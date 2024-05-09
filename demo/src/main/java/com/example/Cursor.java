@@ -1,47 +1,51 @@
 package com.example;
 
 public class Cursor {
-    private double x; // Position X du curseur
-    private double y; // Position Y du curseur
+    private Point position; // Position du curseur
     private double angle; // Orientation du curseur
 
     // Constructeur
-    public Cursor(double x, double y, double angle) {
-        this.x = x;
-        this.y = y;
-        this.angle = angle;
+    public Cursor(Point position, double angle) {
+        if (position == null) {
+            throw new IllegalArgumentException("La position ne peut pas être nulle");
+        }
+        else if (angle < 0 || angle >= 360) {
+            throw new IllegalArgumentException("L'angle doit être compris entre 0 et 360");
+        }
+        else{
+            this.position = position;
+            this.angle = angle;
+        }
     }
 
     // Méthodes pour déplacer le curseur
     public void moveForward(double distance) {
-        x += distance * Math.cos(Math.toRadians(angle));
-        y += distance * Math.sin(Math.toRadians(angle));
+        position.setX(position.getX() + distance * Math.cos(Math.toRadians(angle))); 
+        position.setY(position.getY() + distance * Math.sin(Math.toRadians(angle)));
     }
 
     public void moveBackward(double distance) {
-        x -= distance * Math.cos(Math.toRadians(angle));
-        y -= distance * Math.sin(Math.toRadians(angle));
+        position.setX(position.getX() - distance * Math.cos(Math.toRadians(angle)));
+        position.setY(position.getY() - distance * Math.sin(Math.toRadians(angle)));
     }
 
     public void turn(double degrees) {
-        angle += degrees;
+        if (angle + degrees < 0) {
+            angle = 360 + (angle + degrees);
+        } else if (angle + degrees >= 360) {
+            angle = (angle + degrees) - 360;
+        } else {
+            angle += degrees;
+        }
     }
 
     // Getters et Setters
-    public double getX() {
-        return x;
+    public Point getPosition() {
+        return position;
     }
 
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
+    public void setPosition(Point position) {
+        this.position = position;
     }
 
     public double getAngle() {
@@ -49,6 +53,15 @@ public class Cursor {
     }
 
     public void setAngle(double angle) {
+        if (angle < 0 || angle >= 360) {
+            throw new IllegalArgumentException("L'angle doit être compris entre 0 et 360");
+        }
         this.angle = angle;
     }
+
+    @Override
+    public String toString() {
+        return "Le curseur est à la position " + position + " et est orienté à " + angle + " degrés";
+    }
+
 }
