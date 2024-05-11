@@ -14,27 +14,27 @@ import java.awt.geom.Point2D;
 public class SimpleInstruction extends Instruction {
     private String type;
     private Objects parameters;
-    private Cursor cursor;
+    private CursorManager cursors;
     /**
      * Constructs a new SimpleInstruction with the specified type and parameters.
      *
      * @param type       the type of the instruction
      * @param parameters the parameters of the instruction
      */
-    public SimpleInstruction(String type, Objects parameters,Cursor cursor) {
+    public SimpleInstruction(String type, Objects parameters,CursorManager cursors) {
         this.type = type;
         this.parameters = parameters;
-        this.cursor = cursor;
+        this.cursors = cursors;
     }
     /**
      * Constructs a new SimpleInstruction with the specified type and parameters.
      *
      * @param type       the type of the instruction
      */
-    public SimpleInstruction(String type,Cursor cursor) {
+    public SimpleInstruction(String type,CursorManager cursors) {
         this.type = type;
         this.parameters = 0;
-        this.cursor = cursor;
+        this.cursors = cursors;
     }
 
     /**
@@ -43,22 +43,22 @@ public class SimpleInstruction extends Instruction {
      * @param cursor the cursor to execute the instruction on
      */
     @Override
-    public void execute(Cursor cursor) {
+    public void execute() {
         switch (type) {
             case "FWD":
-                cursor.moveForward(parameters);
+                cursors.getCurrentCursor().moveForward(parameters);
                 break;
             case "BWD":
-                cursor.moveBackward(parameters);
+                cursors.getCurrentCursor().moveBackward(parameters);
                 break;
             case "TURN":
-                cursor.turn(parameters);
+                cursors.getCurrentCursor().turn(parameters);
                 break;
             case "SHOW":
                 Polygon cursorTriangle = new Polygon(
-                        cursor.getPosition().getX(), cursor.getPosition().getY(),
-                        cursor.getPosition().getX() + 10 * Math.cos(Math.toRadians(cursor.getAngle() - 150)), cursor.getPosition().getY() + 10 * Math.sin(Math.toRadians(cursor.getAngle() - 150)),
-                        cursor.getPosition().getX() + 10 * Math.cos(Math.toRadians(cursor.getAngle() + 150)), cursor.getPosition().getY() + 10 * Math.sin(Math.toRadians(cursor.getAngle() + 150))
+                        cursors.getCurrentCursor().getPosition().getX(), cursors.getCurrentCursor().getPosition().getY(),
+                        cursors.getCurrentCursor().getPosition().getX() + 10 * Math.cos(Math.toRadians(cursors.getCurrentCursor().getAngle() - 150)), cursors.getCurrentCursor().getPosition().getY() + 10 * Math.sin(Math.toRadians(cursors.getCurrentCursor().getAngle() - 150)),
+                        cursors.getCurrentCursor().getPosition().getX() + 10 * Math.cos(Math.toRadians(cursors.getCurrentCursor().getAngle() + 150)), cursors.getCurrentCursor().getPosition().getY() + 10 * Math.sin(Math.toRadians(cursors.getCurrentCursor().getAngle() + 150))
                 );
                 /**
                  * Cursor triangle color
@@ -71,9 +71,9 @@ public class SimpleInstruction extends Instruction {
                 break;
             case "HIDE":
                 Polygon cursorTriangle = new Polygon(
-                        cursor.getPosition().getX(), cursor.getPosition().getY(),
-                        cursor.getPosition().getX() + 10 * Math.cos(Math.toRadians(cursor.getAngle() - 150)), cursor.getPosition().getY() + 10 * Math.sin(Math.toRadians(cursor.getAngle() - 150)),
-                        cursor.getPosition().getX() + 10 * Math.cos(Math.toRadians(cursor.getAngle() + 150)), cursor.getPosition().getY() + 10 * Math.sin(Math.toRadians(cursor.getAngle() + 150))
+                        cursors.getCurrentCursor().getPosition().getX(), cursors.getCurrentCursor().getPosition().getY(),
+                        cursors.getCurrentCursor().getPosition().getX() + 10 * Math.cos(Math.toRadians(cursors.getCurrentCursor().getAngle() - 150)), cursors.getCurrentCursor().getPosition().getY() + 10 * Math.sin(Math.toRadians(cursors.getCurrentCursor().getAngle() - 150)),
+                        cursors.getCurrentCursor().getPosition().getX() + 10 * Math.cos(Math.toRadians(cursors.getCurrentCursor().getAngle() + 150)), cursors.getCurrentCursor().getPosition().getY() + 10 * Math.sin(Math.toRadians(cursors.getCurrentCursor().getAngle() + 150))
                 );
                 /**
                  * Remove cursor triangle to group
@@ -81,14 +81,14 @@ public class SimpleInstruction extends Instruction {
                 root.getChildren().remove(cursorTriangle);
                 break;
             case "MOV":
-                cursor.setPosition(parameters);
+                cursors.getCurrentCursor().setPosition(parameters);
                 break;
             case "POS":
-                cursor.setPosition(parameters);
+                cursors.getCurrentCursor().setPosition(parameters);
                 break;
             case "PRESS":
                 if (parameters instanceof Double) {
-                    cursor.setPress(parameters);
+                    cursors.getCurrentCursor().setPress(parameters);
                 }
                 if (parameters instanceof String) {
                     String value = (String) parameters;
@@ -98,44 +98,44 @@ public class SimpleInstruction extends Instruction {
                     if (matcher.matches()) {
                         // La valeur est au format numérique avec un % à la fin
                         double numericValue = Double.parseDouble(value.substring(0, value.length() - 1));
-                        cursor.setPress(numericValue/100);
+                        cursors.getCurrentCursor().setPress(numericValue/100);
                         }
                     }
                 }
-                cursor.setPress(parameters);
+                cursors.getCurrentCursor().setPress(parameters);
                 break;
             case "COLOR":
                 cursor.setColor(parameters);
                 break;
             case "THICK":
-                cursor.setThick(parameters);
+                cursors.getCurrentCursor().setThick(parameters);
                 break;
             case "LOOKAT":
                  if (parameters instanceof Cursor) {
-                     double deltaX = parameters.getPosition().getX() - cursor.getPosition().getX();
-                     double deltaY = parameters.getPosition().getY() - cursor.getPosition().getY();
+                     double deltaX = parameters.getPosition().getX() - cursors.getCurrentCursor().getPosition().getX();
+                     double deltaY = parameters.getPosition().getY() - cursors.getCurrentCursor().getPosition().getY();
 
                      double angleToTarget = Math.toDegrees(Math.atan2(deltaY, deltaX));
 
-                     cursor.setAngle(angleToTarget);
+                     cursors.getCurrentCursor().setAngle(angleToTarget);
                  }
                  if (parameters instanceof Point) {
-                     double deltaX = parameters.getX() - cursor.getPosition().getX();
-                     double deltaY = parameters.getY() - cursor.getPosition().getY();
+                     double deltaX = parameters.getX() - cursors.getCurrentCursor().getCurrentCursor().getPosition().getX();
+                     double deltaY = parameters.getY() - cursors.getCurrentCursor().getCurrentCursor().getPosition().getY();
 
                      double angleToTarget = Math.toDegrees(Math.atan2(deltaY, deltaX));
 
-                     cursor.setAngle(angleToTarget);
+                     cursors.getCurrentCursor().setAngle(angleToTarget);
                  }
                 break;
             case "CURSOR":
-                cursor.moveForward(parameters);
+                cursors.addCursor(parameters)
                 break;
             case "SELECT":
-                cursor.moveForward(parameters);
+                cursors.selectCursor(parameters)
                 break;
             case "REMOVE":
-                cursor.moveForward(parameters);
+                cursors.removeCursor(parameters);
                 break;
         }
     }
@@ -212,17 +212,17 @@ public class SimpleInstruction extends Instruction {
                 }
                 break;
             case "CURSOR":
-                if (parameters instanceof Cursor) {
+                if (parameters instanceof Int) {
                     res = true;
                 }
                 break;
             case "SELECT":
-                if (parameters instanceof String) {
+                if (parameters instanceof Int) {
                     res = true;
                 }
                 break;
             case "REMOVE":
-                if (parameters instanceof Cursor) {
+                if (parameters instanceof Int) {
                     res = true;
                 }
                 break;
