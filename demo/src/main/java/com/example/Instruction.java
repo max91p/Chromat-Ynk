@@ -10,7 +10,9 @@ public abstract class Instruction {
      *
      * @param cursor the cursor to execute the instruction on
      */
-    public abstract void execute(Cursor cursor);
+    //public abstract void execute(Cursor cursor);
+
+    public abstract void execute();
 
     /**
      * Checks if the instruction is valid.

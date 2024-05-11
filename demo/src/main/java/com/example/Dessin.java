@@ -7,6 +7,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.stage.Stage;
 
+
 public class Dessin extends Application {
 
     @Override
@@ -52,17 +53,7 @@ public class Dessin extends Application {
         Group root = new Group();
         root.getChildren().add(path);
 
-        Point point = new Point(500,200);
-        Cursor cursor = new Cursor(point,165);
-        Polygon cursorTriangle = new Polygon(
-                cursor.getPosition().getX(), cursor.getPosition().getY(),
-                cursor.getPosition().getX() + 10 * Math.cos(Math.toRadians(cursor.getAngle() - 150)), cursor.getPosition().getY() + 10 * Math.sin(Math.toRadians(cursor.getAngle() - 150)),
-                cursor.getPosition().getX() + 10 * Math.cos(Math.toRadians(cursor.getAngle() + 150)), cursor.getPosition().getY() + 10 * Math.sin(Math.toRadians(cursor.getAngle() + 150))
-        );
-        cursorTriangle.setFill(Color.RED); // Couleur du triangle représentant le curseur
 
-        // Ajout du triangle représentant le curseur au groupe
-        root.getChildren().add(cursorTriangle);
         // Création de la scène et ajout du groupe
         Scene scene = new Scene(root, 600, 400);
 
@@ -75,6 +66,6 @@ public class Dessin extends Application {
     }
 
     public static void main(String[] args) {
-        launch(args);
+        launch();
     }
 }

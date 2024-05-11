@@ -11,11 +11,9 @@ public class Cursor {
     public Cursor(Point position, double angle,Color color, double thick, double press, int id) {
         if (position == null) {
             throw new IllegalArgumentException("La position ne peut pas être nulle");
-        }
-        else if (angle < 0 || angle >= 360) {
+        } else if (angle < 0 || angle >= 360) {
             throw new IllegalArgumentException("L'angle doit être compris entre 0 et 360");
-        }
-        else{
+        } else {
             this.position = position;
             this.angle = angle;
             this.color = color;
@@ -23,6 +21,7 @@ public class Cursor {
             this.press = press;
             this.id = id;
         }
+    }
     public Cursor(Point position, double angle, int id) {
         if (position == null) {
             throw new IllegalArgumentException("La position ne peut pas être nulle");
@@ -56,6 +55,23 @@ public class Cursor {
                 this.id = id;
             }
         }
+
+    public Cursor(Point point, int i) {
+        if (position == null) {
+            throw new IllegalArgumentException("La position ne peut pas être nulle");
+        }
+        else if (angle < 0 || angle >= 360) {
+            throw new IllegalArgumentException("L'angle doit être compris entre 0 et 360");
+        }
+        else{
+            this.position = new Point(point.getX(), point.getY());
+            this.angle = 0;
+            this.color = new Color(0,0,0);
+            this.thick = 1;
+            this.press = 1;
+            this.id = id;
+        }
+    }
 
     // Méthodes pour déplacer le curseur
     public void moveForward(double distance) {
@@ -106,15 +122,15 @@ public class Cursor {
 
     public double getThick(){ return thick; }
 
-    public void setThick(int thick) { this.thick = thick; }
+    public void setThick(double thick) { this.thick = thick; }
 
     public double getPress() { return press; }
 
-    public void setPress(int press) { this.press = press; }
+    public void setPress(double press) { this.press = press; }
 
-    public String getId() { return id; }
+    public int getId() { return id; }
 
-    public void setId (String id) { this.id = id; }
+    public void setId (int id) { this.id = id; }
 
     @Override
     public String toString() {
