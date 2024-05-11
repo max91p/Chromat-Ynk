@@ -3,8 +3,24 @@ package com.example;
 public class Cursor {
     private Point position; // Position du curseur
     private double angle; // Orientation du curseur
-
+    private Color color;// couleur du curseur
+    private double thick;//épaisseur du trait associé au curseur
+    private double press;//pression du curseur
     // Constructeur
+    public Cursor(Point position, double angle,Color color, double thick, double press) {
+        if (position == null) {
+            throw new IllegalArgumentException("La position ne peut pas être nulle");
+        }
+        else if (angle < 0 || angle >= 360) {
+            throw new IllegalArgumentException("L'angle doit être compris entre 0 et 360");
+        }
+        else{
+            this.position = position;
+            this.angle = angle;
+            this.color = color;
+            this.thick = thick;
+            this.press = press;
+        }
     public Cursor(Point position, double angle) {
         if (position == null) {
             throw new IllegalArgumentException("La position ne peut pas être nulle");
@@ -15,6 +31,9 @@ public class Cursor {
         else{
             this.position = position;
             this.angle = angle;
+            this.color = new Color(0,0,0);
+            this.thick = 1;
+            this.press = 1;
         }
     }
 
@@ -58,6 +77,20 @@ public class Cursor {
         }
         this.angle = angle;
     }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color){ this.color=color; }
+
+    public double getThick(){ return thick; }
+
+    public void setThick(int thick) { this.thick = thick; }
+
+    public double getPress() { return press; }
+
+    public void setPress(int press) { this.press = press; }
 
     @Override
     public String toString() {
