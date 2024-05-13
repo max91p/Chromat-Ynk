@@ -4,7 +4,28 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c07085e0-71b5-40e8-b820-c61529d5503f" name="Changes" comment="moveForward et Backward" />
+    <list default="true" id="c07085e0-71b5-40e8-b820-c61529d5503f" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_5_11_2024_6_26_PM__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_5_11_2024_6_26_PM__Changes_.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/demo/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/Cursor.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/Cursor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/Dessin.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/Dessin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/DrawingCanvas.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/DrawingCanvas.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/target/classes/module-info.class" beforeDir="false" afterPath="$PROJECT_DIR$/demo/target/classes/module-info.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/target/classes/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/demo/target/classes/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/target/classes/src/Cursor.class" beforeDir="false" afterPath="$PROJECT_DIR$/demo/target/classes/src/Cursor.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/target/classes/src/Dessin.class" beforeDir="false" afterPath="$PROJECT_DIR$/demo/target/classes/src/Dessin.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/target/classes/src/DrawingCanvas.class" beforeDir="false" afterPath="$PROJECT_DIR$/demo/target/classes/src/DrawingCanvas.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/target/classes/src/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/demo/target/classes/src/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/target/classes/src/Point.class" beforeDir="false" afterPath="$PROJECT_DIR$/demo/target/classes/src/Point.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/target/classes/target/classes/demo.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/target/classes/target/classes/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/target/classes/target/classes/target/classes/demo.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/target/classes/target/classes/target/classes/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/target/classes/target/classes/target/classes/target/classes/demo.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/target/classes/target/classes/target/classes/target/classes/pom.xml" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -57,23 +78,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "ignore.virus.scanning.warn.message": "true",
-    "jdk.selected.JAVA_MODULE": "20",
-    "last_opened_file_path": "H:/Desktop/JAVA/Chromat-Ynk/demo",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "Errors",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;20&quot;,
+    &quot;last_opened_file_path&quot;: &quot;H:/Desktop/JAVA/Chromat-Ynk/demo&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;Errors&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="H:\Desktop\JAVA\Chromat-Ynk\demo" />
