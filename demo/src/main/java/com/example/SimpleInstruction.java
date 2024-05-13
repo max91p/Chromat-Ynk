@@ -3,6 +3,7 @@ package com.example;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
+import javafx.scene.Group;
 
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -14,9 +15,15 @@ import java.util.regex.Pattern;
 
 public class SimpleInstruction extends Instruction {
     private String type;
-    private Objects parameters;
+    private Object parameters;
     private CursorManager cursors;
     private Scene scene;
+    private Group root;
+    Polygon cursorTriangle = new Polygon(
+            cursors.getCurrentCursor().getPosition().getX(), cursors.getCurrentCursor().getPosition().getY(),
+            cursors.getCurrentCursor().getPosition().getX() + 10 * Math.cos(Math.toRadians(cursors.getCurrentCursor().getAngle() - 150)), cursors.getCurrentCursor().getPosition().getY() + 10 * Math.sin(Math.toRadians(cursors.getCurrentCursor().getAngle() - 150)),
+            cursors.getCurrentCursor().getPosition().getX() + 10 * Math.cos(Math.toRadians(cursors.getCurrentCursor().getAngle() + 150)), cursors.getCurrentCursor().getPosition().getY() + 10 * Math.sin(Math.toRadians(cursors.getCurrentCursor().getAngle() + 150))
+    );
 
     /**
      * Constructs a new SimpleInstruction with the specified type and parameters.
@@ -25,11 +32,12 @@ public class SimpleInstruction extends Instruction {
      * @param parameters the parameters of the instruction
      */
 
-    public SimpleInstruction(String type, Objects parameters, CursorManager cursors,Scene scene) {
+    public SimpleInstruction(String type, Objects parameters, CursorManager cursors,Scene scene,Group root) {
         this.type = type;
         this.parameters = parameters;
         this.cursors = cursors;
         this.scene=scene;
+        this.root=root;
     }
 
     /**
@@ -38,69 +46,46 @@ public class SimpleInstruction extends Instruction {
      * @param type the type of the instruction
      */
 
-    public SimpleInstruction(String type, CursorManager cursors, Scene scene) {
+    public SimpleInstruction(String type, CursorManager cursors, Scene scene,Group root) {
         this.type = type;
-        this.parameters = 0;
+        this.parameters = null;
         this.cursors = cursors;
         this.scene=scene;
+        this.root=root;
     }
 
     /**
      * Executes the instruction on the given cursor.
-     *
-     * @param cursor the cursor to execute the instruction on
      */
 
     @Override
     public void execute() {
         switch (type) {
             case "FWD":
-                cursors.getCurrentCursor().moveForward(parameters,scene);
+                cursors.getCurrentCursor().moveForward((Double)parameters,scene);
                 break;
             case "BWD":
-                cursors.getCurrentCursor().moveBackward(parameters,scene);
+                cursors.getCurrentCursor().moveBackward((Double)parameters,scene);
                 break;
             case "TURN":
-                cursors.getCurrentCursor().turn(parameters);
+                cursors.getCurrentCursor().turn((Double)parameters);
                 break;
             case "SHOW":
-                Polygon cursorTriangle = new Polygon(
-                        cursors.getCurrentCursor().getPosition().getX(), cursors.getCurrentCursor().getPosition().getY(),
-                        cursors.getCurrentCursor().getPosition().getX() + 10 * Math.cos(Math.toRadians(cursors.getCurrentCursor().getAngle() - 150)), cursors.getCurrentCursor().getPosition().getY() + 10 * Math.sin(Math.toRadians(cursors.getCurrentCursor().getAngle() - 150)),
-                        cursors.getCurrentCursor().getPosition().getX() + 10 * Math.cos(Math.toRadians(cursors.getCurrentCursor().getAngle() + 150)), cursors.getCurrentCursor().getPosition().getY() + 10 * Math.sin(Math.toRadians(cursors.getCurrentCursor().getAngle() + 150))
-                );
-                /**
-                 * Cursor triangle color
-                 */
-
                 cursorTriangle.setFill(Color.RED);
-                /**
-                 * Add cursor triangle to group
-                 */
-
                 root.getChildren().add(cursorTriangle);
                 break;
             case "HIDE":
-                Polygon cursorTriangle = new Polygon(
-                        cursors.getCurrentCursor().getPosition().getX(), cursors.getCurrentCursor().getPosition().getY(),
-                        cursors.getCurrentCursor().getPosition().getX() + 10 * Math.cos(Math.toRadians(cursors.getCurrentCursor().getAngle() - 150)), cursors.getCurrentCursor().getPosition().getY() + 10 * Math.sin(Math.toRadians(cursors.getCurrentCursor().getAngle() - 150)),
-                        cursors.getCurrentCursor().getPosition().getX() + 10 * Math.cos(Math.toRadians(cursors.getCurrentCursor().getAngle() + 150)), cursors.getCurrentCursor().getPosition().getY() + 10 * Math.sin(Math.toRadians(cursors.getCurrentCursor().getAngle() + 150))
-                );
-                /**
-                 * Remove cursor triangle to group
-                 */
-
                 root.getChildren().remove(cursorTriangle);
                 break;
             case "MOV":
-                cursors.getCurrentCursor().setPosition(parameters);
+                cursors.getCurrentCursor().setPosition((Point)parameters);
                 break;
             case "POS":
-                cursors.getCurrentCursor().setPosition(parameters);
+                cursors.getCurrentCursor().setPosition((Point)parameters);
                 break;
             case "PRESS":
                 if (parameters instanceof Double) {
-                    cursors.getCurrentCursor().setPress(parameters);
+                    cursors.getCurrentCursor().setPress((Double)parameters);
                 }
                 if (parameters instanceof String) {
                     String value = (String)parameters;
@@ -114,26 +99,28 @@ public class SimpleInstruction extends Instruction {
                     }
                 }
 
-        cursors.getCurrentCursor().setPress(parameters);
+        cursors.getCurrentCursor().setPress((Double)parameters);
         break;
         case "COLOR":
-        cursor.setColor(parameters);
+        cursors.getCurrentCursor().setColor((com.example.Color)parameters);
         break;
         case "THICK":
-        cursors.getCurrentCursor().setThick(parameters);
+        cursors.getCurrentCursor().setThick((Double)parameters);
         break;
         case "LOOKAT":
         if (parameters instanceof Cursor) {
-            double deltaX = parameters.getPosition().getX() - cursors.getCurrentCursor().getPosition().getX();
-            double deltaY = parameters.getPosition().getY() - cursors.getCurrentCursor().getPosition().getY();
+            Cursor cursor = (Cursor) parameters;
+            double deltaX = cursor.getPosition().getX() - cursors.getCurrentCursor().getPosition().getX();
+            double deltaY = cursor.getPosition().getY() - cursors.getCurrentCursor().getPosition().getY();
 
             double angleToTarget = Math.toDegrees(Math.atan2(deltaY, deltaX));
 
             cursors.getCurrentCursor().setAngle(angleToTarget);
         }
         if (parameters instanceof Point) {
-            double deltaX = parameters.getX() - cursors.getCurrentCursor().getCurrentCursor().getPosition().getX();
-            double deltaY = parameters.getY() - cursors.getCurrentCursor().getCurrentCursor().getPosition().getY();
+            Point point = (Point) parameters;
+            double deltaX = point.getX() - cursors.getCurrentCursor().getPosition().getX();
+            double deltaY = point.getY() - cursors.getCurrentCursor().getPosition().getY();
 
             double angleToTarget = Math.toDegrees(Math.atan2(deltaY, deltaX));
 
@@ -141,13 +128,13 @@ public class SimpleInstruction extends Instruction {
         }
         break;
         case "CURSOR":
-        cursors.addCursor(parameters);
+        cursors.addCursor((Integer)parameters);
         break;
         case "SELECT":
-        cursors.selectCursor(parameters);
+        cursors.selectCursor((Integer)parameters);
         break;
         case "REMOVE":
-        cursors.removeCursor(parameters);
+        cursors.removeCursor((Integer)parameters);
         break;
     }
 
