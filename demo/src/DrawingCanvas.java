@@ -42,7 +42,7 @@ public class DrawingCanvas {
         this.newPosition=newPos;
     }
 
-    void drawLine(double width,double opacity){
+    void drawLine(double width,double opacity, ColorOfLine color){
         //Set the point where the line will start
         MoveTo moveTo=new MoveTo(oldPosition.getX(), oldPosition.getY());
         //Creation and addition of the initial point to the path
@@ -54,6 +54,7 @@ public class DrawingCanvas {
         line.setY(newPosition.getY());
         path.setStrokeWidth(width);
         path.setOpacity(opacity);
+        path.setStroke(Color.rgb(color.getRed(),color.getGreen(),color.getBlue()));
         //Add the line to the path
         path.getElements().add(line);
         //Creation of the group that contain the path

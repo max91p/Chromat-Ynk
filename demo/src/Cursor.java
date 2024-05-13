@@ -7,11 +7,15 @@ public class Cursor {
     private Point position;
     //Orientation for the cursor
     private double angle;
+    private ColorOfLine color;
+    private double width;
+    private double opacity;
 
     // Constructeur
     public Cursor(Point pos, double angle) {
         this.position=pos;
         this.angle = angle;
+
     }
 
     public Point getPosition() {
@@ -22,7 +26,7 @@ public class Cursor {
         this.position = position;
     }
 
-    public void moveForward(double distance, Scene scene,double newAngle,double width, double opacity) {
+    public void moveForward(double distance, Scene scene,double newAngle,double width, double opacity,ColorOfLine color) {
         Point oldPosition = new Point(position.getX(), position.getY());
         //Set the angle according to new angle
         this.setAngle(this.getAngle()+newAngle);
@@ -31,10 +35,14 @@ public class Cursor {
         position.setY(position.getY() + distance * Math.sin(Math.toRadians(angle)));
         //Create a drawing canva to draw the line
         DrawingCanvas draw = new DrawingCanvas(scene, oldPosition,position);
-        draw.drawLine(width,opacity);
+        draw.drawLine(width,opacity,color);
         draw.drawCursor(this);
+
     }
-    public void moveBackward(double distance, Scene scene,double newAngle,double width, double opacity) {
+    public void moveForward(double distance, Scene scene,double width, double opacity,ColorOfLine color) {
+
+    }
+    public void moveBackward(double distance, Scene scene, double newAngle, double width, double opacity, ColorOfLine color) {
         Point oldPosition = new Point(position.getX(), position.getY());
         //Set the angle according to new angle
         this.setAngle(this.getAngle()+newAngle);
@@ -43,7 +51,7 @@ public class Cursor {
         position.setY(position.getY() - distance * Math.sin(Math.toRadians(angle)));
         //Create a drawing canva to draw the line
         DrawingCanvas draw = new DrawingCanvas(scene, oldPosition,position);
-        draw.drawLine(width, opacity);
+        draw.drawLine(width, opacity, color);
         draw.drawCursor(this);
     }
 

@@ -28,8 +28,10 @@ public class Dessin extends Application {
         root.getChildren().add(cursorTriangle);
         // Création de la scène et ajout du groupe
         Scene scene = new Scene(root, 600, 400);
-        cursor.moveForward(300,scene,55,5,0.7);
-        cursor.moveBackward(100,scene,125,40,0.2);
+        ColorOfLine red=new ColorOfLine( 39,168,136);
+        ColorOfLine blue=new ColorOfLine(0.139,0.135,0.98);
+        cursor.moveForward(300,scene,55,5,0.7,blue);
+        cursor.moveBackward(100,scene,125,40,0.2,red);
 
 
         // Configuration de la scène principale
