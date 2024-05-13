@@ -1,3 +1,5 @@
+package src;
+
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -49,12 +51,12 @@ public class Dessin extends Application {
         // Création du groupe pour contenir le chemin
         Group root = new Group();
         root.getChildren().add(path);
-
-        Cursor cursor = new Cursor(500,200,165);
+        Point start = new Point(500,200);
+        Cursor cursor = new Cursor(start, 160);
         Polygon cursorTriangle = new Polygon(
-                cursor.getX(), cursor.getY(),
-                cursor.getX() + 10 * Math.cos(Math.toRadians(cursor.getAngle() - 150)), cursor.getY() + 10 * Math.sin(Math.toRadians(cursor.getAngle() - 150)),
-                cursor.getX() + 10 * Math.cos(Math.toRadians(cursor.getAngle() + 150)), cursor.getY() + 10 * Math.sin(Math.toRadians(cursor.getAngle() + 150))
+                cursor.getPosition().getX(), cursor.getPosition().getY(),
+                cursor.getPosition().getX() + 10 * Math.cos(Math.toRadians(cursor.getAngle() - 150)), cursor.getPosition().getY() + 10 * Math.sin(Math.toRadians(cursor.getAngle() - 150)),
+                cursor.getPosition().getX() + 10 * Math.cos(Math.toRadians(cursor.getAngle() + 150)), cursor.getPosition().getY() + 10 * Math.sin(Math.toRadians(cursor.getAngle() + 150))
         );
         cursorTriangle.setFill(Color.RED); // Couleur du triangle représentant le curseur
 
@@ -62,7 +64,7 @@ public class Dessin extends Application {
         root.getChildren().add(cursorTriangle);
         // Création de la scène et ajout du groupe
         Scene scene = new Scene(root, 600, 400);
-
+        cursor.moveBackward(100,scene);
 
 
         // Configuration de la scène principale

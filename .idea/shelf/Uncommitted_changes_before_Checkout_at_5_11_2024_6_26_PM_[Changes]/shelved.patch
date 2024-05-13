@@ -1,0 +1,376 @@
+Index: demo/src/main/java/com/example/Cursor.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example;\r\n\r\npublic class Cursor {\r\n    private Point position; // Position du curseur\r\n    private double angle; // Orientation du curseur\r\n    private Color color;// couleur du curseur\r\n    private double thick;//épaisseur du trait associé au curseur\r\n    private double press;//pression du curseur\r\n    private int id;//id du curseur\r\n    // Constructeur\r\n    public Cursor(Point position, double angle,Color color, double thick, double press, int id) {\r\n        if (position == null) {\r\n            throw new IllegalArgumentException(\"La position ne peut pas être nulle\");\r\n        }\r\n        else if (angle < 0 || angle >= 360) {\r\n            throw new IllegalArgumentException(\"L'angle doit être compris entre 0 et 360\");\r\n        }\r\n        else{\r\n            this.position = position;\r\n            this.angle = angle;\r\n            this.color = color;\r\n            this.thick = thick;\r\n            this.press = press;\r\n            this.id = id;\r\n        }\r\n    public Cursor(Point position, double angle, int id) {\r\n        if (position == null) {\r\n            throw new IllegalArgumentException(\"La position ne peut pas être nulle\");\r\n        }\r\n        else if (angle < 0 || angle >= 360) {\r\n            throw new IllegalArgumentException(\"L'angle doit être compris entre 0 et 360\");\r\n        }\r\n        else{\r\n            this.position = position;\r\n            this.angle = angle;\r\n            this.color = new Color(0,0,0);\r\n            this.thick = 1;\r\n            this.press = 1;\r\n            this.id = id;\r\n        }\r\n    }\r\n\r\n    public Cursor(int id) {\r\n            if (position == null) {\r\n                throw new IllegalArgumentException(\"La position ne peut pas être nulle\");\r\n            }\r\n            else if (angle < 0 || angle >= 360) {\r\n                throw new IllegalArgumentException(\"L'angle doit être compris entre 0 et 360\");\r\n            }\r\n            else{\r\n                this.position = new Point();\r\n                this.angle = 0;\r\n                this.color = new Color(0,0,0);\r\n                this.thick = 1;\r\n                this.press = 1;\r\n                this.id = id;\r\n            }\r\n        }\r\n\r\n    // Méthodes pour déplacer le curseur\r\n    public void moveForward(double distance) {\r\n        position.setX(position.getX() + distance * Math.cos(Math.toRadians(angle))); \r\n        position.setY(position.getY() + distance * Math.sin(Math.toRadians(angle)));\r\n    }\r\n\r\n    public void moveBackward(double distance) {\r\n        position.setX(position.getX() - distance * Math.cos(Math.toRadians(angle)));\r\n        position.setY(position.getY() - distance * Math.sin(Math.toRadians(angle)));\r\n    }\r\n\r\n    public void turn(double degrees) {\r\n        if (angle + degrees < 0) {\r\n            angle = 360 + (angle + degrees);\r\n        } else if (angle + degrees >= 360) {\r\n            angle = (angle + degrees) - 360;\r\n        } else {\r\n            angle += degrees;\r\n        }\r\n    }\r\n\r\n    // Getters et Setters\r\n    public Point getPosition() {\r\n        return position;\r\n    }\r\n\r\n    public void setPosition(Point position) {\r\n        this.position = position;\r\n    }\r\n\r\n    public double getAngle() {\r\n        return angle;\r\n    }\r\n\r\n    public void setAngle(double angle) {\r\n        if (angle < 0 || angle >= 360) {\r\n            throw new IllegalArgumentException(\"L'angle doit être compris entre 0 et 360\");\r\n        }\r\n        this.angle = angle;\r\n    }\r\n\r\n    public Color getColor() {\r\n        return color;\r\n    }\r\n\r\n    public void setColor(Color color){ this.color=color; }\r\n\r\n    public double getThick(){ return thick; }\r\n\r\n    public void setThick(int thick) { this.thick = thick; }\r\n\r\n    public double getPress() { return press; }\r\n\r\n    public void setPress(int press) { this.press = press; }\r\n\r\n    public String getId() { return id; }\r\n\r\n    public void setId (String id) { this.id = id; }\r\n\r\n    @Override\r\n    public String toString() {\r\n        return \"Le curseur est à la position \" + position + \" et est orienté à \" + angle + \" degrés\";\r\n    }\r\n\r\n}
+===================================================================
+diff --git a/demo/src/main/java/com/example/Cursor.java b/demo/src/main/java/com/example/Cursor.java
+--- a/demo/src/main/java/com/example/Cursor.java	
++++ b/demo/src/main/java/com/example/Cursor.java	
+@@ -11,11 +11,9 @@
+     public Cursor(Point position, double angle,Color color, double thick, double press, int id) {
+         if (position == null) {
+             throw new IllegalArgumentException("La position ne peut pas être nulle");
+-        }
+-        else if (angle < 0 || angle >= 360) {
++        } else if (angle < 0 || angle >= 360) {
+             throw new IllegalArgumentException("L'angle doit être compris entre 0 et 360");
+-        }
+-        else{
++        } else {
+             this.position = position;
+             this.angle = angle;
+             this.color = color;
+@@ -23,7 +21,8 @@
+             this.press = press;
+             this.id = id;
+         }
+-    public Cursor(Point position, double angle, int id) {
++    }
++    public Cursor(Point position,double angle, int id) {
+         if (position == null) {
+             throw new IllegalArgumentException("La position ne peut pas être nulle");
+         }
+@@ -106,15 +105,15 @@
+ 
+     public double getThick(){ return thick; }
+ 
+-    public void setThick(int thick) { this.thick = thick; }
++    public void setThick(double thick) { this.thick = thick; }
+ 
+     public double getPress() { return press; }
+ 
+-    public void setPress(int press) { this.press = press; }
++    public void setPress(double press) { this.press = press; }
+ 
+-    public String getId() { return id; }
++    public int getId() { return id; }
+ 
+-    public void setId (String id) { this.id = id; }
++    public void setId (int id) { this.id = id; }
+ 
+     @Override
+     public String toString() {
+Index: demo/src/main/java/com/example/SimpleInstruction.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example;\r\n\r\nimport javafx.application.Application;\r\nimport javafx.scene.Group;\r\nimport javafx.scene.Scene;\r\nimport javafx.scene.paint.Color;\r\nimport javafx.scene.shape.*;\r\nimport javafx.stage.Stage;\r\nimport java.awt.geom.Point2D;\r\n\r\n/**\r\n * Represents a simple drawing instruction.\r\n */\r\npublic class SimpleInstruction extends Instruction {\r\n    private String type;\r\n    private Objects parameters;\r\n    private CursorManager cursors;\r\n    /**\r\n     * Constructs a new SimpleInstruction with the specified type and parameters.\r\n     *\r\n     * @param type       the type of the instruction\r\n     * @param parameters the parameters of the instruction\r\n     */\r\n    public SimpleInstruction(String type, Objects parameters,CursorManager cursors) {\r\n        this.type = type;\r\n        this.parameters = parameters;\r\n        this.cursors = cursors;\r\n    }\r\n    /**\r\n     * Constructs a new SimpleInstruction with the specified type and parameters.\r\n     *\r\n     * @param type       the type of the instruction\r\n     */\r\n    public SimpleInstruction(String type,CursorManager cursors) {\r\n        this.type = type;\r\n        this.parameters = 0;\r\n        this.cursors = cursors;\r\n    }\r\n\r\n    /**\r\n     * Executes the instruction on the given cursor.\r\n     *\r\n     * @param cursor the cursor to execute the instruction on\r\n     */\r\n    @Override\r\n    public void execute() {\r\n        switch (type) {\r\n            case \"FWD\":\r\n                cursors.getCurrentCursor().moveForward(parameters);\r\n                break;\r\n            case \"BWD\":\r\n                cursors.getCurrentCursor().moveBackward(parameters);\r\n                break;\r\n            case \"TURN\":\r\n                cursors.getCurrentCursor().turn(parameters);\r\n                break;\r\n            case \"SHOW\":\r\n                Polygon cursorTriangle = new Polygon(\r\n                        cursors.getCurrentCursor().getPosition().getX(), cursors.getCurrentCursor().getPosition().getY(),\r\n                        cursors.getCurrentCursor().getPosition().getX() + 10 * Math.cos(Math.toRadians(cursors.getCurrentCursor().getAngle() - 150)), cursors.getCurrentCursor().getPosition().getY() + 10 * Math.sin(Math.toRadians(cursors.getCurrentCursor().getAngle() - 150)),\r\n                        cursors.getCurrentCursor().getPosition().getX() + 10 * Math.cos(Math.toRadians(cursors.getCurrentCursor().getAngle() + 150)), cursors.getCurrentCursor().getPosition().getY() + 10 * Math.sin(Math.toRadians(cursors.getCurrentCursor().getAngle() + 150))\r\n                );\r\n                /**\r\n                 * Cursor triangle color\r\n                 */\r\n                cursorTriangle.setFill(Color.RED);\r\n                /**\r\n                 * Add cursor triangle to group\r\n                 */\r\n                root.getChildren().add(cursorTriangle);\r\n                break;\r\n            case \"HIDE\":\r\n                Polygon cursorTriangle = new Polygon(\r\n                        cursors.getCurrentCursor().getPosition().getX(), cursors.getCurrentCursor().getPosition().getY(),\r\n                        cursors.getCurrentCursor().getPosition().getX() + 10 * Math.cos(Math.toRadians(cursors.getCurrentCursor().getAngle() - 150)), cursors.getCurrentCursor().getPosition().getY() + 10 * Math.sin(Math.toRadians(cursors.getCurrentCursor().getAngle() - 150)),\r\n                        cursors.getCurrentCursor().getPosition().getX() + 10 * Math.cos(Math.toRadians(cursors.getCurrentCursor().getAngle() + 150)), cursors.getCurrentCursor().getPosition().getY() + 10 * Math.sin(Math.toRadians(cursors.getCurrentCursor().getAngle() + 150))\r\n                );\r\n                /**\r\n                 * Remove cursor triangle to group\r\n                 */\r\n                root.getChildren().remove(cursorTriangle);\r\n                break;\r\n            case \"MOV\":\r\n                cursors.getCurrentCursor().setPosition(parameters);\r\n                break;\r\n            case \"POS\":\r\n                cursors.getCurrentCursor().setPosition(parameters);\r\n                break;\r\n            case \"PRESS\":\r\n                if (parameters instanceof Double) {\r\n                    cursors.getCurrentCursor().setPress(parameters);\r\n                }\r\n                if (parameters instanceof String) {\r\n                    String value = (String) parameters;\r\n                    // Vérification si la valeur correspond au format numérique avec un % à la fin\r\n                    Pattern pattern = Pattern.compile(\"^\\\\d+(\\\\.\\\\d+)?%$\");\r\n                    Matcher matcher = pattern.matcher(value);\r\n                    if (matcher.matches()) {\r\n                        // La valeur est au format numérique avec un % à la fin\r\n                        double numericValue = Double.parseDouble(value.substring(0, value.length() - 1));\r\n                        cursors.getCurrentCursor().setPress(numericValue/100);\r\n                        }\r\n                    }\r\n                }\r\n                cursors.getCurrentCursor().setPress(parameters);\r\n                break;\r\n            case \"COLOR\":\r\n                cursor.setColor(parameters);\r\n                break;\r\n            case \"THICK\":\r\n                cursors.getCurrentCursor().setThick(parameters);\r\n                break;\r\n            case \"LOOKAT\":\r\n                 if (parameters instanceof Cursor) {\r\n                     double deltaX = parameters.getPosition().getX() - cursors.getCurrentCursor().getPosition().getX();\r\n                     double deltaY = parameters.getPosition().getY() - cursors.getCurrentCursor().getPosition().getY();\r\n\r\n                     double angleToTarget = Math.toDegrees(Math.atan2(deltaY, deltaX));\r\n\r\n                     cursors.getCurrentCursor().setAngle(angleToTarget);\r\n                 }\r\n                 if (parameters instanceof Point) {\r\n                     double deltaX = parameters.getX() - cursors.getCurrentCursor().getCurrentCursor().getPosition().getX();\r\n                     double deltaY = parameters.getY() - cursors.getCurrentCursor().getCurrentCursor().getPosition().getY();\r\n\r\n                     double angleToTarget = Math.toDegrees(Math.atan2(deltaY, deltaX));\r\n\r\n                     cursors.getCurrentCursor().setAngle(angleToTarget);\r\n                 }\r\n                break;\r\n            case \"CURSOR\":\r\n                cursors.addCursor(parameters)\r\n                break;\r\n            case \"SELECT\":\r\n                cursors.selectCursor(parameters)\r\n                break;\r\n            case \"REMOVE\":\r\n                cursors.removeCursor(parameters);\r\n                break;\r\n        }\r\n    }\r\n    public boolean isValid(){\r\n        res = false;\r\n        switch (type) {\r\n            case \"FWD\":\r\n                if (parameters instanceof Int) {\r\n                    res = true;\r\n                }\r\n                break;\r\n            case \"BWD\":\r\n                if (parameters instanceof Int) {\r\n                    res = true;\r\n                }\r\n                break;\r\n            case \"TURN\":\r\n                if (parameters instanceof Int) {\r\n                    res = true;\r\n                }\r\n                break;\r\n            case \"SHOW\":\r\n                res = true;\r\n                break;\r\n            case \"HIDE\":\r\n                res = true;\r\n                break;\r\n            case \"MOV\":\r\n                if (parameters instanceof Point) {\r\n                    res = true;\r\n                }\r\n                break;\r\n            case \"POS\":\r\n                if (parameters instanceof Point) {\r\n                    res = true;\r\n                }\r\n                break;\r\n            case \"PRESS\":\r\n                if (parameters instanceof Double || parameters instanceof String) {\r\n                    if (parameters instanceof Double) {\r\n                        Double value = (Double) parameters;\r\n                        if (value >= 0 && value <= 1) {\r\n                            res = true;\r\n                        }\r\n                    }\r\n                    if (parameters instanceof String) {\r\n                        String value = (String) parameters;\r\n                        // Vérification si la valeur correspond au format numérique avec un % à la fin\r\n                        Pattern pattern = Pattern.compile(\"^\\\\d+(\\\\.\\\\d+)?%$\");\r\n                        Matcher matcher = pattern.matcher(value);\r\n                        if (matcher.matches()) {\r\n                            // La valeur est au format numérique avec un % à la fin\r\n                            double numericValue = Double.parseDouble(value.substring(0, value.length() - 1));\r\n                            if (numericValue >= 0 && numericValue <= 100) {\r\n                                res = true\r\n                            }\r\n                        }\r\n                    }\r\n                }\r\n                break;\r\n            case \"COLOR\":\r\n                if (parameters instanceof Color) {\r\n                    res = true;\r\n                }\r\n                break;\r\n            case \"THICK\":\r\n                if (parameters instanceof Double) {\r\n                    res = true;\r\n                }\r\n                break;\r\n            case \"LOOKAT\":\r\n                if (parameters instanceof Point || parameters instanceof Cursor) {\r\n                    res = true;\r\n                }\r\n                break;\r\n            case \"CURSOR\":\r\n                if (parameters instanceof Int) {\r\n                    res = true;\r\n                }\r\n                break;\r\n            case \"SELECT\":\r\n                if (parameters instanceof Int) {\r\n                    res = true;\r\n                }\r\n                break;\r\n            case \"REMOVE\":\r\n                if (parameters instanceof Int) {\r\n                    res = true;\r\n                }\r\n                break;\r\n        }\r\n        return (res);\r\n    }\r\n}
+===================================================================
+diff --git a/demo/src/main/java/com/example/SimpleInstruction.java b/demo/src/main/java/com/example/SimpleInstruction.java
+--- a/demo/src/main/java/com/example/SimpleInstruction.java	
++++ b/demo/src/main/java/com/example/SimpleInstruction.java	
+@@ -7,6 +7,9 @@
+ import javafx.scene.shape.*;
+ import javafx.stage.Stage;
+ import java.awt.geom.Point2D;
++import java.util.Objects;
++import java.util.regex.Matcher;
++import java.util.regex.Pattern;
+ 
+ /**
+  * Represents a simple drawing instruction.
+@@ -15,23 +18,25 @@
+     private String type;
+     private Objects parameters;
+     private CursorManager cursors;
++
+     /**
+      * Constructs a new SimpleInstruction with the specified type and parameters.
+      *
+      * @param type       the type of the instruction
+      * @param parameters the parameters of the instruction
+      */
+-    public SimpleInstruction(String type, Objects parameters,CursorManager cursors) {
++    public SimpleInstruction(String type, Objects parameters, CursorManager cursors) {
+         this.type = type;
+         this.parameters = parameters;
+         this.cursors = cursors;
+     }
++
+     /**
+      * Constructs a new SimpleInstruction with the specified type and parameters.
+      *
+-     * @param type       the type of the instruction
++     * @param type the type of the instruction
+      */
+-    public SimpleInstruction(String type,CursorManager cursors) {
++    public SimpleInstruction(String type, CursorManager cursors) {
+         this.type = type;
+         this.parameters = 0;
+         this.cursors = cursors;
+@@ -98,10 +103,10 @@
+                     if (matcher.matches()) {
+                         // La valeur est au format numérique avec un % à la fin
+                         double numericValue = Double.parseDouble(value.substring(0, value.length() - 1));
+-                        cursors.getCurrentCursor().setPress(numericValue/100);
+-                        }
++                        cursors.getCurrentCursor().setPress(numericValue / 100);
+                     }
+                 }
++
+                 cursors.getCurrentCursor().setPress(parameters);
+                 break;
+             case "COLOR":
+@@ -111,122 +116,123 @@
+                 cursors.getCurrentCursor().setThick(parameters);
+                 break;
+             case "LOOKAT":
+-                 if (parameters instanceof Cursor) {
+-                     double deltaX = parameters.getPosition().getX() - cursors.getCurrentCursor().getPosition().getX();
+-                     double deltaY = parameters.getPosition().getY() - cursors.getCurrentCursor().getPosition().getY();
++                if (parameters instanceof Cursor) {
++                    double deltaX = parameters.getPosition().getX() - cursors.getCurrentCursor().getPosition().getX();
++                    double deltaY = parameters.getPosition().getY() - cursors.getCurrentCursor().getPosition().getY();
+ 
+-                     double angleToTarget = Math.toDegrees(Math.atan2(deltaY, deltaX));
++                    double angleToTarget = Math.toDegrees(Math.atan2(deltaY, deltaX));
+ 
+-                     cursors.getCurrentCursor().setAngle(angleToTarget);
+-                 }
+-                 if (parameters instanceof Point) {
+-                     double deltaX = parameters.getX() - cursors.getCurrentCursor().getCurrentCursor().getPosition().getX();
+-                     double deltaY = parameters.getY() - cursors.getCurrentCursor().getCurrentCursor().getPosition().getY();
++                    cursors.getCurrentCursor().setAngle(angleToTarget);
++                }
++                if (parameters instanceof Point) {
++                    double deltaX = parameters.getX() - cursors.getCurrentCursor().getCurrentCursor().getPosition().getX();
++                    double deltaY = parameters.getY() - cursors.getCurrentCursor().getCurrentCursor().getPosition().getY();
+ 
+-                     double angleToTarget = Math.toDegrees(Math.atan2(deltaY, deltaX));
++                    double angleToTarget = Math.toDegrees(Math.atan2(deltaY, deltaX));
+ 
+-                     cursors.getCurrentCursor().setAngle(angleToTarget);
+-                 }
++                    cursors.getCurrentCursor().setAngle(angleToTarget);
++                }
+                 break;
+             case "CURSOR":
+-                cursors.addCursor(parameters)
++                cursors.addCursor(parameters);
+                 break;
+             case "SELECT":
+-                cursors.selectCursor(parameters)
++                cursors.selectCursor(parameters);
+                 break;
+             case "REMOVE":
+                 cursors.removeCursor(parameters);
+                 break;
+         }
+-    }
+-    public boolean isValid(){
+-        res = false;
+-        switch (type) {
+-            case "FWD":
+-                if (parameters instanceof Int) {
+-                    res = true;
+-                }
+-                break;
+-            case "BWD":
+-                if (parameters instanceof Int) {
+-                    res = true;
+-                }
+-                break;
+-            case "TURN":
+-                if (parameters instanceof Int) {
+-                    res = true;
+-                }
+-                break;
+-            case "SHOW":
+-                res = true;
+-                break;
+-            case "HIDE":
+-                res = true;
+-                break;
+-            case "MOV":
+-                if (parameters instanceof Point) {
+-                    res = true;
+-                }
+-                break;
+-            case "POS":
+-                if (parameters instanceof Point) {
+-                    res = true;
+-                }
+-                break;
+-            case "PRESS":
+-                if (parameters instanceof Double || parameters instanceof String) {
+-                    if (parameters instanceof Double) {
+-                        Double value = (Double) parameters;
+-                        if (value >= 0 && value <= 1) {
+-                            res = true;
+-                        }
+-                    }
+-                    if (parameters instanceof String) {
+-                        String value = (String) parameters;
+-                        // Vérification si la valeur correspond au format numérique avec un % à la fin
+-                        Pattern pattern = Pattern.compile("^\\d+(\\.\\d+)?%$");
+-                        Matcher matcher = pattern.matcher(value);
+-                        if (matcher.matches()) {
+-                            // La valeur est au format numérique avec un % à la fin
+-                            double numericValue = Double.parseDouble(value.substring(0, value.length() - 1));
+-                            if (numericValue >= 0 && numericValue <= 100) {
+-                                res = true
+-                            }
+-                        }
+-                    }
+-                }
+-                break;
+-            case "COLOR":
+-                if (parameters instanceof Color) {
+-                    res = true;
+-                }
+-                break;
+-            case "THICK":
+-                if (parameters instanceof Double) {
+-                    res = true;
+-                }
+-                break;
+-            case "LOOKAT":
+-                if (parameters instanceof Point || parameters instanceof Cursor) {
+-                    res = true;
+-                }
+-                break;
+-            case "CURSOR":
+-                if (parameters instanceof Int) {
+-                    res = true;
+-                }
+-                break;
+-            case "SELECT":
+-                if (parameters instanceof Int) {
+-                    res = true;
+-                }
+-                break;
+-            case "REMOVE":
+-                if (parameters instanceof Int) {
+-                    res = true;
+-                }
+-                break;
+-        }
+-        return (res);
++
++        public boolean isValid(){
++            boolean res = false;
++            switch (type) {
++                case "FWD":
++                    if (parameters instanceof Integer) {
++                        res = true;
++                    }
++                    break;
++                case "BWD":
++                    if (parameters instanceof Integer) {
++                        res = true;
++                    }
++                    break;
++                case "TURN":
++                    if (parameters instanceof Integer) {
++                        res = true;
++                    }
++                    break;
++                case "SHOW":
++                    res = true;
++                    break;
++                case "HIDE":
++                    res = true;
++                    break;
++                case "MOV":
++                    if (parameters instanceof Point) {
++                        res = true;
++                    }
++                    break;
++                case "POS":
++                    if (parameters instanceof Point) {
++                        res = true;
++                    }
++                    break;
++                case "PRESS":
++                    if (parameters instanceof Double || parameters instanceof String) {
++                        if (parameters instanceof Double) {
++                            Double value = (Double) parameters;
++                            if (value >= 0 && value <= 1) {
++                                res = true;
++                            }
++                        }
++                        if (parameters instanceof String) {
++                            String value = (String) parameters;
++                            // Vérification si la valeur correspond au format numérique avec un % à la fin
++                            Pattern pattern = Pattern.compile("^\\d+(\\.\\d+)?%$");
++                            Matcher matcher = pattern.matcher(value);
++                            if (matcher.matches()) {
++                                // La valeur est au format numérique avec un % à la fin
++                                double numericValue = Double.parseDouble(value.substring(0, value.length() - 1));
++                                if (numericValue >= 0 && numericValue <= 100) {
++                                    res = true;
++                                }
++                            }
++                        }
++                    }
++                    break;
++                case "COLOR":
++                    if (parameters instanceof Color) {
++                        res = true;
++                    }
++                    break;
++                case "THICK":
++                    if (parameters instanceof Double) {
++                        res = true;
++                    }
++                    break;
++                case "LOOKAT":
++                    if (parameters instanceof Point || parameters instanceof Cursor) {
++                        res = true;
++                    }
++                    break;
++                case "CURSOR":
++                    if (parameters instanceof Integer) {
++                        res = true;
++                    }
++                    break;
++                case "SELECT":
++                    if (parameters instanceof Integer) {
++                        res = true;
++                    }
++                    break;
++                case "REMOVE":
++                    if (parameters instanceof Integer) {
++                        res = true;
++                    }
++                    break;
++            }
++            return (res);
++        }
+     }
+ }
+\ No newline at end of file
+Index: demo/src/main/java/module-info.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>module com.example {\r\n    requires transitive javafx.controls;\r\n    requires javafx.fxml;\r\n\r\n    opens com.example to javafx.fxml;\r\n    exports com.example;\r\n}\r\n
+===================================================================
+diff --git a/demo/src/main/java/module-info.java b/demo/src/main/java/module-info.java
+--- a/demo/src/main/java/module-info.java	
++++ b/demo/src/main/java/module-info.java	
+@@ -1,6 +1,7 @@
+ module com.example {
+     requires transitive javafx.controls;
+     requires javafx.fxml;
++    requires java.desktop;
+ 
+     opens com.example to javafx.fxml;
+     exports com.example;
+Index: .idea/Chromat-Ynk.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<module type=\"JAVA_MODULE\" version=\"4\">\r\n  <component name=\"NewModuleRootManager\" inherit-compiler-output=\"true\">\r\n    <exclude-output />\r\n    <content url=\"file://$MODULE_DIR$\" />\r\n    <orderEntry type=\"inheritedJdk\" />\r\n    <orderEntry type=\"sourceFolder\" forTests=\"false\" />\r\n  </component>\r\n</module>
+===================================================================
+diff --git a/.idea/Chromat-Ynk.iml b/.idea/Chromat-Ynk.iml
+--- a/.idea/Chromat-Ynk.iml	
++++ b/.idea/Chromat-Ynk.iml	
+@@ -2,7 +2,9 @@
+ <module type="JAVA_MODULE" version="4">
+   <component name="NewModuleRootManager" inherit-compiler-output="true">
+     <exclude-output />
+-    <content url="file://$MODULE_DIR$" />
++    <content url="file://$MODULE_DIR$">
++      <sourceFolder url="file://$MODULE_DIR$/demo/src/main/java" isTestSource="false" />
++    </content>
+     <orderEntry type="inheritedJdk" />
+     <orderEntry type="sourceFolder" forTests="false" />
+   </component>
