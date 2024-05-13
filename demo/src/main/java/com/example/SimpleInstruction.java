@@ -1,5 +1,6 @@
-/*package com.example;
+package com.example;
 
+import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 
@@ -10,11 +11,12 @@ import java.util.regex.Pattern;
 /**
  * Represents a simple drawing instruction.
  */
-/*
+
 public class SimpleInstruction extends Instruction {
     private String type;
     private Objects parameters;
     private CursorManager cursors;
+    private Scene scene;
 
     /**
      * Constructs a new SimpleInstruction with the specified type and parameters.
@@ -22,11 +24,12 @@ public class SimpleInstruction extends Instruction {
      * @param type       the type of the instruction
      * @param parameters the parameters of the instruction
      */
-/*
-    public SimpleInstruction(String type, Objects parameters, CursorManager cursors) {
+
+    public SimpleInstruction(String type, Objects parameters, CursorManager cursors,Scene scene) {
         this.type = type;
         this.parameters = parameters;
         this.cursors = cursors;
+        this.scene=scene;
     }
 
     /**
@@ -34,11 +37,12 @@ public class SimpleInstruction extends Instruction {
      *
      * @param type the type of the instruction
      */
-/*
-    public SimpleInstruction(String type, CursorManager cursors) {
+
+    public SimpleInstruction(String type, CursorManager cursors, Scene scene) {
         this.type = type;
         this.parameters = 0;
         this.cursors = cursors;
+        this.scene=scene;
     }
 
     /**
@@ -46,15 +50,15 @@ public class SimpleInstruction extends Instruction {
      *
      * @param cursor the cursor to execute the instruction on
      */
-/*
+
     @Override
     public void execute() {
         switch (type) {
             case "FWD":
-                cursors.getCurrentCursor().moveForward(parameters);
+                cursors.getCurrentCursor().moveForward(parameters,scene);
                 break;
             case "BWD":
-                cursors.getCurrentCursor().moveBackward(parameters);
+                cursors.getCurrentCursor().moveBackward(parameters,scene);
                 break;
             case "TURN":
                 cursors.getCurrentCursor().turn(parameters);
@@ -68,12 +72,12 @@ public class SimpleInstruction extends Instruction {
                 /**
                  * Cursor triangle color
                  */
-/*
+
                 cursorTriangle.setFill(Color.RED);
                 /**
                  * Add cursor triangle to group
                  */
-/*
+
                 root.getChildren().add(cursorTriangle);
                 break;
             case "HIDE":
@@ -85,7 +89,7 @@ public class SimpleInstruction extends Instruction {
                 /**
                  * Remove cursor triangle to group
                  */
-/*
+
                 root.getChildren().remove(cursorTriangle);
                 break;
             case "MOV":
@@ -241,5 +245,3 @@ public class SimpleInstruction extends Instruction {
         return (res);
     }
 }
-
- */
