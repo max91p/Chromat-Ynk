@@ -199,7 +199,7 @@ public class SimpleInstruction extends Instruction {
                 }
                 break;
             case "COLOR":
-                if (parameters instanceof Color) {
+                if (parameters instanceof ColorOfLine) {
                     res = true;
                 }
                 break;
