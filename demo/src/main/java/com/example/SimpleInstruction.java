@@ -99,46 +99,46 @@ public class SimpleInstruction extends Instruction {
                     }
                 }
 
-        cursors.getCurrentCursor().setPress((Double)parameters);
-        break;
-        case "COLOR":
-        cursors.getCurrentCursor().setColor((ColorOfLine)parameters);
-        break;
-        case "THICK":
-        cursors.getCurrentCursor().setThick((Double)parameters);
-        break;
-        case "LOOKAT":
-        if (parameters instanceof Cursor) {
-            Cursor cursor = (Cursor) parameters;
-            double deltaX = cursor.getPosition().getX() - cursors.getCurrentCursor().getPosition().getX();
-            double deltaY = cursor.getPosition().getY() - cursors.getCurrentCursor().getPosition().getY();
+                cursors.getCurrentCursor().setPress((Double)parameters);
+                break;
+            case "COLOR":
+                cursors.getCurrentCursor().setColor((ColorOfLine)parameters);
+                break;
+            case "THICK":
+                cursors.getCurrentCursor().setThick((Double)parameters);
+                break;
+            case "LOOKAT":
+                if (parameters instanceof Cursor) {
+                    Cursor cursor = (Cursor) parameters;
+                    double deltaX = cursor.getPosition().getX() - cursors.getCurrentCursor().getPosition().getX();
+                    double deltaY = cursor.getPosition().getY() - cursors.getCurrentCursor().getPosition().getY();
 
-            double angleToTarget = Math.toDegrees(Math.atan2(deltaY, deltaX));
+                    double angleToTarget = Math.toDegrees(Math.atan2(deltaY, deltaX));
 
-            cursors.getCurrentCursor().setAngle(angleToTarget);
+                    cursors.getCurrentCursor().setAngle(angleToTarget);
+                }
+                if (parameters instanceof Point) {
+                    Point point = (Point) parameters;
+                    double deltaX = point.getX() - cursors.getCurrentCursor().getPosition().getX();
+                    double deltaY = point.getY() - cursors.getCurrentCursor().getPosition().getY();
+
+                    double angleToTarget = Math.toDegrees(Math.atan2(deltaY, deltaX));
+
+                    cursors.getCurrentCursor().setAngle(angleToTarget);
+                }
+                break;
+            case "CURSOR":
+                cursors.addCursor((Integer)parameters);
+                break;
+            case "SELECT":
+                cursors.selectCursor((Integer)parameters);
+                break;
+            case "REMOVE":
+                cursors.removeCursor((Integer)parameters);
+                break;
         }
-        if (parameters instanceof Point) {
-            Point point = (Point) parameters;
-            double deltaX = point.getX() - cursors.getCurrentCursor().getPosition().getX();
-            double deltaY = point.getY() - cursors.getCurrentCursor().getPosition().getY();
 
-            double angleToTarget = Math.toDegrees(Math.atan2(deltaY, deltaX));
-
-            cursors.getCurrentCursor().setAngle(angleToTarget);
-        }
-        break;
-        case "CURSOR":
-        cursors.addCursor((Integer)parameters);
-        break;
-        case "SELECT":
-        cursors.selectCursor((Integer)parameters);
-        break;
-        case "REMOVE":
-        cursors.removeCursor((Integer)parameters);
-        break;
     }
-
-}
 
 
     public boolean isValid(){
