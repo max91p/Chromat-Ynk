@@ -19,7 +19,7 @@ public class SimpleInstruction extends Instruction {
     private CursorManager cursors;
     private Scene scene;
     private Group root;
-    Polygon cursorTriangle = new Polygon(
+    private final Polygon cursorTriangle = new Polygon(
             cursors.getCurrentCursor().getPosition().getX(), cursors.getCurrentCursor().getPosition().getY(),
             cursors.getCurrentCursor().getPosition().getX() + 10 * Math.cos(Math.toRadians(cursors.getCurrentCursor().getAngle() - 150)), cursors.getCurrentCursor().getPosition().getY() + 10 * Math.sin(Math.toRadians(cursors.getCurrentCursor().getAngle() - 150)),
             cursors.getCurrentCursor().getPosition().getX() + 10 * Math.cos(Math.toRadians(cursors.getCurrentCursor().getAngle() + 150)), cursors.getCurrentCursor().getPosition().getY() + 10 * Math.sin(Math.toRadians(cursors.getCurrentCursor().getAngle() + 150))
