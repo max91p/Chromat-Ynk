@@ -1,11 +1,13 @@
 package com.example;
 
-public class Color {
+public class ColorOfLine {
     private int red;
     private int green;
     private int blue;
 
-    public Color(int red, int green, int blue){
+
+    // Constructors with the parameters red, green and blue
+    public ColorOfLine(int red, int green, int blue){
         if(red < 0 || red > 255 || green < 0 || green > 255 || blue < 0 || blue > 255){
             throw new IllegalArgumentException("Les valeurs de rouge, vert et bleu doivent être comprises entre 0 et 255");
         } else {
@@ -15,7 +17,8 @@ public class Color {
         }
     }
 
-    public Color(String hex){
+    // Constructors with the parameter hexadecimal code
+    public ColorOfLine(String hex){
         if(hex.length() != 7 || hex.charAt(0) != '#' || !hex.substring(1).matches("[0-9A-F]+")){
             throw new IllegalArgumentException("Le code hexadécimal doit être sous la forme #RRGGBB où RR, GG et BB sont des valeurs hexadécimales comprises entre 00 et FF");
         }
@@ -24,7 +27,8 @@ public class Color {
         this.blue = Integer.parseInt(hex.substring(5, 7), 16);
     }
 
-    public Color(double red, double green, double blue){
+    // Constructors with the parameters red, green and blue between 0 and 1
+    public ColorOfLine(double red, double green, double blue){
         if(red < 0 || red > 1 || green < 0 || green > 1 || blue < 0 || blue > 1){
             throw new IllegalArgumentException("Les valeurs de rouge, vert et bleu doivent être comprises entre 0 et 1");
         } else {
@@ -34,6 +38,7 @@ public class Color {
         }
     }
 
+    // Getters and setters
     public int getRed(){
         return red;
     }
@@ -70,8 +75,9 @@ public class Color {
         }
     }
 
+    @Override
     public String toString(){
-        return "Rouge : " + red + ", Vert : " + green + ", Bleu : " + blue;
+        return "Red : " + red + ", Green : " + green + ", Blue : " + blue;
     }
 
     public String getHex(){

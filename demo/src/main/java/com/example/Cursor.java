@@ -3,14 +3,15 @@ package com.example;
 import javafx.scene.Scene;
 
 public class Cursor {
-    private Point position; // Position du curseur
-    private double angle; // Orientation du curseur
-    private Color color;// couleur du curseur
-    private double thick;//épaisseur du trait associé au curseur
-    private double press;//pression du curseur
-    private int id;//id du curseur
-    // Constructeur
-    public Cursor(Point position, double angle,Color color, double thick, double press, int id) {
+    private Point position; // Position of the cursor
+    private double angle; // Orientation of the cursor
+    private ColorOfLine color; //Color of the line
+    private double thick; //thickness of the line
+    private double press; //pressure of the line
+    private int id; //id of the cursor
+
+    // Constructors with all the parameters
+    public Cursor(Point position, double angle, ColorOfLine color, double thick, double press, int id) {
         if (position == null) {
             throw new IllegalArgumentException("La position ne peut pas être nulle");
         } else if (angle < 0 || angle >= 360) {
@@ -24,6 +25,8 @@ public class Cursor {
             this.id = id;
         }
     }
+
+    // Constructors with all the parameters except the color
     public Cursor(Point position, double angle, int id) {
         if (position == null) {
             throw new IllegalArgumentException("La position ne peut pas être nulle");
@@ -34,7 +37,7 @@ public class Cursor {
         else{
             this.position = position;
             this.angle = angle;
-            this.color = new Color(0,0,0);
+            this.color = new ColorOfLine(0,0,0);
             this.thick = 1;
             this.press = 1;
             this.id = id;
@@ -42,40 +45,29 @@ public class Cursor {
     }
 
     public Cursor(int id) {
-            if (position == null) {
-                throw new IllegalArgumentException("La position ne peut pas être nulle");
-            }
-            else if (angle < 0 || angle >= 360) {
-                throw new IllegalArgumentException("L'angle doit être compris entre 0 et 360");
-            }
-            else{
                 this.position = new Point();
                 this.angle = 0;
-                this.color = new Color(0,0,0);
+                this.color = new ColorOfLine(0,0,0);
                 this.thick = 1;
                 this.press = 1;
                 this.id = id;
-            }
-        }
+    }
 
-    public Cursor(Point point, int i) {
-        if (position == null) {
+    public Cursor(Point point, int id) {
+        if (point == null) {
             throw new IllegalArgumentException("La position ne peut pas être nulle");
-        }
-        else if (angle < 0 || angle >= 360) {
-            throw new IllegalArgumentException("L'angle doit être compris entre 0 et 360");
         }
         else{
             this.position = new Point(point.getX(), point.getY());
             this.angle = 0;
-            this.color = new Color(0,0,0);
+            this.color = new ColorOfLine(0,0,0);
             this.thick = 1;
             this.press = 1;
             this.id = id;
         }
     }
 
-    // Méthodes pour déplacer le curseur
+    // Method to move the cursor forward
     public void moveForward(double distance, Scene scene) {
         Point oldPosition = new Point(position.getX(), position.getY());
         //Move the cursor to the new position according to the distance
@@ -85,6 +77,7 @@ public class Cursor {
         draw.drawLine();
     }
 
+    // Method to move the cursor backward
     public void moveBackward(double distance, Scene scene) {
         Point oldPosition = new Point(position.getX(), position.getY());
         //Move the cursor to the new position according to the distance
@@ -94,6 +87,7 @@ public class Cursor {
         draw.drawLine();
     }
 
+    // Method to turn the cursor
     public void turn(double degrees) {
         if (angle + degrees < 0) {
             angle = 360 + (angle + degrees);
@@ -124,11 +118,11 @@ public class Cursor {
         this.angle = angle;
     }
 
-    public Color getColor() {
+    public ColorOfLine getColor() {
         return color;
     }
 
-    public void setColor(Color color){ this.color=color; }
+    public void setColor(ColorOfLine color){ this.color=color; }
 
     public double getThick(){ return thick; }
 

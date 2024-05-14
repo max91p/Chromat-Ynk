@@ -102,7 +102,7 @@ public class SimpleInstruction extends Instruction {
         cursors.getCurrentCursor().setPress((Double)parameters);
         break;
         case "COLOR":
-        cursors.getCurrentCursor().setColor((com.example.Color)parameters);
+        cursors.getCurrentCursor().setColor((ColorOfLine)parameters);
         break;
         case "THICK":
         cursors.getCurrentCursor().setThick((Double)parameters);
