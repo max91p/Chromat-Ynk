@@ -26,7 +26,7 @@ public class SimpleInstruction extends Instruction {
      * @param parameters the parameters of the instruction
      */
 
-    public SimpleInstruction(String type, Objects parameters, CursorManager cursors,Scene scene) {
+    public SimpleInstruction(String type, Object parameters, CursorManager cursors,Scene scene) {
         this.type = type;
         this.parameters = parameters;
         this.cursors = cursors;
