@@ -21,17 +21,40 @@ public class Dessin extends Application {
         path.getElements().add(moveTo);
         // Création du groupe pour contenir le chemin
         Group root = new Group();
+        Scene scene = new Scene(root,1080,500);
         Point start = new Point(0,0);
-        Cursor cursor = new Cursor(start, 0);
+        Cursor cursor = new Cursor(start, 0,scene);
         Polygon cursorTriangle = new Polygon();
         // Ajout du triangle représentant le curseur au groupe
         root.getChildren().add(cursorTriangle);
         // Création de la scène et ajout du groupe
-        Scene scene = new Scene(root, 600, 400);
+        scene.setRoot(root);
         ColorOfLine red=new ColorOfLine( 39,168,136);
         ColorOfLine blue=new ColorOfLine(0.139,0.135,0.98);
-        cursor.moveForward(300,scene,55,5,0.7,blue);
-        cursor.moveBackward(100,scene,125,40,0.2,red);
+        cursor.setColor(blue);
+        cursor.setWidth(5);
+        cursor.setOpacity(0.7);
+        cursor.setAngle(55);
+        cursor.setScene(scene);
+        cursor.moveForward(300);
+        cursor.setColor(red);
+        cursor.setWidth(40);
+        cursor.setOpacity(0.2);
+        cursor.setAngle(125);
+        cursor.moveBackward(100);
+        cursor.setPosition(new Point(600,200));
+        cursor.setColor(blue);
+        cursor.setWidth(5);
+        cursor.setOpacity(0.7);
+        cursor.setAngle(180);
+        cursor.moveForward(300);
+        cursor.setColor(red);
+        cursor.setWidth(40);
+        cursor.setOpacity(0.2);
+        cursor.setAngle(260);
+        cursor.moveBackward(100);
+        cursor.move(50,50);
+        cursor.setPosition(new Point(900,300));
 
 
         // Configuration de la scène principale

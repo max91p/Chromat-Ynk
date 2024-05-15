@@ -36,10 +36,15 @@ public class DrawingCanvas {
         this.oldPosition=oldPosition;
     }
 
-    DrawingCanvas(Scene s, Point oldPos,Point newPos){
+    DrawingCanvas(Scene s, Point oldPos, Point newPos){
         this.scene=s;
         this.oldPosition=oldPos;
         this.newPosition=newPos;
+    }
+    DrawingCanvas(Scene s){
+        this.scene=s;
+        this.oldPosition=null;
+        this.newPosition=null;
     }
 
     void drawLine(double width,double opacity, ColorOfLine color){
@@ -58,7 +63,6 @@ public class DrawingCanvas {
         //Add the line to the path
         path.getElements().add(line);
         //Creation of the group that contain the path
-
         Group root = new Group();
         //Take the last element added to the scene and delete it (delete the cursor as it is always the last element added to the scene)
         Group rootf=(Group)scene.getRoot();
@@ -85,6 +89,15 @@ public class DrawingCanvas {
         root.getChildren().addAll(scene.getRoot(),cursorTriangle);
         //Adding the root to the scene
         scene.setRoot(root);
+    }
+
+    void drawPosCursor(Cursor cursor){
+        Group rootf=(Group)scene.getRoot();
+        int lastIndex = rootf.getChildren().size() - 1;
+        if (lastIndex >= 0) {
+            rootf.getChildren().remove(lastIndex);
+        }
+        this.drawCursor(cursor);
     }
 
 }

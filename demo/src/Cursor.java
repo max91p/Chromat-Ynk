@@ -10,12 +10,74 @@ public class Cursor {
     private ColorOfLine color;
     private double width;
     private double opacity;
+    private int id;
+    private Scene scene;
 
     // Constructeur
-    public Cursor(Point pos, double angle) {
-        this.position=pos;
-        this.angle = angle;
+    public Cursor(Point position, double angle, ColorOfLine color, double thick, double press, int id, Scene scene) {
+        if (angle < 0 || angle >= 360) {
+            throw new IllegalArgumentException("L'angle doit être compris entre 0 et 360");
+        } else {
+            this.position = position;
+            this.angle = angle;
+            this.color = color;
+            this.width = thick;
+            this.opacity = press;
+            this.id = id;
+            this.scene=scene;
+        }
+    }
+    public Cursor(Point position, double angle, int id, Scene scene) {
+        if (angle < 0 || angle >= 360) {
+            throw new IllegalArgumentException("L'angle doit être compris entre 0 et 360");
+        }
+        else{
+            this.position = position;
+            this.angle = angle;
+            this.color = new ColorOfLine(0,0,0);
+            this.width = 1;
+            this.opacity = 1;
+            this.id = id;
+            this.scene=scene;
+        }
+    }
 
+    public Cursor(int id,Scene scene) {
+        if (angle < 0 || angle >= 360) {
+            throw new IllegalArgumentException("L'angle doit être compris entre 0 et 360");
+        }
+        else{
+            this.position = new Point();
+            this.angle = 0;
+            this.color = new ColorOfLine(0,0,0);
+            this.width = 1;
+            this.opacity= 1;
+            this.id = id;
+            this.scene=scene;
+        }
+    }
+
+    public Cursor(Point point, int id, Scene scene) {
+        if (angle < 0 || angle >= 360) {
+            throw new IllegalArgumentException("L'angle doit être compris entre 0 et 360");
+        }
+        else{
+            this.position = new Point(point.getX(), point.getY());
+            this.angle = 0;
+            this.color = new ColorOfLine(0,0,0);
+            this.width = 1;
+            this.opacity = 1;
+            this.id = id;
+            this.scene=scene;
+        }
+    }
+
+    public Scene getScene() {
+        return scene;
+    }
+
+    public void setScene(Scene scene) {
+        this.scene = scene;
     }
 
     public Point getPosition() {
@@ -24,41 +86,44 @@ public class Cursor {
 
     public void setPosition(Point position) {
         this.position = position;
+        DrawingCanvas draw = new DrawingCanvas(this.scene);
+        draw.drawPosCursor(this);
     }
 
-    public void moveForward(double distance, Scene scene,double newAngle,double width, double opacity,ColorOfLine color) {
+    public void moveForward(double distance) {
         Point oldPosition = new Point(position.getX(), position.getY());
-        //Set the angle according to new angle
-        this.setAngle(this.getAngle()+newAngle);
         //Move the cursor to the new position according to the distance
         position.setX(position.getX() + distance * Math.cos(Math.toRadians(angle)));
         position.setY(position.getY() + distance * Math.sin(Math.toRadians(angle)));
         //Create a drawing canva to draw the line
-        DrawingCanvas draw = new DrawingCanvas(scene, oldPosition,position);
-        draw.drawLine(width,opacity,color);
+        DrawingCanvas draw = new DrawingCanvas(this.scene, oldPosition,this.getPosition());
+        draw.drawLine(this.getWidth(),this.getOpacity(),this.getColor());
         draw.drawCursor(this);
-
     }
-    public void moveForward(double distance, Scene scene,double width, double opacity,ColorOfLine color) {
-
-    }
-    public void moveBackward(double distance, Scene scene, double newAngle, double width, double opacity, ColorOfLine color) {
+    public void moveBackward(double distance) {
         Point oldPosition = new Point(position.getX(), position.getY());
-        //Set the angle according to new angle
-        this.setAngle(this.getAngle()+newAngle);
         //Move the cursor to the new position according to the distance
         position.setX(position.getX() - distance * Math.cos(Math.toRadians(angle)));
         position.setY(position.getY() - distance * Math.sin(Math.toRadians(angle)));
         //Create a drawing canva to draw the line
-        DrawingCanvas draw = new DrawingCanvas(scene, oldPosition,position);
-        draw.drawLine(width, opacity, color);
+        DrawingCanvas draw = new DrawingCanvas(this.scene, oldPosition,this.getPosition());
+        draw.drawLine(this.getWidth(),this.getOpacity(),this.getColor());
         draw.drawCursor(this);
     }
 
 
+    public void move(double x,double y){
+        Point move = new Point(position.getX()+x, position.getY()+y);
+        DrawingCanvas draw = new DrawingCanvas(this.scene,position,move);
+        this.setPosition(move);
+        draw.drawLine(this.getWidth(),this.getOpacity(),this.getColor());
+        draw.drawCursor(this);
+    }
 
     public void turn(double degrees) {
         angle += degrees;
+        DrawingCanvas draw = new DrawingCanvas(this.scene);
+        draw.drawCursor(this);
     }
 
     // Getters et Setters
@@ -69,5 +134,37 @@ public class Cursor {
 
     public void setAngle(double angle) {
         this.angle = angle;
+    }
+
+    public ColorOfLine getColor() {
+        return color;
+    }
+
+    public void setColor(ColorOfLine color) {
+        this.color = color;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public void setWidth(double width) {
+        this.width = width;
+    }
+
+    public double getOpacity() {
+        return opacity;
+    }
+
+    public void setOpacity(double opacity) {
+        this.opacity = opacity;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
