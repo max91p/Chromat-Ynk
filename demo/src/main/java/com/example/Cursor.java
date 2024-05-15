@@ -10,6 +10,8 @@ public class Cursor {
     private double press; //pressure of the line
     private int id; //id of the cursor
 
+    private boolean visible; //visibility of the cursor
+
     // Constructors with all the parameters
     public Cursor(Point position, double angle, ColorOfLine color, double thick, double press, int id) {
         if (position == null) {
@@ -23,6 +25,7 @@ public class Cursor {
             this.thick = thick;
             this.press = press;
             this.id = id;
+            this.visible = true;
         }
     }
 
@@ -41,6 +44,7 @@ public class Cursor {
             this.thick = 1;
             this.press = 1;
             this.id = id;
+            this.visible = true;
         }
     }
 
@@ -51,6 +55,7 @@ public class Cursor {
                 this.thick = 1;
                 this.press = 1;
                 this.id = id;
+                this.visible = true;
     }
 
     public Cursor(Point point, int id) {
@@ -64,6 +69,7 @@ public class Cursor {
             this.thick = 1;
             this.press = 1;
             this.id = id;
+            this.visible = true;
         }
     }
 
@@ -135,6 +141,10 @@ public class Cursor {
     public int getId() { return id; }
 
     public void setId (int id) { this.id = id; }
+
+    public void setVisible (boolean visible) { this.visible = visible;}
+
+    public boolean getVisible () { return visible;}
 
     @Override
     public String toString() {

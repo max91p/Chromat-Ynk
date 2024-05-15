@@ -18,12 +18,6 @@ public class SimpleInstruction extends Instruction {
     private Object parameters;
     private CursorManager cursors;
     private Scene scene;
-    private Group root;
-    private final Polygon cursorTriangle = new Polygon(
-            cursors.getCurrentCursor().getPosition().getX(), cursors.getCurrentCursor().getPosition().getY(),
-            cursors.getCurrentCursor().getPosition().getX() + 10 * Math.cos(Math.toRadians(cursors.getCurrentCursor().getAngle() - 150)), cursors.getCurrentCursor().getPosition().getY() + 10 * Math.sin(Math.toRadians(cursors.getCurrentCursor().getAngle() - 150)),
-            cursors.getCurrentCursor().getPosition().getX() + 10 * Math.cos(Math.toRadians(cursors.getCurrentCursor().getAngle() + 150)), cursors.getCurrentCursor().getPosition().getY() + 10 * Math.sin(Math.toRadians(cursors.getCurrentCursor().getAngle() + 150))
-    );
 
     /**
      * Constructs a new SimpleInstruction with the specified type and parameters.
@@ -32,12 +26,11 @@ public class SimpleInstruction extends Instruction {
      * @param parameters the parameters of the instruction
      */
 
-    public SimpleInstruction(String type, Objects parameters, CursorManager cursors,Scene scene,Group root) {
+    public SimpleInstruction(String type, Objects parameters, CursorManager cursors,Scene scene) {
         this.type = type;
         this.parameters = parameters;
         this.cursors = cursors;
         this.scene=scene;
-        this.root=root;
     }
 
     /**
@@ -46,12 +39,11 @@ public class SimpleInstruction extends Instruction {
      * @param type the type of the instruction
      */
 
-    public SimpleInstruction(String type, CursorManager cursors, Scene scene,Group root) {
+    public SimpleInstruction(String type, CursorManager cursors, Scene scene) {
         this.type = type;
         this.parameters = null;
         this.cursors = cursors;
         this.scene=scene;
-        this.root=root;
     }
 
     /**
@@ -71,11 +63,10 @@ public class SimpleInstruction extends Instruction {
                 cursors.getCurrentCursor().turn((Double)parameters);
                 break;
             case "SHOW":
-                cursorTriangle.setFill(Color.RED);
-                root.getChildren().add(cursorTriangle);
+                cursors.getCurrentCursor().setVisible(true);
                 break;
             case "HIDE":
-                root.getChildren().remove(cursorTriangle);
+                cursors.getCurrentCursor().setVisible(false);
                 break;
             case "MOV":
                 cursors.getCurrentCursor().setPosition((Point)parameters);
