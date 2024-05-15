@@ -25,6 +25,14 @@ public class CursorManager {
         }
     }
 
+    public void addCursor(Cursor cursor) {
+        if (!isCursorIdExists(cursor.getId()) && cursor!=null) {
+            cursors.add(cursor);
+        } else {
+            throw new IllegalArgumentException("L'identifiant existe déjà!");
+        }
+    }
+
     public void selectCursor(int id) {
         for (Cursor cursor : cursors) {
             if (cursor.getId() == id) {

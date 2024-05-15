@@ -136,12 +136,12 @@ public class SimpleInstruction extends Instruction {
         boolean res = false;
         switch (type) {
             case "FWD":
-                if (parameters instanceof Integer) {
+                if (parameters instanceof Double) {
                     res = true;
                 }
                 break;
             case "BWD":
-                if (parameters instanceof Integer) {
+                if (parameters instanceof Double) {
                     res = true;
                 }
                 break;

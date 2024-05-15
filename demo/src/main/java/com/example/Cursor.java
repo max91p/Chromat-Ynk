@@ -124,6 +124,14 @@ public class Cursor {
         this.angle = angle;
     }
 
+    public void mimic(Cursor other) {
+        this.position = new Point(other.position.getX(), other.position.getY());
+        this.angle = other.angle;
+        this.thick = other.thick;
+        this.color = other.color;
+        this.press = other.press;
+    }
+
     public ColorOfLine getColor() {
         return color;
     }
