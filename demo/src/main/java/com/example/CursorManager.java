@@ -54,7 +54,7 @@ public class CursorManager {
     }
 
     // Méthode pour vérifier si l'identifiant du curseur existe déjà
-    private boolean isCursorIdExists(int id) {
+    public boolean isCursorIdExists(int id) {
         for (Cursor cursor : cursors) {
             if (cursor.getId() == id) {
                 return true;

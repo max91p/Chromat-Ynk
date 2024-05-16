@@ -67,7 +67,13 @@ public class InstructionsBlock extends Instruction {
                 int cursorID = (Integer) parameters[0];
                 cursorManager.selectCursor(cursorID);
                 Cursor originalCursor = cursorManager.getCurrentCursor();
-                Cursor tempCursor = new Cursor(originalCursor.getPosition(), originalCursor.getAngle(), originalCursor.getColor(),originalCursor.getThick(), originalCursor.getPress(),originalCursor.getId()*31);
+
+                int factor=31;
+                while(cursorManager.isCursorIdExists(originalCursor.getId()*factor)){
+                    factor++;
+                }
+
+                Cursor tempCursor = new Cursor(originalCursor.getPosition(), originalCursor.getAngle(), originalCursor.getColor(),originalCursor.getThick(), originalCursor.getPress(),originalCursor.getId()*factor);
 
                 cursorManager.addCursor(tempCursor);
 
