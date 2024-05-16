@@ -27,21 +27,26 @@ public class InstructionsBlock extends Instruction {
             case "IF":
                 if (((BooleanSupplier) condition).getAsBoolean()) {
                     for (Instruction instruction : instructions) {
-                        instruction.execute();
+                        if (instruction.isValid()) {
+                            instruction.execute();
+                        }
                     }
                 }
                 break;
 
             case "FOR":
-                String variableName = (String) parameters[0];
-                int from = parameters.length > 1 ? (Integer) parameters[1] : 0;
-                int to = (Integer) parameters[2];
-                int step = parameters.length > 3 ? (Integer) parameters[3] : 1;
+                List<Integer> loopParams = (List<Integer>) condition;
+                String variableName = "i";  // Assuming a default variable name
+                int from = loopParams.get(0);
+                int to = loopParams.get(1);
+                int step = loopParams.size() > 2 ? loopParams.get(2) : 1;
 
                 for (int i = from; i <= to; i += step) {
                     VariableContext.set(variableName, i);
                     for (Instruction instruction : instructions) {
-                        instruction.execute();
+                        if (instruction.isValid()) {
+                            instruction.execute();
+                        }
                     }
                 }
                 VariableContext.remove(variableName);
@@ -51,7 +56,9 @@ public class InstructionsBlock extends Instruction {
                 BooleanSupplier conditionSupplier = (BooleanSupplier) condition;
                 while (conditionSupplier.getAsBoolean()) {
                     for (Instruction instruction : instructions) {
-                        instruction.execute();
+                        if (instruction.isValid()) {
+                            instruction.execute();
+                        }
                     }
                 }
                 break;
@@ -65,7 +72,9 @@ public class InstructionsBlock extends Instruction {
                 cursorManager.addCursor(tempCursor);
 
                 for (Instruction instruction : instructions) {
-                    instruction.execute();
+                    if (instruction.isValid()) {
+                        instruction.execute();
+                    }
                     tempCursor.mimic(originalCursor);
                 }
 
@@ -80,7 +89,9 @@ public class InstructionsBlock extends Instruction {
                     double y2 = (Double) parameters[3];
                     // Axial symmetry logic
                     for (Instruction instruction : instructions) {
-                        instruction.execute();
+                        if (instruction.isValid()) {
+                            instruction.execute();
+                        }
                         // Apply symmetry transformation
                     }
                 } else {
@@ -91,7 +102,9 @@ public class InstructionsBlock extends Instruction {
                     cursorManager.addCursor(mirroredCursor);
 
                     for (Instruction instruction : instructions) {
-                        instruction.execute();
+                        if (instruction.isValid()) {
+                            instruction.execute();
+                        }
                         mirroredCursor.setPosition(new Point(
                                 2 * x1 - currentCursor.getPosition().getX(),
                                 2 * y1 - currentCursor.getPosition().getY()
