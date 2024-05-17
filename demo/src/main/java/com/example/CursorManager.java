@@ -43,6 +43,17 @@ public class CursorManager {
         // Gérer l'erreur : aucun curseur avec cet identifiant n'existe
     }
 
+    //get an access to a cursor with its id
+    public Cursor getCursor(int id){
+        for(Cursor cursor : cursors){
+            if(cursor.getId()==id){
+                return cursor;
+            }
+        }
+        //error
+        return null;
+    }
+
     public void removeCursor(int id) {
         for (Cursor cursor : cursors) {
             if (cursor.getId() == id) {

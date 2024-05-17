@@ -2,6 +2,9 @@ package com.example;
 
 import javafx.scene.Scene;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Cursor {
     private Point position; // Position of the cursor
     private double angle; // Orientation of the cursor
@@ -9,8 +12,9 @@ public class Cursor {
     private double thick; //thickness of the line
     private double press; //pressure of the line
     private int id; //id of the cursor
-
     private boolean visible; //visibility of the cursor
+    private List<SimpleInstruction> history; //history of the cursor
+
 
     // Constructors with all the parameters
     public Cursor(Point position, double angle, ColorOfLine color, double thick, double press, int id) {
@@ -26,6 +30,7 @@ public class Cursor {
             this.press = press;
             this.id = id;
             this.visible = true;
+            this.history= new ArrayList<>();
         }
     }
 
@@ -45,6 +50,8 @@ public class Cursor {
             this.press = 1;
             this.id = id;
             this.visible = true;
+            this.history= new ArrayList<>();
+
         }
     }
 
@@ -56,6 +63,8 @@ public class Cursor {
                 this.press = 1;
                 this.id = id;
                 this.visible = true;
+                this.history= new ArrayList<>();
+
     }
 
     public Cursor(Point point, int id) {
@@ -70,6 +79,7 @@ public class Cursor {
             this.press = 1;
             this.id = id;
             this.visible = true;
+            this.history= new ArrayList<>();
         }
     }
 
@@ -153,10 +163,11 @@ public class Cursor {
     public void setVisible (boolean visible) { this.visible = visible;}
 
     public boolean getVisible () { return visible;}
+    public List<SimpleInstruction> getHistory(){ return history;}
 
     @Override
     public String toString() {
-        return "Le curseur est à la position " + position + " et est orienté à " + angle + " degrés";
+        return "Le curseur "+ id +" est à la position " + position + " et est orienté à " + angle + " degrés";
     }
 
 }

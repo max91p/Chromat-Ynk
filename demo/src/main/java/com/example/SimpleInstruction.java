@@ -128,7 +128,7 @@ public class SimpleInstruction extends Instruction {
                 cursors.removeCursor((Integer)parameters);
                 break;
         }
-
+        cursors.getCurrentCursor().getHistory().add(this);
     }
 
 
@@ -146,7 +146,7 @@ public class SimpleInstruction extends Instruction {
                 }
                 break;
             case "TURN":
-                if (parameters instanceof Integer) {
+                if (parameters instanceof Double) {
                     res = true;
                 }
                 break;

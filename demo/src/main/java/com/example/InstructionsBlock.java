@@ -65,7 +65,6 @@ public class InstructionsBlock extends Instruction {
 
             case "MIMIC":
                 int cursorID = (Integer) parameters[0];
-                cursorManager.selectCursor(cursorID);
                 Cursor originalCursor = cursorManager.getCurrentCursor();
 
                 int factor=31;
@@ -76,14 +75,16 @@ public class InstructionsBlock extends Instruction {
                 Cursor tempCursor = new Cursor(originalCursor.getPosition(), originalCursor.getAngle(), originalCursor.getColor(),originalCursor.getThick(), originalCursor.getPress(),originalCursor.getId()*factor);
 
                 cursorManager.addCursor(tempCursor);
+                cursorManager.selectCursor(tempCursor.getId());
 
-                for (Instruction instruction : instructions) {
-                    if (instruction.isValid()) {
-                        instruction.execute();
-                    }
-                    tempCursor.mimic(originalCursor);
+
+                List<SimpleInstruction> history = cursorManager.getCursor(cursorID).getHistory();
+                for (SimpleInstruction instruction : history) {
+                    instruction.execute();
                 }
 
+                cursorManager.getCursor(originalCursor.getId()).mimic(tempCursor);
+                cursorManager.selectCursor(originalCursor.getId());
                 cursorManager.removeCursor(tempCursor.getId());
                 break;
 
