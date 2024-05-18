@@ -1,4 +1,4 @@
-package src;
+package com.example;
 
 import javafx.scene.Scene;
 

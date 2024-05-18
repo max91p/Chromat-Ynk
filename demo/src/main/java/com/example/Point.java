@@ -1,4 +1,4 @@
-package src;
+package com.example;
 
 public class Point {
     private double x;
