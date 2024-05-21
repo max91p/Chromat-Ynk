@@ -12,7 +12,7 @@ public abstract class Instruction {
      */
     //public abstract void execute(Cursor cursor);
 
-    public abstract void execute();
+    public abstract void execute() throws ErrorLogger;
 
     /**
      * Checks if the instruction is valid.

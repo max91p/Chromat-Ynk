@@ -1,8 +1,14 @@
 package com.example;
 
 import javafx.application.Application;
+import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.Path;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -13,12 +19,24 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage){
 
-        MainView view = new MainView(10);
-        ScrollPane scrollPane = new ScrollPane(view);
-        scrollPane.setFitToWidth(true);
 
+
+        Group root = new Group();
         // Création de la scène avec la racine
-        Scene scene = new Scene(scrollPane, 400, 200);
+        Scene scene = new Scene(root, 400, 200);
+        Cursor c1=new Cursor(new Point(100,100),10,scene);
+
+        CursorManager cursorManager=new CursorManager();
+        cursorManager.addCursor(c1);
+        cursorManager.selectCursor(10);
+        MainView view = new MainView(10,new TextArea(),new Button("Submit"),new Text(),cursorManager);
+
+        Pane container = new Pane();
+        container.getChildren().add(view);
+
+// Ajouter le conteneur à root
+        root.getChildren().add(container);
+        scene.setRoot(root);
 
 
         primaryStage.setScene(scene);
