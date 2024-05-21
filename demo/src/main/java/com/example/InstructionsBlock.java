@@ -12,9 +12,18 @@ public class InstructionsBlock extends Instruction {
     private CursorManager cursorManager;
     private Scene scene;
 
-    public InstructionsBlock(String type, Object condition, List<Instruction> instructions, CursorManager cursorManager, Scene scene, Object... parameters) {
+    public InstructionsBlock(String type, Object condition, List<Instruction> instructions, CursorManager cursorManager, Scene scene) {
         this.type = type;
         this.condition = condition;
+        this.instructions = instructions;
+        this.cursorManager = cursorManager;
+        this.scene = scene;
+        this.parameters = null;
+    }
+
+    public InstructionsBlock(String type, List<Instruction> instructions, CursorManager cursorManager, Scene scene, Object... parameters) {
+        this.type = type;
+        this.condition = null;
         this.instructions = instructions;
         this.cursorManager = cursorManager;
         this.scene = scene;
@@ -72,7 +81,7 @@ public class InstructionsBlock extends Instruction {
                     factor++;
                 }
 
-                Cursor tempCursor = new Cursor(originalCursor.getPosition(), originalCursor.getAngle(), originalCursor.getColor(),originalCursor.getWidth(), originalCursor.getOpacity(),originalCursor.getId()*factor, scene);
+                Cursor tempCursor = new Cursor(originalCursor.getPosition(), originalCursor.getAngle(), originalCursor.getColor(),originalCursor.getThick(), originalCursor.getPress(),originalCursor.getId()*factor);
 
                 cursorManager.addCursor(tempCursor);
                 cursorManager.selectCursor(tempCursor.getId());
@@ -104,7 +113,7 @@ public class InstructionsBlock extends Instruction {
                 } else {
                     // Central symmetry logic
                     Cursor currentCursor = cursorManager.getCurrentCursor();
-                    Cursor mirroredCursor =  new Cursor(currentCursor.getPosition(),currentCursor.getAngle(), currentCursor.getColor(),currentCursor.getWidth(), currentCursor.getOpacity(),currentCursor.getId()*31, scene);
+                    Cursor mirroredCursor =  new Cursor(currentCursor.getPosition(),currentCursor.getAngle(), currentCursor.getColor(),currentCursor.getThick(), currentCursor.getPress(),currentCursor.getId()*31);
 
                     cursorManager.addCursor(mirroredCursor);
 
