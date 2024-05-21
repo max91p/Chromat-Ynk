@@ -3,10 +3,10 @@ package com.example;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.Polygon;
 import javafx.stage.Stage;
-
 
 public class Dessin extends Application {
 
@@ -16,47 +16,45 @@ public class Dessin extends Application {
         Path path = new Path();
 
         // Point initial à partir duquel le trait commencera
-        MoveTo moveTo = new MoveTo( 100, 100);
-
+        MoveTo moveTo = new MoveTo( 0, 0);
         // Ajout du point initial au chemin
         path.getElements().add(moveTo);
-
-        // Ajout d'une courbe quadratique
-        LineTo line = new LineTo();
-        line.setX(400);
-        line.setY(300);
-        QuadCurveTo quadCurveTo = new QuadCurveTo();
-
-        quadCurveTo.setX(200); // Position X du point d'arriver de la courbe
-        quadCurveTo.setY(100); // Position Y du point de d'arriver de la courbe
-        quadCurveTo.setControlX(400); // Position X du point de contrôle de la courbe
-        quadCurveTo.setControlY(400); // Position Y du point de contrôle de la courbe
-
-        QuadCurveTo quadCurveTo2 = new QuadCurveTo();
-
-        quadCurveTo2.setX(500); // Position X du point d'arriver de la courbe
-        quadCurveTo2.setY(200); // Position Y du point de d'arriver de la courbe
-        quadCurveTo2.setControlX(400); // Position X du point de contrôle de la courbe
-        quadCurveTo2.setControlY(0); // Position Y du point de contrôle de la courbe
-
-        // Ajout de la courbe au chemin
-        path.getElements().addAll(line,quadCurveTo,quadCurveTo2);
-
-        // Définition de la couleur de trait
-        path.setStroke(Color.BLUE);
-        path.setOpacity(0.2);
-
-        // Définition de l'épaisseur de trait
-        path.setStrokeWidth(5);
-
         // Création du groupe pour contenir le chemin
         Group root = new Group();
-        root.getChildren().add(path);
-
-
+        Scene scene = new Scene(root,1080,500);
+        Point start = new Point(0,0);
+        Cursor cursor = new Cursor(start, 0,scene);
+        Polygon cursorTriangle = new Polygon();
+        // Ajout du triangle représentant le curseur au groupe
+        root.getChildren().add(cursorTriangle);
         // Création de la scène et ajout du groupe
-        Scene scene = new Scene(root, 600, 400);
-
+        scene.setRoot(root);
+        ColorOfLine red=new ColorOfLine( 39,168,136);
+        ColorOfLine blue=new ColorOfLine(0.139,0.135,0.98);
+        cursor.setColor(blue);
+        cursor.setWidth(5);
+        cursor.setOpacity(0.7);
+        cursor.setAngle(55);
+        cursor.setScene(scene);
+        cursor.moveForward(300);
+        cursor.setColor(red);
+        cursor.setWidth(40);
+        cursor.setOpacity(0.2);
+        cursor.setAngle(125);
+        cursor.moveBackward(100);
+        cursor.setPosition(new Point(600,200));
+        cursor.setColor(blue);
+        cursor.setWidth(5);
+        cursor.setOpacity(0.7);
+        cursor.setAngle(180);
+        cursor.moveForward(300);
+        cursor.setColor(red);
+        cursor.setWidth(40);
+        cursor.setOpacity(0.2);
+        cursor.setAngle(260);
+        cursor.moveBackward(100);
+        cursor.move(50,50);
+        cursor.setPosition(new Point(900,300));
 
 
         // Configuration de la scène principale
@@ -66,6 +64,6 @@ public class Dessin extends Application {
     }
 
     public static void main(String[] args) {
-        launch();
+        launch(args);
     }
 }

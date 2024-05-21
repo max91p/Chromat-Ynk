@@ -72,7 +72,7 @@ public class InstructionsBlock extends Instruction {
                     factor++;
                 }
 
-                Cursor tempCursor = new Cursor(originalCursor.getPosition(), originalCursor.getAngle(), originalCursor.getColor(),originalCursor.getThick(), originalCursor.getPress(),originalCursor.getId()*factor);
+                Cursor tempCursor = new Cursor(originalCursor.getPosition(), originalCursor.getAngle(), originalCursor.getColor(),originalCursor.getWidth(), originalCursor.getOpacity(),originalCursor.getId()*factor, scene);
 
                 cursorManager.addCursor(tempCursor);
                 cursorManager.selectCursor(tempCursor.getId());
@@ -104,7 +104,7 @@ public class InstructionsBlock extends Instruction {
                 } else {
                     // Central symmetry logic
                     Cursor currentCursor = cursorManager.getCurrentCursor();
-                    Cursor mirroredCursor =  new Cursor(currentCursor.getPosition(),currentCursor.getAngle(), currentCursor.getColor(),currentCursor.getThick(), currentCursor.getPress(),currentCursor.getId()*31);
+                    Cursor mirroredCursor =  new Cursor(currentCursor.getPosition(),currentCursor.getAngle(), currentCursor.getColor(),currentCursor.getWidth(), currentCursor.getOpacity(),currentCursor.getId()*31, scene);
 
                     cursorManager.addCursor(mirroredCursor);
 

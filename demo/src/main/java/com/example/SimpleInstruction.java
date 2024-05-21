@@ -54,10 +54,10 @@ public class SimpleInstruction extends Instruction {
     public void execute() {
         switch (type) {
             case "FWD":
-                cursors.getCurrentCursor().moveForward((Double)parameters,scene);
+                cursors.getCurrentCursor().moveForward((Double)parameters);
                 break;
             case "BWD":
-                cursors.getCurrentCursor().moveBackward((Double)parameters,scene);
+                cursors.getCurrentCursor().moveBackward((Double)parameters);
                 break;
             case "TURN":
                 cursors.getCurrentCursor().turn((Double)parameters);
@@ -76,7 +76,7 @@ public class SimpleInstruction extends Instruction {
                 break;
             case "PRESS":
                 if (parameters instanceof Double) {
-                    cursors.getCurrentCursor().setPress((Double)parameters);
+                    cursors.getCurrentCursor().setOpacity((Double)parameters);
                 }
                 if (parameters instanceof String) {
                     String value = (String)parameters;
@@ -86,17 +86,17 @@ public class SimpleInstruction extends Instruction {
                     if (matcher.matches()) {
                         // La valeur est au format numérique avec un % à la fin
                         double numericValue = Double.parseDouble(value.substring(0, value.length() - 1));
-                        cursors.getCurrentCursor().setPress(numericValue / 100);
+                        cursors.getCurrentCursor().setOpacity(numericValue / 100);
                     }
                 }
 
-                cursors.getCurrentCursor().setPress((Double)parameters);
+                cursors.getCurrentCursor().setOpacity((Double)parameters);
                 break;
             case "COLOR":
                 cursors.getCurrentCursor().setColor((ColorOfLine)parameters);
                 break;
             case "THICK":
-                cursors.getCurrentCursor().setThick((Double)parameters);
+                cursors.getCurrentCursor().setWidth((Double)parameters);
                 break;
             case "LOOKAT":
                 if (parameters instanceof Cursor) {

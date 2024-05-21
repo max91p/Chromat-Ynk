@@ -3,9 +3,12 @@ package com.example;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.scene.Scene;
+
 public class CursorManager {
     private List<Cursor> cursors;
     private Cursor currentCursor;
+    private Scene scene;
 
     public CursorManager() {
         cursors = new ArrayList<>();
@@ -18,7 +21,7 @@ public class CursorManager {
 
     public void addCursor(int id) {
         if (!isCursorIdExists(id)) {
-            Cursor newCursor = new Cursor(id);
+            Cursor newCursor = new Cursor(id,scene);
             cursors.add(newCursor);
         } else {
             throw new IllegalArgumentException("L'identifiant existe déjà!");
