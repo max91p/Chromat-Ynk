@@ -31,7 +31,7 @@ public class MainView extends VBox {
         button.setOnAction(event -> {
             try {
                 getText(text,resultText,cursorManager1);
-                secondaryStage.setScene(cursorManager1.getCursor(10).getScene());
+                secondaryStage.setScene(cursorManager1.getScene());
                 secondaryStage.show();
             } catch (ErrorLogger e) {
                 throw new RuntimeException(e);

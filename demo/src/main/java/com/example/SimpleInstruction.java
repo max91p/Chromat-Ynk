@@ -69,10 +69,27 @@ public class SimpleInstruction extends Instruction {
                 cursors.getCurrentCursor().setVisible(false);
                 break;
             case "MOV":
-                cursors.getCurrentCursor().setPosition((Point)parameters);
+                String valuePoint = (String)parameters;
+                if(valuePoint.contains(",")){
+                    String[] valueCo = valuePoint.split(",");
+                    double[] values = new double[valueCo.length];
+                    for (int i = 0; i < valueCo.length; i++) {
+                        values[i]= Double.parseDouble(valueCo[i]);
+                    }
+                    cursors.getCurrentCursor().move(values[0],values[1]);
+                }
                 break;
             case "POS":
-                cursors.getCurrentCursor().setPosition((Point)parameters);
+                String valuePointPos = (String)parameters;
+                if(valuePointPos.contains(",")){
+                    String[] valueCo = valuePointPos.split(",");
+                    double[] values = new double[valueCo.length];
+                    for (int i = 0; i < valueCo.length; i++) {
+                        values[i]= Double.parseDouble(valueCo[i]);
+                    }
+                    cursors.getCurrentCursor().setPosition(values[0],values[1]);
+                }
+
                 break;
             case "PRESS":
                 if (parameters instanceof Double) {
@@ -118,8 +135,8 @@ public class SimpleInstruction extends Instruction {
                 cursors.getCurrentCursor().setWidth((Double)parameters);
                 break;
             case "LOOKAT":
-                if (parameters instanceof Cursor) {
-                    Cursor cursor = (Cursor) parameters;
+                if (parameters instanceof Integer) {
+                    Cursor cursor = cursors.getCursor((Integer)parameters);
                     double deltaX = cursor.getPosition().getX() - cursors.getCurrentCursor().getPosition().getX();
                     double deltaY = cursor.getPosition().getY() - cursors.getCurrentCursor().getPosition().getY();
 
@@ -127,18 +144,27 @@ public class SimpleInstruction extends Instruction {
 
                     cursors.getCurrentCursor().setAngle(angleToTarget);
                 }
-                if (parameters instanceof Point) {
-                    Point point = (Point) parameters;
-                    double deltaX = point.getX() - cursors.getCurrentCursor().getPosition().getX();
-                    double deltaY = point.getY() - cursors.getCurrentCursor().getPosition().getY();
+                if (parameters instanceof String) {
+                    String valuePointLook = (String) parameters;
+                    if (valuePointLook.contains(",")) {
+                        String[] valueCo = valuePointLook.split(",");
+                        double[] values = new double[valueCo.length];
+                        for (int i = 0; i < valueCo.length; i++) {
+                            values[i] = Double.parseDouble(valueCo[i]);
+                        }
+                        Point point = new Point(values[0], values[1]);
 
-                    double angleToTarget = Math.toDegrees(Math.atan2(deltaY, deltaX));
+                        double deltaX = point.getX() - cursors.getCurrentCursor().getPosition().getX();
+                        double deltaY = point.getY() - cursors.getCurrentCursor().getPosition().getY();
 
-                    cursors.getCurrentCursor().setAngle(angleToTarget);
+                        double angleToTarget = Math.toDegrees(Math.atan2(deltaY, deltaX));
+
+                        cursors.getCurrentCursor().setAngle(angleToTarget);
+                    }
                 }
                 break;
             case "CURSOR":
-                cursors.addCursor((Integer)parameters);
+                cursors.createCursor((Integer)parameters);
                 break;
             case "SELECT":
                 cursors.selectCursor((Integer)parameters);
@@ -183,14 +209,14 @@ public class SimpleInstruction extends Instruction {
                     res = true;
                     break;
                 case "MOV":
-                    if (parameters instanceof Point) {
+                    if (parameters instanceof String) {
                         res = true;
                     } else {
                         throw new ErrorLogger("parameter needs to be a Point");
                     }
                     break;
                 case "POS":
-                    if (parameters instanceof Point) {
+                    if (parameters instanceof String) {
                         res = true;
                     } else {
                         throw new ErrorLogger("parameter needs to be a Point");
@@ -240,7 +266,7 @@ public class SimpleInstruction extends Instruction {
                     }
                     break;
                 case "LOOKAT":
-                    if (parameters instanceof Point || parameters instanceof Cursor) {
+                    if (parameters instanceof String || parameters instanceof Integer) {
                         res = true;
                     } else {
                         throw new ErrorLogger("parameter needs to be a Cursor or Point");

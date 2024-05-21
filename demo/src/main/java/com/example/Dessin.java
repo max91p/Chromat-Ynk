@@ -42,7 +42,7 @@ public class Dessin extends Application {
         cursor.setOpacity(0.2);
         cursor.setAngle(125);
         cursor.moveBackward(100);
-        cursor.setPosition(new Point(600,200));
+        cursor.setPosition(600,200);
         cursor.setColor(blue);
         cursor.setWidth(5);
         cursor.setOpacity(0.7);
@@ -54,7 +54,7 @@ public class Dessin extends Application {
         cursor.setAngle(260);
         cursor.moveBackward(100);
         cursor.move(50,50);
-        cursor.setPosition(new Point(900,300));
+        cursor.setPosition(900,300);
 
 
         // Configuration de la scène principale

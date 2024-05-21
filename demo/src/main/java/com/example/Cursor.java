@@ -1,5 +1,7 @@
 package com.example;
 
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 
 import java.util.ArrayList;
@@ -97,6 +99,12 @@ public class Cursor {
         return position;
     }
 
+    public void setPosition(double x,double y) {
+        this.position = new Point(x,y);
+        DrawingCanvas draw = new DrawingCanvas(this.scene);
+        draw.drawPosCursor(this);
+    }
+
     public void setPosition(Point position) {
         this.position = position;
         DrawingCanvas draw = new DrawingCanvas(this.scene);
@@ -146,10 +154,9 @@ public class Cursor {
     }
 
     public void setAngle(double angle) {
-        if (angle < 0 || angle >= 360) {
-            throw new IllegalArgumentException("L'angle doit être compris entre 0 et 360");
-        }
         this.angle = angle;
+        DrawingCanvas draw = new DrawingCanvas(this.scene);
+        draw.drawPosCursor(this);
     }
 
     public void mimic(Cursor other) {
@@ -191,7 +198,20 @@ public class Cursor {
     public void setId(int id) {
         this.id = id;
     }
-    public void setVisible (boolean visible) { this.visible = visible;}
+    public void setVisible (boolean visible) {
+        this.visible = visible;
+        if (this.visible){
+            DrawingCanvas draw = new DrawingCanvas(this.scene,position);
+            draw.drawCursor(this);
+        }
+        else{
+            Group rootf=(Group)scene.getRoot();
+            int lastIndex = rootf.getChildren().size() - 1;
+            if (lastIndex >= 0) {
+                rootf.getChildren().remove(lastIndex);
+            }
+        }
+    }
 
     public boolean getVisible () { return visible;}
 
