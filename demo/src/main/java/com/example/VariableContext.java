@@ -4,17 +4,34 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class VariableContext {
-    private static Map<String, Integer> context = new HashMap<>();
 
-    public static void set(String name, int value) {
-        context.put(name, value);
+    private Map<String, Object> variables;
+
+    public VariableContext() {
+        variables = new HashMap<>();
     }
 
-    public static Integer get(String name) {
-        return context.get(name);
+    public void setVariable(String name, Object value) {
+        variables.put(name, value);
     }
 
-    public static void remove(String name) {
-        context.remove(name);
+    public Object getVariable(String name) {
+        return variables.get(name);
+    }
+
+    public boolean containsVariable(String name) {
+        return variables.containsKey(name);
+    }
+
+    public void removeVariable(String name) {
+        variables.remove(name);
+    }
+
+    public String getVariableType(String name) {
+        Object value = variables.get(name);
+        if (value != null) {
+            return value.getClass().getSimpleName();
+        }
+        return null;
     }
 }

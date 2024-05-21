@@ -10,22 +10,25 @@ public class InstructionsBlock extends Instruction {
     private Object condition;
     private Object[] parameters;
     private CursorManager cursorManager;
+    private VariableContext variableContext;
     private Scene scene;
 
-    public InstructionsBlock(String type, Object condition, List<Instruction> instructions, CursorManager cursorManager, Scene scene) {
+    public InstructionsBlock(String type, Object condition, List<Instruction> instructions, CursorManager cursorManager, VariableContext variableContext, Scene scene) {
         this.type = type;
         this.condition = condition;
         this.instructions = instructions;
         this.cursorManager = cursorManager;
+        this.variableContext = variableContext;
         this.scene = scene;
         this.parameters = null;
     }
 
-    public InstructionsBlock(String type, List<Instruction> instructions, CursorManager cursorManager, Scene scene, Object... parameters) {
+    public InstructionsBlock(String type, List<Instruction> instructions, CursorManager cursorManager, VariableContext variableContext, Scene scene, Object... parameters) {
         this.type = type;
         this.condition = null;
         this.instructions = instructions;
         this.cursorManager = cursorManager;
+        this.variableContext = variableContext;
         this.scene = scene;
         this.parameters = parameters;
     }
@@ -51,14 +54,14 @@ public class InstructionsBlock extends Instruction {
                 int step = loopParams.size() > 2 ? loopParams.get(2) : 1;
 
                 for (int i = from; i <= to; i += step) {
-                    VariableContext.set(variableName, i);
+                    variableContext.setVariable(variableName, i);
                     for (Instruction instruction : instructions) {
                         if (instruction.isValid()) {
                             instruction.execute();
                         }
                     }
                 }
-                VariableContext.remove(variableName);
+                variableContext.removeVariable(variableName);
                 break;
 
             case "WHILE":
@@ -74,27 +77,19 @@ public class InstructionsBlock extends Instruction {
 
             case "MIMIC":
                 int cursorID = (Integer) parameters[0];
-                Cursor originalCursor = cursorManager.getCurrentCursor();
+                int originalCursor = cursorManager.getCurrentCursor().getId();
 
-                int factor=31;
-                while(cursorManager.isCursorIdExists(originalCursor.getId()*factor)){
-                    factor++;
+                cursorManager.selectCursor(cursorID);
+                for (Instruction instruction : instructions) {
+                    if (instruction.isValid()) {
+                        instruction.execute();
+                        cursorManager.selectCursor(originalCursor);
+                        instruction.execute();
+                        cursorManager.selectCursor(cursorID);
+                    }
                 }
 
-                Cursor tempCursor = new Cursor(originalCursor.getPosition(), originalCursor.getAngle(), originalCursor.getColor(),originalCursor.getWidth(), originalCursor.getOpacity(),originalCursor.getId()*factor, scene);
-
-                cursorManager.addCursor(tempCursor);
-                cursorManager.selectCursor(tempCursor.getId());
-
-
-                List<SimpleInstruction> history = cursorManager.getCursor(cursorID).getHistory();
-                for (SimpleInstruction instruction : history) {
-                    instruction.execute();
-                }
-
-                cursorManager.getCursor(originalCursor.getId()).mimic(tempCursor);
-                cursorManager.selectCursor(originalCursor.getId());
-                cursorManager.removeCursor(tempCursor.getId());
+                cursorManager.selectCursor(originalCursor);
                 break;
 
             case "MIRROR":

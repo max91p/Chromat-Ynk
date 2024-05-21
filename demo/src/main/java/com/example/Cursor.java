@@ -14,8 +14,6 @@ public class Cursor {
     private int id;
     private Scene scene;
     private boolean visible; //visibility of the cursor
-    private List<SimpleInstruction> history; //history of the cursor
-
 
     // Constructors with all the parameters
     public Cursor(Point position, double angle, ColorOfLine color, double thick, double press, int id, Scene scene) {
@@ -32,7 +30,6 @@ public class Cursor {
             this.id = id;
             this.scene=scene;
             this.visible = true;
-            this.history= new ArrayList<>();
         }
     }
 
@@ -53,7 +50,6 @@ public class Cursor {
             this.id = id;
             this.scene=scene;
             this.visible = true;
-            this.history= new ArrayList<>();
         }
     }
 
@@ -70,7 +66,6 @@ public class Cursor {
             this.id = id;
             this.scene=scene;
             this.visible = true;
-            this.history= new ArrayList<>();
         }
     }
 
@@ -87,7 +82,6 @@ public class Cursor {
             this.id = id;
             this.scene=scene;
             this.visible = true;
-            this.history= new ArrayList<>();
         }
     }
 
@@ -200,7 +194,6 @@ public class Cursor {
     public void setVisible (boolean visible) { this.visible = visible;}
 
     public boolean getVisible () { return visible;}
-    public List<SimpleInstruction> getHistory(){ return history;}
 
     @Override
     public String toString() {

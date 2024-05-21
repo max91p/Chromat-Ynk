@@ -148,8 +148,6 @@ public class SimpleInstruction extends Instruction {
                 break;
 
         }
-
-        cursors.getCurrentCursor().getHistory().add(this);
     }
 
 
