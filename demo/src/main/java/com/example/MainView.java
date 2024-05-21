@@ -3,11 +3,14 @@ package com.example;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,15 +21,18 @@ public class MainView extends VBox {
     private final Button button;
     private final Text resultText;
 
-    public MainView(double spacing, TextArea text, Button button, Text resultText, CursorManager cursorManager) {
+    public MainView(double spacing, TextArea text, Button button, Text resultText, CursorManager cursorManager1) {
         super(spacing);
         this.text = text;
         this.button = button;
         this.resultText = resultText;
 
+        Stage secondaryStage = new Stage();
         button.setOnAction(event -> {
             try {
-                getText(text,resultText,cursorManager);
+                getText(text,resultText,cursorManager1);
+                secondaryStage.setScene(cursorManager1.getCursor(10).getScene());
+                secondaryStage.show();
             } catch (ErrorLogger e) {
                 throw new RuntimeException(e);
             }
@@ -57,9 +63,14 @@ public class MainView extends VBox {
             // Vérifier le type de la valeur
             if (isInteger(valeurString)) {
                 valeur = Integer.parseInt(valeurString);
+                if((int)valeur<0){
+                    throw new ErrorLogger("La valeur doit être positive");
+                }
+                
             } else if (isDouble(valeurString)) {
                 valeur = Double.parseDouble(valeurString);
-            } else {
+            }
+            else {
                 valeur = valeurString;
             }
             // Afficher le texte et la valeur

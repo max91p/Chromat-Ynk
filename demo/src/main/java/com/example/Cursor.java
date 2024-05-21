@@ -142,7 +142,7 @@ public class Cursor {
     public void turn(double degrees) {
         angle += degrees;
         DrawingCanvas draw = new DrawingCanvas(this.scene);
-        draw.drawCursor(this);
+        draw.drawPosCursor(this);
     }
 
     // Getters et Setters

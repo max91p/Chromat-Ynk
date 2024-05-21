@@ -93,7 +93,26 @@ public class SimpleInstruction extends Instruction {
                 cursors.getCurrentCursor().setOpacity((Double)parameters);
                 break;
             case "COLOR":
-                cursors.getCurrentCursor().setColor((ColorOfLine)parameters);
+                String valueString = (String)parameters;
+                if(valueString.contains(",") && !valueString.contains(".")){
+                    String[] valueStrings = valueString.split(",");
+                    int[] values = new int[valueStrings.length];
+                    for (int i = 0; i < valueStrings.length; i++) {
+                        values[i]= Integer.parseInt(valueStrings[i]);
+                    }
+                    cursors.getCurrentCursor().setColor(new ColorOfLine(values[0], values[1], values[2]));
+                }
+                else if (valueString.contains("#")){
+                    cursors.getCurrentCursor().setColor(new ColorOfLine(valueString));
+                }
+                else if(valueString.contains(",") && valueString.contains(".")){
+                    String[] valueStrings = valueString.split(",");
+                    double[] values = new double[valueStrings.length];
+                    for (int i = 0; i < valueStrings.length; i++) {
+                        values[i]= Double.parseDouble(valueStrings[i]);
+                    }
+                    cursors.getCurrentCursor().setColor(new ColorOfLine(values[0], values[1], values[2]));
+                }
                 break;
             case "THICK":
                 cursors.getCurrentCursor().setWidth((Double)parameters);
@@ -209,7 +228,7 @@ public class SimpleInstruction extends Instruction {
                     }
                     break;
                 case "COLOR":
-                    if (parameters instanceof ColorOfLine) {
+                    if (parameters instanceof String) {
                         res = true;
                     } else {
                         throw new ErrorLogger("parameter needs to be a ColorOfLine");

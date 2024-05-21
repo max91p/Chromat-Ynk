@@ -22,9 +22,15 @@ public class Main extends Application {
 
 
         Group root = new Group();
+        Group root2 = new Group();
+
         // Création de la scène avec la racine
         Scene scene = new Scene(root, 400, 200);
-        Cursor c1=new Cursor(new Point(100,100),10,scene);
+        Scene scene2 = new Scene(root2, 400, 200);
+        Cursor c1=new Cursor(new Point(100,100),10,scene2);
+        primaryStage.setTitle(WINDOW_TITLE);
+        primaryStage.setWidth(WINDOW_WIDTH);
+        primaryStage.setHeight(WINDOW_HEIGHT);
 
         CursorManager cursorManager=new CursorManager();
         cursorManager.addCursor(c1);
