@@ -19,5 +19,5 @@ public abstract class Instruction {
      *
      * @return true if the instruction is valid, false otherwise
      */
-    public abstract boolean isValid();
+    public abstract boolean isValid() throws ErrorLogger;
 }

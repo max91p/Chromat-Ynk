@@ -51,7 +51,7 @@ public class SimpleInstruction extends Instruction {
      */
 
     @Override
-    public void execute() {
+    public void execute(){
         switch (type) {
             case "FWD":
                 cursors.getCurrentCursor().moveForward((Double)parameters);
@@ -127,99 +127,139 @@ public class SimpleInstruction extends Instruction {
             case "REMOVE":
                 cursors.removeCursor((Integer)parameters);
                 break;
+
         }
+
         cursors.getCurrentCursor().getHistory().add(this);
     }
 
 
-    public boolean isValid(){
+    public boolean isValid() throws ErrorLogger{
         boolean res = false;
-        switch (type) {
-            case "FWD":
-                if (parameters instanceof Double) {
-                    res = true;
-                }
-                break;
-            case "BWD":
-                if (parameters instanceof Double) {
-                    res = true;
-                }
-                break;
-            case "TURN":
-                if (parameters instanceof Double) {
-                    res = true;
-                }
-                break;
-            case "SHOW":
-                res = true;
-                break;
-            case "HIDE":
-                res = true;
-                break;
-            case "MOV":
-                if (parameters instanceof Point) {
-                    res = true;
-                }
-                break;
-            case "POS":
-                if (parameters instanceof Point) {
-                    res = true;
-                }
-                break;
-            case "PRESS":
-                if (parameters instanceof Double || parameters instanceof String) {
+        try {
+            switch (type) {
+                case "FWD":
                     if (parameters instanceof Double) {
-                        Double value = (Double) parameters;
-                        if (value >= 0 && value <= 1) {
-                            res = true;
-                        }
+                        res = true;
+                    } else {
+                        throw new ErrorLogger("parameter needs to be a Double");
                     }
-                    if (parameters instanceof String) {
-                        String value = (String) parameters;
-                        // Vérification si la valeur correspond au format numérique avec un % à la fin
-                        Pattern pattern = Pattern.compile("^\\d+(\\.\\d+)?%$");
-                        Matcher matcher = pattern.matcher(value);
-                        if (matcher.matches()) {
-                            // La valeur est au format numérique avec un % à la fin
-                            double numericValue = Double.parseDouble(value.substring(0, value.length() - 1));
-                            if (numericValue >= 0 && numericValue <= 100) {
+                    break;
+                case "BWD":
+                    if (parameters instanceof Double) {
+                        res = true;
+                    } else {
+                        throw new ErrorLogger("parameter needs to be a Double");
+                    }
+                    break;
+                case "TURN":
+                    if (parameters instanceof Double) {
+                        res = true;
+                    } else {
+                        throw new ErrorLogger("parameter needs to be a Double");
+                    }
+                    break;
+                case "SHOW":
+                    res = true;
+                    break;
+                case "HIDE":
+                    res = true;
+                    break;
+                case "MOV":
+                    if (parameters instanceof Point) {
+                        res = true;
+                    } else {
+                        throw new ErrorLogger("parameter needs to be a Point");
+                    }
+                    break;
+                case "POS":
+                    if (parameters instanceof Point) {
+                        res = true;
+                    } else {
+                        throw new ErrorLogger("parameter needs to be a Point");
+                    }
+                    break;
+                case "PRESS":
+                    if (parameters instanceof Double || parameters instanceof String) {
+                        if (parameters instanceof Double) {
+                            Double value = (Double) parameters;
+                            if (value >= 0 && value <= 1) {
                                 res = true;
+                            } else {
+                                throw new ErrorLogger("parameter needs to be between 0 and 1");
                             }
                         }
+                        if (parameters instanceof String) {
+                            String value = (String) parameters;
+                            // Vérification si la valeur correspond au format numérique avec un % à la fin
+                            Pattern pattern = Pattern.compile("^\\d+(\\.\\d+)?%$");
+                            Matcher matcher = pattern.matcher(value);
+                            if (matcher.matches()) {
+                                // La valeur est au format numérique avec un % à la fin
+                                double numericValue = Double.parseDouble(value.substring(0, value.length() - 1));
+                                if (numericValue >= 0 && numericValue <= 100) {
+                                    res = true;
+                                } else {
+                                    throw new ErrorLogger("parameter needs to be between 0 and 100");
+                                }
+                            }
+                        } else {
+                            throw new ErrorLogger("parameter needs to be a Double or String");
+                        }
                     }
-                }
-                break;
-            case "COLOR":
-                if (parameters instanceof ColorOfLine) {
-                    res = true;
-                }
-                break;
-            case "THICK":
-                if (parameters instanceof Double) {
-                    res = true;
-                }
-                break;
-            case "LOOKAT":
-                if (parameters instanceof Point || parameters instanceof Cursor) {
-                    res = true;
-                }
-                break;
-            case "CURSOR":
-                if (parameters instanceof Integer) {
-                    res = true;
-                }
-                break;
-            case "SELECT":
-                if (parameters instanceof Integer) {
-                    res = true;
-                }
-                break;
-            case "REMOVE":
-                if (parameters instanceof Integer) {
-                    res = true;
-                }
-                break;
+                    break;
+                case "COLOR":
+                    if (parameters instanceof ColorOfLine) {
+                        res = true;
+                    } else {
+                        throw new ErrorLogger("parameter needs to be a ColorOfLine");
+                    }
+                    break;
+                case "THICK":
+                    if (parameters instanceof Double) {
+                        res = true;
+                    } else {
+                        throw new ErrorLogger("parameter needs to be a Double");
+                    }
+                    break;
+                case "LOOKAT":
+                    if (parameters instanceof Point || parameters instanceof Cursor) {
+                        res = true;
+                    } else {
+                        throw new ErrorLogger("parameter needs to be a Cursor or Point");
+                    }
+                    break;
+                case "CURSOR":
+                    if (parameters instanceof Integer) {
+                        res = true;
+                    } else {
+                        throw new ErrorLogger("parameter needs to be a Integer");
+                    }
+                    break;
+                case "SELECT":
+                    if (parameters instanceof Integer) {
+                        res = true;
+                    } else {
+                        throw new ErrorLogger("parameter needs to be a Integer");
+                    }
+                    break;
+                case "REMOVE":
+                    if (parameters instanceof Integer) {
+                        res = true;
+                    } else {
+                        throw new ErrorLogger("parameter needs to be a Integer");
+                    }
+                    break;
+                default:
+                    throw new ErrorLogger("type of instruction is unknown :" + type);
+            }
+            return (res);
         }
-        return (res);
+        catch (ErrorLogger e){
+            throw e;
+        }
+        catch (Exception e){
+            throw new ErrorLogger("Error during execution of the instruction :" + type , e);
+        }
     }
 }
