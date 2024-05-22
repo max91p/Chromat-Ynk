@@ -17,6 +17,7 @@ public class SimpleInstruction extends Instruction {
     private String type;
     private Object parameters;
     private CursorManager cursors;
+    private VariableContext variableContext;
     private Scene scene;
 
     /**
@@ -26,10 +27,11 @@ public class SimpleInstruction extends Instruction {
      * @param parameters the parameters of the instruction
      */
 
-    public SimpleInstruction(String type, Object parameters, CursorManager cursors,Scene scene) {
+    public SimpleInstruction(String type, Object parameters, CursorManager cursors, VariableContext variableContext,Scene scene) {
         this.type = type;
         this.parameters = parameters;
         this.cursors = cursors;
+        this.variableContext=variableContext;
         this.scene=scene;
     }
 
@@ -39,12 +41,27 @@ public class SimpleInstruction extends Instruction {
      * @param type the type of the instruction
      */
 
-    public SimpleInstruction(String type, CursorManager cursors, Scene scene) {
+    public SimpleInstruction(String type, CursorManager cursors, VariableContext variableContext,Scene scene) {
         this.type = type;
         this.parameters = null;
         this.cursors = cursors;
+        this.variableContext=variableContext;
         this.scene=scene;
     }
+
+    /**
+     * Replace variable by values in parameters of instructions
+     *
+     * @param parameter
+     * @return
+     */
+    private Object resolveParameter(Object parameter) {
+        if (parameter instanceof String && variableContext.containsVariable((String) parameter)) {
+            return variableContext.getVariable((String) parameter);
+        }
+        return parameter;
+    }
+
 
     /**
      * Executes the instruction on the given cursor.
@@ -52,15 +69,16 @@ public class SimpleInstruction extends Instruction {
 
     @Override
     public void execute(){
+        Object resolvedParameter = resolveParameter(parameters);
         switch (type) {
             case "FWD":
-                cursors.getCurrentCursor().moveForward((Double)parameters);
+                cursors.getCurrentCursor().moveForward((Double)resolvedParameter);
                 break;
             case "BWD":
-                cursors.getCurrentCursor().moveBackward((Double)parameters);
+                cursors.getCurrentCursor().moveBackward((Double)resolvedParameter);
                 break;
             case "TURN":
-                cursors.getCurrentCursor().turn((Double)parameters);
+                cursors.getCurrentCursor().turn((Double)resolvedParameter);
                 break;
             case "SHOW":
                 cursors.getCurrentCursor().setVisible(true);
@@ -69,7 +87,7 @@ public class SimpleInstruction extends Instruction {
                 cursors.getCurrentCursor().setVisible(false);
                 break;
             case "MOV":
-                String valuePoint = (String)parameters;
+                String valuePoint = (String)resolvedParameter;
                 if(valuePoint.contains(",")){
                     String[] valueCo = valuePoint.split(",");
                     double[] values = new double[valueCo.length];
@@ -80,7 +98,7 @@ public class SimpleInstruction extends Instruction {
                 }
                 break;
             case "POS":
-                String valuePointPos = (String)parameters;
+                String valuePointPos = (String)resolvedParameter;
                 if(valuePointPos.contains(",")){
                     String[] valueCo = valuePointPos.split(",");
                     double[] values = new double[valueCo.length];
@@ -92,11 +110,11 @@ public class SimpleInstruction extends Instruction {
 
                 break;
             case "PRESS":
-                if (parameters instanceof Double) {
-                    cursors.getCurrentCursor().setOpacity((Double)parameters);
+                if (resolvedParameter instanceof Double) {
+                    cursors.getCurrentCursor().setOpacity((Double)resolvedParameter);
                 }
-                if (parameters instanceof String) {
-                    String value = (String)parameters;
+                if (resolvedParameter instanceof String) {
+                    String value = (String)resolvedParameter;
                     // Vérification si la valeur correspond au format numérique avec un % à la fin
                     Pattern pattern = Pattern.compile("^\\d+(\\.\\d+)?%$");
                     Matcher matcher = pattern.matcher(value);
@@ -107,10 +125,10 @@ public class SimpleInstruction extends Instruction {
                     }
                 }
 
-                cursors.getCurrentCursor().setOpacity((Double)parameters);
+                cursors.getCurrentCursor().setOpacity((Double)resolvedParameter);
                 break;
             case "COLOR":
-                String valueString = (String)parameters;
+                String valueString = (String)resolvedParameter;
                 if(valueString.contains(",") && !valueString.contains(".")){
                     String[] valueStrings = valueString.split(",");
                     int[] values = new int[valueStrings.length];
@@ -132,11 +150,11 @@ public class SimpleInstruction extends Instruction {
                 }
                 break;
             case "THICK":
-                cursors.getCurrentCursor().setWidth((Double)parameters);
+                cursors.getCurrentCursor().setWidth((Double)resolvedParameter);
                 break;
             case "LOOKAT":
-                if (parameters instanceof Integer) {
-                    Cursor cursor = cursors.getCursor((Integer)parameters);
+                if (resolvedParameter instanceof Integer) {
+                    Cursor cursor = cursors.getCursor((Integer)resolvedParameter);
                     double deltaX = cursor.getPosition().getX() - cursors.getCurrentCursor().getPosition().getX();
                     double deltaY = cursor.getPosition().getY() - cursors.getCurrentCursor().getPosition().getY();
 
@@ -144,8 +162,8 @@ public class SimpleInstruction extends Instruction {
 
                     cursors.getCurrentCursor().setAngle(angleToTarget);
                 }
-                if (parameters instanceof String) {
-                    String valuePointLook = (String) parameters;
+                if (resolvedParameter instanceof String) {
+                    String valuePointLook = (String) resolvedParameter;
                     if (valuePointLook.contains(",")) {
                         String[] valueCo = valuePointLook.split(",");
                         double[] values = new double[valueCo.length];
@@ -164,13 +182,13 @@ public class SimpleInstruction extends Instruction {
                 }
                 break;
             case "CURSOR":
-                cursors.createCursor((Integer)parameters);
+                cursors.createCursor((Integer)resolvedParameter);
                 break;
             case "SELECT":
-                cursors.selectCursor((Integer)parameters);
+                cursors.selectCursor((Integer)resolvedParameter);
                 break;
             case "REMOVE":
-                cursors.removeCursor((Integer)parameters);
+                cursors.removeCursor((Integer)resolvedParameter);
                 break;
 
         }
@@ -377,62 +395,49 @@ public class SimpleInstruction extends Instruction {
     }
 
     public boolean isValid() throws ErrorLogger{
+        Object resolvedParameter = resolveParameter(parameters);
         boolean res = false;
         try {
             switch (type) {
                 case "FWD":
-                    if (parameters instanceof Double) {
-                        res = true;
-                    } else {
-                        throw new ErrorLogger("parameter needs to be a Double");
-                    }
-                    break;
                 case "BWD":
-                    if (parameters instanceof Double) {
-                        res = true;
-                    } else {
-                        throw new ErrorLogger("parameter needs to be a Double");
-                    }
-                    break;
                 case "TURN":
-                    if (parameters instanceof Double) {
+                    if (resolvedParameter instanceof Double) {
                         res = true;
                     } else {
                         throw new ErrorLogger("parameter needs to be a Double");
                     }
                     break;
                 case "SHOW":
-                    res = true;
-                    break;
                 case "HIDE":
                     res = true;
                     break;
                 case "MOV":
-                    if (parameters instanceof String) {
+                    if (resolvedParameter instanceof String) {
                         res = true;
                     } else {
                         throw new ErrorLogger("parameter needs to be a Point");
                     }
                     break;
                 case "POS":
-                    if (parameters instanceof String) {
+                    if (resolvedParameter instanceof String) {
                         res = true;
                     } else {
                         throw new ErrorLogger("parameter needs to be a Point");
                     }
                     break;
                 case "PRESS":
-                    if (parameters instanceof Double || parameters instanceof String) {
-                        if (parameters instanceof Double) {
-                            Double value = (Double) parameters;
+                    if (resolvedParameter instanceof Double || resolvedParameter instanceof String) {
+                        if (resolvedParameter instanceof Double) {
+                            Double value = (Double) resolvedParameter;
                             if (value >= 0 && value <= 1) {
                                 res = true;
                             } else {
                                 throw new ErrorLogger("parameter needs to be between 0 and 1");
                             }
                         }
-                        if (parameters instanceof String) {
-                            String value = (String) parameters;
+                        if (resolvedParameter instanceof String) {
+                            String value = (String) resolvedParameter;
                             // Vérification si la valeur correspond au format numérique avec un % à la fin
                             Pattern pattern = Pattern.compile("^\\d+(\\.\\d+)?%$");
                             Matcher matcher = pattern.matcher(value);
@@ -451,42 +456,42 @@ public class SimpleInstruction extends Instruction {
                     }
                     break;
                 case "COLOR":
-                    if (parameters instanceof String) {
+                    if (resolvedParameter instanceof String) {
                         res = true;
                     } else {
                         throw new ErrorLogger("parameter needs to be a ColorOfLine");
                     }
                     break;
                 case "THICK":
-                    if (parameters instanceof Double) {
+                    if (resolvedParameter instanceof Double) {
                         res = true;
                     } else {
                         throw new ErrorLogger("parameter needs to be a Double");
                     }
                     break;
                 case "LOOKAT":
-                    if (parameters instanceof String || parameters instanceof Integer) {
+                    if (resolvedParameter instanceof String || resolvedParameter instanceof Integer) {
                         res = true;
                     } else {
                         throw new ErrorLogger("parameter needs to be a Cursor or Point");
                     }
                     break;
                 case "CURSOR":
-                    if (parameters instanceof Integer) {
+                    if (resolvedParameter instanceof Integer) {
                         res = true;
                     } else {
                         throw new ErrorLogger("parameter needs to be a Integer");
                     }
                     break;
                 case "SELECT":
-                    if (parameters instanceof Integer) {
+                    if (resolvedParameter instanceof Integer) {
                         res = true;
                     } else {
                         throw new ErrorLogger("parameter needs to be a Integer");
                     }
                     break;
                 case "REMOVE":
-                    if (parameters instanceof Integer) {
+                    if (resolvedParameter instanceof Integer) {
                         res = true;
                     } else {
                         throw new ErrorLogger("parameter needs to be a Integer");
