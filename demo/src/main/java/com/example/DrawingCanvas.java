@@ -2,16 +2,22 @@ package com.example;
 
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Polygon;
 
-public class DrawingCanvas {
+public class DrawingCanvas{
     private Scene scene;
     private Point oldPosition;
     private Point newPosition;
+
+    public DrawingCanvas(Scene scene, Point oldPosition) {
+        this.scene=scene;
+        this.oldPosition=oldPosition;
+    }
 
     public Point getNewPosition() {
         return newPosition;

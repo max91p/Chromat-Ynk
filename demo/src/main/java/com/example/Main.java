@@ -2,6 +2,7 @@ package com.example;
 
 import javafx.application.Application;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -28,11 +29,12 @@ public class Main extends Application {
         Scene scene = new Scene(root, 400, 200);
         Scene scene2 = new Scene(root2, 400, 200);
         Cursor c1=new Cursor(new Point(100,100),10,scene2);
+
         primaryStage.setTitle(WINDOW_TITLE);
         primaryStage.setWidth(WINDOW_WIDTH);
         primaryStage.setHeight(WINDOW_HEIGHT);
 
-        CursorManager cursorManager=new CursorManager();
+        CursorManager cursorManager=new CursorManager(scene2);
         cursorManager.addCursor(c1);
         cursorManager.selectCursor(10);
         MainView view = new MainView(10,new TextArea(),new Button("Submit"),new Text(),cursorManager);
@@ -42,6 +44,7 @@ public class Main extends Application {
 
 // Ajouter le conteneur à root
         root.getChildren().add(container);
+
         scene.setRoot(root);
 
 

@@ -3,6 +3,8 @@ package com.example;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 
 public class CursorManager {
@@ -10,18 +12,23 @@ public class CursorManager {
     private Cursor currentCursor;
     private Scene scene;
 
-    public CursorManager() {
+    public CursorManager(Scene scene) {
+        this.scene=scene;
         cursors = new ArrayList<>();
         currentCursor = null;
+    }
+
+    public Scene getScene() {
+        return scene;
     }
 
     public Cursor getCurrentCursor() {
         return currentCursor;
     }
 
-    public void addCursor(int id) {
+    public void createCursor(int id) {
         if (!isCursorIdExists(id)) {
-            Cursor newCursor = new Cursor(id,scene);
+            Cursor newCursor = new Cursor(new Point(50,50),id,scene);
             cursors.add(newCursor);
         } else {
             throw new IllegalArgumentException("L'identifiant existe déjà!");
@@ -61,7 +68,10 @@ public class CursorManager {
         for (Cursor cursor : cursors) {
             if (cursor.getId() == id) {
                 cursors.remove(cursor);
-                return;
+                Group root = new Group(scene.getRoot());
+                root.getChildren().remove(cursor);
+                scene.setRoot(root);
+                break;
             }
         }
         // Gérer l'erreur : aucun curseur avec cet identifiant n'existe
