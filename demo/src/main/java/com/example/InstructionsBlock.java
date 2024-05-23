@@ -314,19 +314,27 @@ public class InstructionsBlock extends Instruction {
     public boolean isValid() {
         switch (type) {
             case "IF":
-                return condition instanceof BooleanSupplier && instructions != null;
+                if( condition instanceof BooleanSupplier && instructions != null){
+                    return true;
+                }
 
             case "FOR":
-                return parameters.length >= 2 && parameters[0] instanceof String && parameters[1] instanceof Integer
+                if( parameters.length >= 2 && parameters[0] instanceof String && parameters[1] instanceof Integer
                         && (parameters.length < 3 || parameters[2] instanceof Integer)
                         && (parameters.length < 4 || parameters[3] instanceof Integer)
-                        && instructions != null;
+                        && instructions != null){
+                    return true;
+                }
 
             case "WHILE":
-                return condition instanceof BooleanSupplier && instructions != null;
+                if( condition instanceof BooleanSupplier && instructions != null){
+                    return true;
+                }
 
             case "MIMIC":
-                return parameters instanceof Integer && instructions != null;
+                if parameters instanceof Integer && instructions != null){
+                    return true;
+            }
 
             case "MIRROR":
                 if (parameters instanceof String) {
@@ -340,7 +348,9 @@ public class InstructionsBlock extends Instruction {
                                 return false;
                             }
                         }
-                        return instructions != null;
+                        if( instructions != null){
+                            return true;
+                        }
                     }
                 }
                 return false;
