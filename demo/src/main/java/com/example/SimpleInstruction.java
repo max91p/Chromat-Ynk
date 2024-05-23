@@ -194,7 +194,7 @@ public class SimpleInstruction extends Instruction {
         }
     }
 
-    public void mirrorExecute(boolean Axial,Object parameters){
+    public void mirrorExecute(boolean Axial,Object parameter)throws ErrorLogger{
         switch (type) {
             case "FWD":
                 if(Axial) {
@@ -221,55 +221,64 @@ public class SimpleInstruction extends Instruction {
             case "HIDE":
                 cursors.getCurrentCursor().setVisible(false);
                 break;
-            case "MOV":
-                String valuePoint = (String) parameters;
+            case "MOV": {
+                String symmetryPoints = (String) parameter;
+                String destinationPoint = (String) parameters;
+                Point destination = parsePoint(destinationPoint);
+                Point newPos;
                 if (Axial) {
                     // Handle axial symmetry with two points
-                    if (valuePoint.contains("),(")) {
-                        String[] pointStrings = valuePoint.split("\\),\\(");
-                        Point p1 = parsePoint(pointStrings[0]);
-                        Point p2 = parsePoint(pointStrings[1]);
-                        Point cursorPos = cursors.getCurrentCursor().getPosition();
-                        Point newPos = axialSymmetry(cursorPos, p1, p2);
-                        cursors.getCurrentCursor().move(newPos.getX(), newPos.getY());
+                    if (symmetryPoints.contains("),(")) {
+                        String[] pointStrings = symmetryPoints.split("\\),\\(");
+                        Point p1 = parsePoint(pointStrings[0] + ")");
+                        Point p2 = parsePoint("(" + pointStrings[1]);
+                        newPos = axialSymmetry(destination, p1, p2);
+                    } else {
+                        newPos = destination;
                     }
                 } else {
                     // Handle central symmetry with one point
-                    if (valuePoint.contains(",")) {
-                        Point center = parsePoint(valuePoint);
-                        Point cursorPos = cursors.getCurrentCursor().getPosition();
-                        Point newPos = centralSymmetry(cursorPos, center);
-                        cursors.getCurrentCursor().move(newPos.getX(), newPos.getY());
+                    if (symmetryPoints.contains(",")) {
+                        Point center = parsePoint(symmetryPoints);
+                        newPos = centralSymmetry(destination, center);
+                    } else {
+                        newPos = destination;
                     }
                 }
+                cursors.getCurrentCursor().move(newPos.getX(), newPos.getY());
                 break;
-            case "POS":
-                String valuePointPos = (String) parameters;
+            }
+            case "POS": {
+                String symmetryPointsPos = (String) parameter;
+                String destinationPointPos = (String) parameters;
+                Point destination = parsePoint(destinationPointPos);
+                Point newPos;
                 if (Axial) {
                     // Handle axial symmetry with two points
-                    if (valuePointPos.contains("),(")) {
-                        String[] pointStrings = valuePointPos.split("\\),\\(");
-                        Point p1 = parsePoint(pointStrings[0]);
-                        Point p2 = parsePoint(pointStrings[1]);
-                        Point cursorPos = cursors.getCurrentCursor().getPosition();
-                        Point newPos = axialSymmetry(cursorPos, p1, p2);
-                        cursors.getCurrentCursor().setPosition(newPos.getX(), newPos.getY());
+                    if (symmetryPointsPos.contains("),(")) {
+                        String[] pointStrings = symmetryPointsPos.split("\\),\\(");
+                        Point p1 = parsePoint(pointStrings[0] + ")");
+                        Point p2 = parsePoint("(" + pointStrings[1]);
+                        newPos = axialSymmetry(destination, p1, p2);
+                    } else {
+                        newPos = destination;
                     }
                 } else {
                     // Handle central symmetry with one point
-                    if (valuePointPos.contains(",")) {
-                        Point center = parsePoint(valuePointPos);
-                        Point cursorPos = cursors.getCurrentCursor().getPosition();
-                        Point newPos = centralSymmetry(cursorPos, center);
-                        cursors.getCurrentCursor().setPosition(newPos.getX(), newPos.getY());
+                    if (symmetryPointsPos.contains(",")) {
+                        Point center = parsePoint(symmetryPointsPos);
+                        newPos = centralSymmetry(destination, center);
+                    } else {
+                        newPos = destination;
                     }
                 }
+                cursors.getCurrentCursor().setPosition(newPos.getX(), newPos.getY());
                 break;
+            }
             case "PRESS":
                 if (parameters instanceof Double) {
                     cursors.getCurrentCursor().setOpacity((Double) parameters);
-                }
-                if (parameters instanceof String) {
+                } else if (parameters instanceof String) {
                     String value = (String) parameters;
                     // Vérification si la valeur correspond au format numérique avec un % à la fin
                     Pattern pattern = Pattern.compile("^\\d+(\\.\\d+)?%$");
@@ -280,10 +289,8 @@ public class SimpleInstruction extends Instruction {
                         cursors.getCurrentCursor().setOpacity(numericValue / 100);
                     }
                 }
-
-                cursors.getCurrentCursor().setOpacity((Double) parameters);
                 break;
-            case "COLOR":
+            case "COLOR": {
                 String valueString = (String) parameters;
                 if (valueString.contains(",") && !valueString.contains(".")) {
                     String[] valueStrings = valueString.split(",");
@@ -303,60 +310,74 @@ public class SimpleInstruction extends Instruction {
                     cursors.getCurrentCursor().setColor(new ColorOfLine(values[0], values[1], values[2]));
                 }
                 break;
+            }
             case "THICK":
                 cursors.getCurrentCursor().setWidth((Double) parameters);
                 break;
-            case "LOOKAT":
+            case "LOOKAT": {
                 if (parameters instanceof Integer) {
                     Cursor cursor = cursors.getCursor((Integer) parameters);
-                    double deltaX = cursor.getPosition().getX() - cursors.getCurrentCursor().getPosition().getX();
-                    double deltaY = cursor.getPosition().getY() - cursors.getCurrentCursor().getPosition().getY();
+                    Point targetPos = cursor.getPosition();
+                    Point newPos;
+
+                    if (Axial) {
+                        String symmetryPoints = (String) parameter;
+                        if (symmetryPoints.contains("),(")) {
+                            String[] pointStrings = symmetryPoints.split("\\),\\(");
+                            Point p1 = parsePoint(pointStrings[0] + ")");
+                            Point p2 = parsePoint("(" + pointStrings[1]);
+                            newPos = axialSymmetry(targetPos, p1, p2);
+                        } else {
+                            newPos = targetPos;
+                        }
+                    } else {
+                        String symmetryPoint = (String) parameter;
+                        if (symmetryPoint.contains(",")) {
+                            Point center = parsePoint(symmetryPoint);
+                            newPos = centralSymmetry(targetPos, center);
+                        } else {
+                            newPos = targetPos;
+                        }
+                    }
+
+                    double deltaX = newPos.getX() - cursors.getCurrentCursor().getPosition().getX();
+                    double deltaY = newPos.getY() - cursors.getCurrentCursor().getPosition().getY();
 
                     double angleToTarget = Math.toDegrees(Math.atan2(deltaY, deltaX));
+                    cursors.getCurrentCursor().setAngle(angleToTarget);
+                } else if (parameters instanceof String) {
+                    String destinationPoint = (String) parameters;
+                    Point destination = parsePoint(destinationPoint);
+                    Point newPos;
 
+                    if (Axial) {
+                        String symmetryPoints = (String) parameter;
+                        if (symmetryPoints.contains("),(")) {
+                            String[] pointStrings = symmetryPoints.split("\\),\\(");
+                            Point p1 = parsePoint(pointStrings[0] + ")");
+                            Point p2 = parsePoint("(" + pointStrings[1]);
+                            newPos = axialSymmetry(destination, p1, p2);
+                        } else {
+                            newPos = destination;
+                        }
+                    } else {
+                        String symmetryPoint = (String) parameter;
+                        if (symmetryPoint.contains(",")) {
+                            Point center = parsePoint(symmetryPoint);
+                            newPos = centralSymmetry(destination, center);
+                        } else {
+                            newPos = destination;
+                        }
+                    }
+
+                    double deltaX = newPos.getX() - cursors.getCurrentCursor().getPosition().getX();
+                    double deltaY = newPos.getY() - cursors.getCurrentCursor().getPosition().getY();
+
+                    double angleToTarget = Math.toDegrees(Math.atan2(deltaY, deltaX));
                     cursors.getCurrentCursor().setAngle(angleToTarget);
                 }
-                if (parameters instanceof String) {
-                    String valuePointLook = (String) parameters;
-                    if (valuePointLook.contains(",")) {
-                        String[] valueCo = valuePointLook.split(",");
-                        double[] values = new double[valueCo.length];
-                        for (int i = 0; i < valueCo.length; i++) {
-                            values[i] = Double.parseDouble(valueCo[i]);
-                        }
-                        Point point = new Point(values[0], values[1]);
-
-                        // Symétrie axiale du point de regard
-                        if (Axial) {
-                            if (valuePointLook.contains(",")) {
-                                String[] pointStrings = valuePointLook.split(",");
-                                Point p1 = parsePoint(pointStrings[0]);
-                                Point p2 = parsePoint(pointStrings[1]);
-                                Point cursorPos = cursors.getCurrentCursor().getPosition();
-                                Point newPos = axialSymmetry(cursorPos, p1, p2);
-                                point = newPos;
-                            }
-                        }
-
-                        // Symétrie centrale du point de regard
-                        if (!Axial) {
-                            if (valuePointLook.contains(",")) {
-                                Point center = parsePoint(valuePointLook);
-                                Point cursorPos = cursors.getCurrentCursor().getPosition();
-                                Point newPos = centralSymmetry(cursorPos, center);
-                                point = newPos;
-                            }
-                        }
-
-                        double deltaX = point.getX() - cursors.getCurrentCursor().getPosition().getX();
-                        double deltaY = point.getY() - cursors.getCurrentCursor().getPosition().getY();
-
-                        double angleToTarget = Math.toDegrees(Math.atan2(deltaY, deltaX));
-
-                        cursors.getCurrentCursor().setAngle(angleToTarget);
-                    }
-                }
                 break;
+            }
             case "CURSOR":
                 cursors.createCursor((Integer) parameters);
                 break;

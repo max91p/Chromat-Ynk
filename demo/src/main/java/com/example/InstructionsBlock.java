@@ -130,6 +130,105 @@ public class InstructionsBlock extends Instruction {
                 throw new UnsupportedOperationException("Unknown block instruction type: " + type);
         }
     }
+
+    @Override
+    public void mirrorExecute(boolean Axial,Object parameter) throws ErrorLogger {
+        switch (type) {
+            case "IF":
+                if (((BooleanSupplier) condition).getAsBoolean()) {
+                    for (Instruction instruction : instructions) {
+                        if (instruction.isValid()) {
+                            instruction.mirrorExecute(Axial,parameter);
+                        }
+                    }
+                }
+                break;
+
+            case "FOR":
+                List<Integer> loopParams = (List<Integer>) condition;
+                String variableName = "i";  // Assuming a default variable name
+                int from = loopParams.get(0);
+                int to = loopParams.get(1);
+                int step = loopParams.size() > 2 ? loopParams.get(2) : 1;
+
+                for (int i = from; i <= to; i += step) {
+                    variableContext.setVariable(variableName, i);
+                    for (Instruction instruction : instructions) {
+                        if (instruction.isValid()) {
+                            instruction.mirrorExecute(Axial,parameter);
+                        }
+                    }
+                }
+                variableContext.removeVariable(variableName);
+                break;
+
+            case "WHILE":
+                BooleanSupplier conditionSupplier = (BooleanSupplier) condition;
+                while (conditionSupplier.getAsBoolean()) {
+                    for (Instruction instruction : instructions) {
+                        if (instruction.isValid()) {
+                            instruction.mirrorExecute(Axial,parameter);
+                        }
+                    }
+                }
+                break;
+
+            case "MIMIC":
+                int cursorID = (Integer) parameters[0];
+                int originalCursor = cursorManager.getCurrentCursor().getId();
+
+                cursorManager.selectCursor(cursorID);
+                for (Instruction instruction : instructions) {
+                    if (instruction.isValid()) {
+                        instruction.mirrorExecute(Axial,parameter);
+                        cursorManager.selectCursor(originalCursor);
+                        instruction.mirrorExecute(Axial,parameter);
+                        cursorManager.selectCursor(cursorID);
+                    }
+                }
+
+                cursorManager.selectCursor(originalCursor);
+                break;
+
+            case "MIRROR":
+                double x1 = (Double) parameters[0];
+                double y1 = (Double) parameters[1];
+                if (parameters.length > 2) {
+                    double x2 = (Double) parameters[2];
+                    double y2 = (Double) parameters[3];
+                    // Axial symmetry logic
+                    for (Instruction instruction : instructions) {
+                        if (instruction.isValid()) {
+                            instruction.execute();
+                        }
+                        // Apply symmetry transformation
+                    }
+                } else {
+                    // Central symmetry logic
+                    Cursor currentCursor = cursorManager.getCurrentCursor();
+                    Cursor mirroredCursor =  new Cursor(currentCursor.getPosition(),currentCursor.getAngle(), currentCursor.getColor(),currentCursor.getWidth(), currentCursor.getOpacity(),currentCursor.getId()*31,scene);
+
+                    cursorManager.addCursor(mirroredCursor);
+
+                    for (Instruction instruction : instructions) {
+                        if (instruction.isValid()) {
+                            instruction.execute();
+                        }
+                        mirroredCursor.setPosition(new Point(
+                                2 * x1 - currentCursor.getPosition().getX(),
+                                2 * y1 - currentCursor.getPosition().getY()
+                        ));
+                    }
+
+                    cursorManager.removeCursor(mirroredCursor.getId());
+                }
+                break;
+
+            default:
+                throw new UnsupportedOperationException("Unknown block instruction type: " + type);
+        }
+    }
+
     public boolean isValid() {
         switch (type) {
             case "IF":
