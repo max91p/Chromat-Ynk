@@ -311,52 +311,69 @@ public class InstructionsBlock extends Instruction {
         return points;
     }
 
-    public boolean isValid() {
-        switch (type) {
-            case "IF":
-                if( condition instanceof BooleanSupplier && instructions != null){
+    public boolean isValid() throws ErrorLogger {
+        try {
+            switch (type) {
+                case "IF":
+                    if (condition instanceof BooleanSupplier && instructions != null){
+                        return true;
+                    } else {
+                        throw new ErrorLogger("condition needs to be a BooleanSupplier type and instructions cannot be null");
+                    }
+                    break;
+
+                case "FOR":
+                    if( parameters.length >= 2 && parameters[0] instanceof String && parameters[1] instanceof Integer
+                            && (parameters.length < 3 || parameters[2] instanceof Integer)
+                            && (parameters.length < 4 || parameters[3] instanceof Integer)
+                            && instructions != null){
+                        return true;
+                    }
+
+                case "WHILE":
+                    if (condition instanceof BooleanSupplier && instructions != null){
+                        return true;
+                    } else {
+                        throw new ErrorLogger("condition needs to be a BooleanSupplier type and instructions cannot be null");
+                    }
+                    break;
+
+                case "MIMIC":
+                    if (parameters instanceof Integer && instructions != null){
                     return true;
+                    } else {
+                    throw new ErrorLogger("condition needs to be an Integer type and instructions cannot be null");
                 }
+                break;
 
-            case "FOR":
-                if( parameters.length >= 2 && parameters[0] instanceof String && parameters[1] instanceof Integer
-                        && (parameters.length < 3 || parameters[2] instanceof Integer)
-                        && (parameters.length < 4 || parameters[3] instanceof Integer)
-                        && instructions != null){
-                    return true;
-                }
-
-            case "WHILE":
-                if( condition instanceof BooleanSupplier && instructions != null){
-                    return true;
-                }
-
-            case "MIMIC":
-                if parameters instanceof Integer && instructions != null){
-                    return true;
-            }
-
-            case "MIRROR":
-                if (parameters instanceof String) {
-                    String params = (String) parameters;
-                    String[] points = params.split("\\),\\(");
-                    if (points.length == 1 || points.length == 2) {
-                        for (String point : points) {
-                            try {
-                                parsePoint(point);
-                            } catch (Exception e) {
-                                return false;
+                case "MIRROR":
+                    if (parameters instanceof String) {
+                        String params = (String) parameters;
+                        String[] points = params.split("\\),\\(");
+                        if (points.length == 1 || points.length == 2) {
+                            for (String point : points) {
+                                try {
+                                    parsePoint(point);
+                                } catch (Exception e) {
+                                    return false;
+                                }
+                            }
+                            if( instructions != null){
+                                return true;
                             }
                         }
-                        if( instructions != null){
-                            return true;
-                        }
                     }
-                }
-                return false;
+                    return false;
 
-            default:
-                return false;
+                default:
+                    return false;
+            }
+        }
+        catch (ErrorLogger e){
+            throw e;
+        }
+        catch (Exception e){
+            throw new ErrorLogger("Error during execution of the instruction :" + type , e);
         }
     }
 }
