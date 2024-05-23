@@ -1,6 +1,7 @@
 package com.example;
 
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -53,7 +54,7 @@ public class DrawingCanvas{
         this.newPosition=null;
     }
 
-    void drawLine(double width,double opacity, ColorOfLine color){
+    void drawLine(Cursor cursor, double width,double opacity, ColorOfLine color){
         //Set the point where the line will start
         MoveTo moveTo=new MoveTo(oldPosition.getX(), oldPosition.getY());
         //Creation and addition of the initial point to the path
@@ -71,14 +72,12 @@ public class DrawingCanvas{
         //Creation of the group that contain the path
         Group root = new Group();
         //Take the last element added to the scene and delete it (delete the cursor as it is always the last element added to the scene)
+        cursor.removeCursorWithId();
+        drawCursor(cursor);
         Group rootf=(Group)scene.getRoot();
-        int lastIndex = rootf.getChildren().size() - 1;
-        if (lastIndex >= 0) {
-            rootf.getChildren().remove(lastIndex);
-        }
-        root.getChildren().addAll(scene.getRoot(),path);
+        rootf.getChildren().add(path);
         //Adding the root to the scene
-        scene.setRoot(root);
+        scene.setRoot(rootf);
     }
 
     void drawCursor(Cursor cursor){
@@ -88,13 +87,14 @@ public class DrawingCanvas{
                 cursor.getPosition().getX() + 10 * Math.cos(Math.toRadians(cursor.getAngle() - 150)), cursor.getPosition().getY() + 10 * Math.sin(Math.toRadians(cursor.getAngle() - 150)),
                 cursor.getPosition().getX() + 10 * Math.cos(Math.toRadians(cursor.getAngle() + 150)), cursor.getPosition().getY() + 10 * Math.sin(Math.toRadians(cursor.getAngle() + 150))
         );
+        cursorTriangle.setId(Integer.toString(cursor.getId()));
         //Set the color of the cursor
         cursorTriangle.setFill(Color.RED);
-        Group root = new Group();
         //Adding the cursor to the root
-        root.getChildren().addAll(scene.getRoot(),cursorTriangle);
+        Group roots = (Group)scene.getRoot();
+        roots.getChildren().add(cursorTriangle);
         //Adding the root to the scene
-        scene.setRoot(root);
+        scene.setRoot(roots);
     }
 
     void drawPosCursor(Cursor cursor){

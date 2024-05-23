@@ -35,6 +35,13 @@ public class SimpleInstruction extends Instruction {
         this.scene=scene;
     }
 
+    public SimpleInstruction(String type, Object parameters, CursorManager cursors,Scene scene) {
+        this.type = type;
+        this.parameters = parameters;
+        this.cursors = cursors;
+        this.scene=scene;
+    }
+
     /**
      * Constructs a new SimpleInstruction with the specified type and parameters.
      *

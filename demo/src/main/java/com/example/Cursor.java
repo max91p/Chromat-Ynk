@@ -1,10 +1,14 @@
 package com.example;
 
+import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Cursor {
@@ -118,7 +122,7 @@ public class Cursor {
         position.setY(position.getY() + distance * Math.sin(Math.toRadians(angle)));
         //Create a drawing canva to draw the line
         DrawingCanvas draw = new DrawingCanvas(this.scene, oldPosition,this.getPosition());
-        draw.drawLine(this.getWidth(),this.getOpacity(),this.getColor());
+        draw.drawLine(this,this.getWidth(),this.getOpacity(),this.getColor());
         draw.drawCursor(this);
     }
     public void moveBackward(double distance) {
@@ -128,7 +132,7 @@ public class Cursor {
         position.setY(position.getY() - distance * Math.sin(Math.toRadians(angle)));
         //Create a drawing canva to draw the line
         DrawingCanvas draw = new DrawingCanvas(this.scene, oldPosition,this.getPosition());
-        draw.drawLine(this.getWidth(),this.getOpacity(),this.getColor());
+        draw.drawLine(this,this.getWidth(),this.getOpacity(),this.getColor());
         draw.drawCursor(this);
     }
 
@@ -137,7 +141,7 @@ public class Cursor {
         Point move = new Point(position.getX()+x, position.getY()+y);
         DrawingCanvas draw = new DrawingCanvas(this.scene,position,move);
         this.setPosition(move);
-        draw.drawLine(this.getWidth(),this.getOpacity(),this.getColor());
+        draw.drawLine(this,this.getWidth(),this.getOpacity(),this.getColor());
         draw.drawCursor(this);
     }
 
@@ -198,18 +202,52 @@ public class Cursor {
     public void setId(int id) {
         this.id = id;
     }
+
+    public void removeCursorWithId() {
+        String idToRemove = Integer.toString(this.getId());
+        Parent root = this.scene.getRoot();
+
+        // Vérifiez si la racine peut être castée en Group ou Pane
+        if (root instanceof Group) {
+            Group groupRoot = (Group) root;
+            ObservableList<Node> children = groupRoot.getChildren();
+
+            // Utilisez un itérateur pour éviter les problèmes de modification de la liste
+            for (Iterator<Node> iterator = children.iterator(); iterator.hasNext();) {
+                Node child = iterator.next();
+                if (idToRemove.equals(child.getId())) {
+                    iterator.remove();
+                }
+            }
+
+        } else if (root instanceof Pane) {
+            Pane paneRoot = (Pane) root;
+            ObservableList<Node> children = paneRoot.getChildren();
+
+            // Utilisez un itérateur pour éviter les problèmes de modification de la liste
+            for (Iterator<Node> iterator = children.iterator(); iterator.hasNext();) {
+                Node child = iterator.next();
+                if (idToRemove.equals(child.getId())) {
+                    iterator.remove();
+                }
+            }
+        } else {
+            throw new IllegalArgumentException("Unsupported root type: " + root.getClass().getName());
+        }
+
+        // Pas besoin de réaffecter la racine, elle est déjà mise à jour
+        System.out.println(root+"root reaffecter");
+    }
+
     public void setVisible (boolean visible) {
         this.visible = visible;
         if (this.visible){
             DrawingCanvas draw = new DrawingCanvas(this.scene,position);
             draw.drawCursor(this);
+            Group root = (Group)scene.getRoot();
         }
         else{
-            Group rootf=(Group)scene.getRoot();
-            int lastIndex = rootf.getChildren().size() - 1;
-            if (lastIndex >= 0) {
-                rootf.getChildren().remove(lastIndex);
-            }
+            this.removeCursorWithId();
         }
     }
 

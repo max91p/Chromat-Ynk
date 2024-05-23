@@ -36,7 +36,7 @@ public class Dessin extends Application {
         cursor.setOpacity(0.7);
         cursor.setAngle(55);
         cursor.setScene(scene);
-        cursor.moveForward(300);
+       // cursor.moveForward(300);
         cursor.setColor(red);
         cursor.setWidth(40);
         cursor.setOpacity(0.2);
@@ -47,7 +47,7 @@ public class Dessin extends Application {
         cursor.setWidth(5);
         cursor.setOpacity(0.7);
         cursor.setAngle(180);
-        cursor.moveForward(300);
+       // cursor.moveForward(300);
         cursor.setColor(red);
         cursor.setWidth(40);
         cursor.setOpacity(0.2);

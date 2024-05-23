@@ -6,6 +6,7 @@ import java.util.List;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.shape.Polygon;
 
 public class CursorManager {
     private List<Cursor> cursors;
@@ -30,6 +31,9 @@ public class CursorManager {
         if (!isCursorIdExists(id)) {
             Cursor newCursor = new Cursor(new Point(50,50),id,scene);
             cursors.add(newCursor);
+            DrawingCanvas draw = new DrawingCanvas(scene);
+            draw.drawCursor(newCursor);
+            Group root = (Group)scene.getRoot();
         } else {
             throw new IllegalArgumentException("L'identifiant existe déjà!");
         }
@@ -38,6 +42,7 @@ public class CursorManager {
     public void addCursor(Cursor cursor) {
         if (!isCursorIdExists(cursor.getId()) && cursor!=null) {
             cursors.add(cursor);
+
         } else {
             throw new IllegalArgumentException("L'identifiant existe déjà!");
         }
@@ -47,6 +52,8 @@ public class CursorManager {
         for (Cursor cursor : cursors) {
             if (cursor.getId() == id) {
                 currentCursor = cursor;
+                Group root = (Group)scene.getRoot();
+                System.out.println(root.getChildren());
                 return;
             }
         }
