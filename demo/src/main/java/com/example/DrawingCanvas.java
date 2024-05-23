@@ -98,11 +98,7 @@ public class DrawingCanvas{
     }
 
     void drawPosCursor(Cursor cursor){
-        Group rootf=(Group)scene.getRoot();
-        int lastIndex = rootf.getChildren().size() - 1;
-        if (lastIndex >= 0) {
-            rootf.getChildren().remove(lastIndex);
-        }
+        cursor.removeCursorWithId();
         this.drawCursor(cursor);
     }
 

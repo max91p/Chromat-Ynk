@@ -5,6 +5,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.Group;
 
+import java.nio.channels.Pipe;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -132,7 +133,6 @@ public class SimpleInstruction extends Instruction {
                     }
                 }
 
-                cursors.getCurrentCursor().setOpacity((Double)resolvedParameter);
                 break;
             case "COLOR":
                 String valueString = (String)resolvedParameter;
@@ -457,15 +457,15 @@ public class SimpleInstruction extends Instruction {
                 case "PRESS":
                     if (resolvedParameter instanceof Double || resolvedParameter instanceof String) {
                         if (resolvedParameter instanceof Double) {
-                            Double value = (Double) resolvedParameter;
-                            if (value >= 0 && value <= 1) {
+                            double value = (Double)resolvedParameter;
+                            if (value >= 0.0 && value <= 1.0) {
                                 res = true;
                             } else {
                                 throw new ErrorLogger("parameter needs to be between 0 and 1");
                             }
                         }
-                        if (resolvedParameter instanceof String) {
-                            String value = (String) resolvedParameter;
+                        else if (resolvedParameter instanceof String) {
+                            String value = (String)resolvedParameter;
                             // Vérification si la valeur correspond au format numérique avec un % à la fin
                             Pattern pattern = Pattern.compile("^\\d+(\\.\\d+)?%$");
                             Matcher matcher = pattern.matcher(value);

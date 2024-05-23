@@ -34,6 +34,12 @@ public class VariableInstruction extends Instruction{
     }
 
     @Override
+    public void mirrorExecute(boolean Axial, Object parameter) throws ErrorLogger {
+
+    }
+
+
+    @Override
     public boolean isValid() throws ErrorLogger {
         boolean res=false;
         switch (type){

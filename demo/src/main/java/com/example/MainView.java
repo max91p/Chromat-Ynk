@@ -76,9 +76,8 @@ public class MainView extends VBox {
             // Afficher le texte et la valeur
             test.setText("Texte : " + texte + " Valeur : " + valeur);
             VariableContext variable = new VariableContext();
-            variable.setVariable(texte,valeur);
 
-            SimpleInstruction test1 = new SimpleInstruction(texte,valeur,cursorManager,cursorManager.getCursor(10).getScene());
+            SimpleInstruction test1 = new SimpleInstruction(texte,valeur,cursorManager,variable,cursorManager.getScene());
             test1.isValid();
             test1.execute();
             System.out.println(test1.isValid());

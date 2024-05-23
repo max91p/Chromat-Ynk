@@ -257,4 +257,16 @@ public class Cursor {
     public String toString() {
         return "Le curseur "+ id +" est à la position " + position + " et est orienté à " + angle + " degrés";
     }
+    public void deconstructor(){
+        this.position = new Point();
+        this.angle = 0;
+        this.color = new ColorOfLine(0,0,0);
+        this.width = 1;
+        this.opacity= 1;
+        this.id = id;
+        this.scene=scene;
+        this.visible = true;
+    }
 }
+
+

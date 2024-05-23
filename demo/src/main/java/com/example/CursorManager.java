@@ -54,7 +54,6 @@ public class CursorManager {
                 currentCursor = cursor;
                 Group root = (Group)scene.getRoot();
                 System.out.println(root.getChildren());
-                return;
             }
         }
         // Gérer l'erreur : aucun curseur avec cet identifiant n'existe
@@ -75,9 +74,8 @@ public class CursorManager {
         for (Cursor cursor : cursors) {
             if (cursor.getId() == id) {
                 cursors.remove(cursor);
-                Group root = new Group(scene.getRoot());
-                root.getChildren().remove(cursor);
-                scene.setRoot(root);
+                cursor.removeCursorWithId();
+                cursor.deconstructor();
                 break;
             }
         }
