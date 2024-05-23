@@ -8,37 +8,119 @@ import javafx.scene.Scene;
 public class InstructionsBlock extends Instruction {
     private String type;
     private List<Instruction> instructions;
-    private Object condition;
-    private Object parameters;
+    private String argument;
     private CursorManager cursorManager;
     private VariableContext variableContext;
     private Scene scene;
 
-    public InstructionsBlock(String type, Object condition, List<Instruction> instructions, CursorManager cursorManager, VariableContext variableContext, Scene scene) {
+    public InstructionsBlock(String type, String argument, List<Instruction> instructions, CursorManager cursorManager, VariableContext variableContext, Scene scene) {
         this.type = type;
-        this.condition = condition;
+        this.argument = argument;
         this.instructions = instructions;
         this.cursorManager = cursorManager;
         this.variableContext = variableContext;
         this.scene = scene;
-        this.parameters = null;
     }
 
-    public InstructionsBlock(String type, List<Instruction> instructions, CursorManager cursorManager, VariableContext variableContext, Scene scene, Object parameters) {
-        this.type = type;
-        this.condition = null;
-        this.instructions = instructions;
-        this.cursorManager = cursorManager;
-        this.variableContext = variableContext;
-        this.scene = scene;
-        this.parameters = parameters;
+    private boolean evaluateComparison(String condition){
+        condition=condition.trim();
+
+
+
+        String[] operators={"==","<=",">=","<",">","!="};
+        for (String operator : operators){
+            int position = condition.indexOf(operator);
+            if(position != -1){
+                String leftPart = condition.substring(0,position).trim();
+                String rightPart = condition.substring(position+operator.length()).trim();
+                return evaluateBooleanExpression(leftPart,rightPart,operator);
+            }
+        }
+
+        if(condition=="true" || (Boolean)resolvedParameter(condition)==true){
+            return true;
+        } else if (condition=="false" || (Boolean)resolvedParameter(condition)==false) {
+            return false;
+        }
+
+        if(condition.startsWith("!")){
+            String expression= condition.substring(1).trim();
+            if(expression=="true" || (Boolean)resolvedParameter(expression)==true){
+                return false;
+            } else if (expression=="false" || (Boolean)resolvedParameter(expression)==false) {
+                return true;
+            }
+        }
+        throw new IllegalArgumentException("Condition :"+ condition + "unsupported");
+    }
+
+    private boolean evaluateBooleanExpression(String leftPart, String rightPart,String operator){
+        Object leftOperand=resolvedParameter(leftPart);
+        Object rightOperand= resolvedParameter(rightPart);
+        switch (operator){
+            case "==":
+                return leftPart.equals(rightPart);
+            case "!=":
+                return !leftPart.equals(rightPart);
+            case "<":
+                return compareTo(leftOperand,rightOperand)<0;
+            case ">":
+                return compareTo(leftOperand,rightOperand)>0;
+            case "<=":
+                return compareTo(leftOperand,rightOperand)<=0;
+            case ">=":
+                return compareTo(leftOperand,rightOperand)>=0;
+            default:
+                throw new IllegalArgumentException("Operator"+ operator + "unsupported");
+        }
+    }
+
+    private boolean evaluateLogicalExpression(String expression){
+        String[] parts = expression.split("\\|\\|");
+        if(parts.length>1){
+            for (String part : parts){
+                if(evaluateLogicalExpression(part.trim())){
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        parts = expression.split("&&");
+        if(parts.length>1){
+            for(String part : parts){
+                if(!evaluateLogicalExpression(part.trim())){
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        return evaluateComparison(expression);
+    }
+
+    private Object resolvedParameter(String parameter){
+        if(variableContext.containsVariable(parameter.trim())){
+            return variableContext.getVariable(parameter.trim());
+        }
+        return parameter;
+    }
+
+    private int compareTo(Object leftValue, Object rightValue){
+        if(leftValue instanceof Integer && rightValue instanceof Integer){
+            return Integer.compare((Integer)leftValue,(Integer)rightValue);
+        } else if (leftValue instanceof Double && rightValue instanceof Double) {
+            return Double.compare((Double)leftValue,(Double)rightValue);
+        } else{
+            throw new IllegalArgumentException("Comparison between different types is impossible");
+        }
     }
 
     @Override
     public void execute() throws ErrorLogger {
         switch (type) {
             case "IF":
-                if (((BooleanSupplier) condition).getAsBoolean()) {
+                if (evaluateLogicalExpression(argument)) {
                     for (Instruction instruction : instructions) {
                         if (instruction.isValid()) {
                             instruction.execute();
@@ -48,26 +130,41 @@ public class InstructionsBlock extends Instruction {
                 break;
 
             case "FOR":
-                List<Integer> loopParams = (List<Integer>) condition;
-                String variableName = "i";  // Assuming a default variable name
-                int from = loopParams.get(0);
-                int to = loopParams.get(1);
-                int step = loopParams.size() > 2 ? loopParams.get(2) : 1;
+                String[] parts= argument.split("\\s+");
+                String variableName=parts[0];
 
-                for (int i = from; i <= to; i += step) {
-                    variableContext.setVariable(variableName, i);
-                    for (Instruction instruction : instructions) {
-                        if (instruction.isValid()) {
+                int from=0;
+                int to;
+                int step=1;
+
+                if(parts.length == 5){
+                    // [FOR] name FROM v1 TO v2
+                    from=Integer.parseInt(parts[2]);
+                    to=Integer.parseInt(parts[4]);
+                } else if(parts.length==7){
+                    // [FOR] name FROM v1 TO v2 STEP v3
+                    from=Integer.parseInt(parts[2]);
+                    to=Integer.parseInt(parts[4]);
+                    step=Integer.parseInt(parts[6]);
+                } else if (parts.length==3) {
+                    //[FOR] name TO v1
+                    to=Integer.parseInt(parts[2]);
+                } else {
+                    throw new IllegalArgumentException("Invalid loop format");
+                }
+
+                for(int i = from; i<=to;i+=step){
+                    variableContext.setVariable(variableName,i);
+                    for(Instruction instruction : instructions){
+                        if (instruction.isValid()){
                             instruction.execute();
                         }
                     }
                 }
-                variableContext.removeVariable(variableName);
                 break;
 
             case "WHILE":
-                BooleanSupplier conditionSupplier = (BooleanSupplier) condition;
-                while (conditionSupplier.getAsBoolean()) {
+                while (evaluateLogicalExpression(argument)) {
                     for (Instruction instruction : instructions) {
                         if (instruction.isValid()) {
                             instruction.execute();
@@ -77,7 +174,7 @@ public class InstructionsBlock extends Instruction {
                 break;
 
             case "MIMIC":
-                int cursorID = (Integer) parameters;
+                int cursorID = Integer.parseInt(argument.trim());
                 int originalCursor = cursorManager.getCurrentCursor().getId();
 
                 cursorManager.selectCursor(cursorID);
@@ -94,7 +191,7 @@ public class InstructionsBlock extends Instruction {
                 break;
 
             case "MIRROR":
-                Point[] points = parsePoints((String) parameters);
+                Point[] points = parsePoints((String) argument);
                 Point pointA = points[0];
                 int currentCursorId = cursorManager.getCurrentCursor().getId();
 
@@ -118,7 +215,7 @@ public class InstructionsBlock extends Instruction {
                         if (instruction.isValid()) {
                             instruction.execute();
                             cursorManager.selectCursor(mirroredCursor.getId());
-                            instruction.mirrorExecute(true, parameters);
+                            instruction.mirrorExecute(true, argument);
                             cursorManager.selectCursor(currentCursorId);
                         }
                     }
@@ -140,7 +237,7 @@ public class InstructionsBlock extends Instruction {
                         if (instruction.isValid()) {
                             instruction.execute();
                             cursorManager.selectCursor(mirroredCursor.getId());
-                            instruction.mirrorExecute(false, parameters);
+                            instruction.mirrorExecute(false, argument);
                             cursorManager.selectCursor(currentCursorId);
                         }
                     }
@@ -156,54 +253,66 @@ public class InstructionsBlock extends Instruction {
     public void mirrorExecute(boolean Axial,Object parameter) throws ErrorLogger {
         switch (type) {
             case "IF":
-                if (((BooleanSupplier) condition).getAsBoolean()) {
+                if (evaluateLogicalExpression(argument)) {
                     for (Instruction instruction : instructions) {
                         if (instruction.isValid()) {
-                            instruction.mirrorExecute(Axial,parameter);
+                            instruction.mirrorExecute(Axial, parameter);
                         }
                     }
                 }
                 break;
 
             case "FOR":
-                List<Integer> loopParams = (List<Integer>) condition;
-                String variableName = "i";  // Assuming a default variable name
-                int from = loopParams.get(0);
-                int to = loopParams.get(1);
-                int step = loopParams.size() > 2 ? loopParams.get(2) : 1;
+                String[] parts = argument.split("\\s+");
+                String variableName = parts[0];
+
+                int from = 0;
+                int to;
+                int step = 1;
+
+                if (parts.length == 5) {
+                    from = Integer.parseInt(parts[2]);
+                    to = Integer.parseInt(parts[4]);
+                } else if (parts.length == 7) {
+                    from = Integer.parseInt(parts[2]);
+                    to = Integer.parseInt(parts[4]);
+                    step = Integer.parseInt(parts[6]);
+                } else if (parts.length == 3) {
+                    to = Integer.parseInt(parts[2]);
+                } else {
+                    throw new IllegalArgumentException("Invalid loop format");
+                }
 
                 for (int i = from; i <= to; i += step) {
                     variableContext.setVariable(variableName, i);
                     for (Instruction instruction : instructions) {
                         if (instruction.isValid()) {
-                            instruction.mirrorExecute(Axial,parameter);
+                            instruction.mirrorExecute(Axial, parameter);
                         }
                     }
                 }
-                variableContext.removeVariable(variableName);
                 break;
 
             case "WHILE":
-                BooleanSupplier conditionSupplier = (BooleanSupplier) condition;
-                while (conditionSupplier.getAsBoolean()) {
+                while (evaluateLogicalExpression(argument)) {
                     for (Instruction instruction : instructions) {
                         if (instruction.isValid()) {
-                            instruction.mirrorExecute(Axial,parameter);
+                            instruction.mirrorExecute(Axial, parameter);
                         }
                     }
                 }
                 break;
 
             case "MIMIC":
-                int cursorID = (Integer) parameters;
+                int cursorID = Integer.parseInt(argument.trim());
                 int originalCursor = cursorManager.getCurrentCursor().getId();
 
                 cursorManager.selectCursor(cursorID);
                 for (Instruction instruction : instructions) {
                     if (instruction.isValid()) {
-                        instruction.mirrorExecute(Axial,parameter);
+                        instruction.mirrorExecute(Axial, parameter);
                         cursorManager.selectCursor(originalCursor);
-                        instruction.mirrorExecute(Axial,parameter);
+                        instruction.mirrorExecute(Axial, parameter);
                         cursorManager.selectCursor(cursorID);
                     }
                 }
@@ -211,7 +320,7 @@ public class InstructionsBlock extends Instruction {
                 cursorManager.selectCursor(originalCursor);
                 break;
             case "MIRROR":
-                Point[] points = parsePoints((String) parameters);
+                Point[] points = parsePoints((String) argument);
                 Point pointA = points[0];
                 int currentCursorId = cursorManager.getCurrentCursor().getId();
 
@@ -235,7 +344,7 @@ public class InstructionsBlock extends Instruction {
                         if (instruction.isValid()) {
                             instruction.execute();
                             cursorManager.selectCursor(mirroredCursor.getId());
-                            instruction.mirrorExecute(true, parameters);
+                            instruction.mirrorExecute(true, argument);
                             cursorManager.selectCursor(currentCursorId);
                         }
                     }
@@ -257,7 +366,7 @@ public class InstructionsBlock extends Instruction {
                         if (instruction.isValid()) {
                             instruction.execute();
                             cursorManager.selectCursor(mirroredCursor.getId());
-                            instruction.mirrorExecute(false, parameters);
+                            instruction.mirrorExecute(false, argument);
                             cursorManager.selectCursor(currentCursorId);
                         }
                     }
@@ -315,45 +424,52 @@ public class InstructionsBlock extends Instruction {
         try {
             switch (type) {
                 case "IF":
-                    if (condition instanceof BooleanSupplier && instructions != null){
+                    if (argument != null && instructions != null){
                         return true;
                     } else {
                         throw new ErrorLogger("condition needs to be a BooleanSupplier type and instructions cannot be null");
                     }
-                    break;
 
                 case "FOR":
-                    if( parameters.length >= 2 && parameters[0] instanceof String && parameters[1] instanceof Integer
-                            && (parameters.length < 3 || parameters[2] instanceof Integer)
-                            && (parameters.length < 4 || parameters[3] instanceof Integer)
-                            && instructions != null){
-                        return true;
+                    String[] parts = argument.split("\\s+");
+                    if (parts.length == 3 || parts.length == 5 || parts.length == 7) {
+                        for (int i = 1; i < parts.length; i += 2) {
+                            try {
+                                Integer.parseInt(parts[i]);
+                            } catch (NumberFormatException e) {
+                                throw new ErrorLogger("Invalid FOR block: FROM, TO, and STEP must be integers.");
+                            }
+                        }
+                        if (instructions != null) {
+                            return true;
+                        } else {
+                            throw new ErrorLogger("Invalid FOR block: instructions cannot be null.");
+                        }
+                    } else {
+                        throw new ErrorLogger("Invalid FOR block: incorrect number of arguments.");
                     }
 
+
                 case "WHILE":
-                    if (condition instanceof BooleanSupplier && instructions != null){
+                    if (argument != null && instructions != null){
                         return true;
                     } else {
                         throw new ErrorLogger("condition needs to be a BooleanSupplier type and instructions cannot be null");
                     }
-                    break;
 
                 case "MIMIC":
-                    if (parameters instanceof Integer && instructions != null){
+                    if (argument != null && instructions != null){
                     return true;
                     } else {
                     throw new ErrorLogger("condition needs to be an Integer type and instructions cannot be null");
                 }
-                break;
 
                 case "MIRROR":
-                    if (parameters instanceof String) {
-                        String params = (String) parameters;
-                        String[] points = params.split("\\),\\(");
-                        if (points.length == 1 || points.length == 2) {
-                            for (String point : points) {
-                                try {
-                                    parsePoint(point);
+                    String[] points = argument.split("\\),\\(");
+                    if (points.length == 1 || points.length == 2) {
+                        for (String point : points) {
+                            try {
+                                parsePoint(point);
                                 } catch (Exception e) {
                                     return false;
                                 }
@@ -362,7 +478,6 @@ public class InstructionsBlock extends Instruction {
                                 return true;
                             }
                         }
-                    }
                     return false;
 
                 default:
