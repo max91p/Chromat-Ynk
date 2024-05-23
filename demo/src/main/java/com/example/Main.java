@@ -37,7 +37,7 @@ public class Main extends Application {
         CursorManager cursorManager=new CursorManager(scene2);
         cursorManager.addCursor(c1);
         cursorManager.selectCursor(10);
-        MainView view = new MainView(10,new TextArea(),new Button("Submit"),new Text(),cursorManager);
+        MainView view = new MainView(10,new TextArea(),new Button("Submit"), new Button("Save"),new Text(),cursorManager);
 
         Pane container = new Pane();
         container.getChildren().add(view);

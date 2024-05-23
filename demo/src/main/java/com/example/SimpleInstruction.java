@@ -534,7 +534,10 @@ public class SimpleInstruction extends Instruction {
             throw e;
         }
         catch (Exception e){
-            throw new ErrorLogger("Error during execution of the instruction :" + type , e);
+            if (e.getStackTrace().length > 0) {
+                System.out.println(e.getStackTrace()[0]);
+            }
         }
+        return res;
     }
 }

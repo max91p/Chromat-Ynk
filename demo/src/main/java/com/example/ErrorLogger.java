@@ -15,4 +15,9 @@ public class ErrorLogger extends Exception{
     public ErrorLogger(String message, Throwable cause){
         super(message, cause);
     }
+
+    @Override
+    public String toString() {
+        return getMessage();
+    }
 }
