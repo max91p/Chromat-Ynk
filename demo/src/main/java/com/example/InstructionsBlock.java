@@ -1,5 +1,6 @@
 package com.example;
 
+import java.security.KeyStore;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import javafx.scene.Scene;
@@ -8,7 +9,7 @@ public class InstructionsBlock extends Instruction {
     private String type;
     private List<Instruction> instructions;
     private Object condition;
-    private Object[] parameters;
+    private Object parameters;
     private CursorManager cursorManager;
     private VariableContext variableContext;
     private Scene scene;
@@ -23,7 +24,7 @@ public class InstructionsBlock extends Instruction {
         this.parameters = null;
     }
 
-    public InstructionsBlock(String type, List<Instruction> instructions, CursorManager cursorManager, VariableContext variableContext, Scene scene, Object... parameters) {
+    public InstructionsBlock(String type, List<Instruction> instructions, CursorManager cursorManager, VariableContext variableContext, Scene scene, Object parameters) {
         this.type = type;
         this.condition = null;
         this.instructions = instructions;
@@ -76,7 +77,7 @@ public class InstructionsBlock extends Instruction {
                 break;
 
             case "MIMIC":
-                int cursorID = (Integer) parameters[0];
+                int cursorID = (Integer) parameters;
                 int originalCursor = cursorManager.getCurrentCursor().getId();
 
                 cursorManager.selectCursor(cursorID);
@@ -93,36 +94,56 @@ public class InstructionsBlock extends Instruction {
                 break;
 
             case "MIRROR":
-                double x1 = (Double) parameters[0];
-                double y1 = (Double) parameters[1];
-                if (parameters.length > 2) {
-                    double x2 = (Double) parameters[2];
-                    double y2 = (Double) parameters[3];
+                Point[] points = parsePoints((String) parameters);
+                Point pointA = points[0];
+                int currentCursorId = cursorManager.getCurrentCursor().getId();
+
+                if (points.length > 1) {
+                    Point pointB = points[1];
+
+                    Cursor currentCursor = cursorManager.getCurrentCursor();
+                    Cursor mirroredCursor = new Cursor(
+                            axialSymmetry(currentCursor.getPosition(), pointA, pointB),
+                            currentCursor.getAngle() + 180, // Angle adapted to +180
+                            currentCursor.getColor(),
+                            currentCursor.getWidth(),
+                            currentCursor.getOpacity(),
+                            currentCursor.getId() * 31,
+                            scene
+                    );
+                    cursorManager.addCursor(mirroredCursor);
+
                     // Axial symmetry logic
                     for (Instruction instruction : instructions) {
                         if (instruction.isValid()) {
                             instruction.execute();
+                            cursorManager.selectCursor(mirroredCursor.getId());
+                            instruction.mirrorExecute(true, parameters);
+                            cursorManager.selectCursor(currentCursorId);
                         }
-                        // Apply symmetry transformation
                     }
                 } else {
-                    // Central symmetry logic
                     Cursor currentCursor = cursorManager.getCurrentCursor();
-                    Cursor mirroredCursor =  new Cursor(currentCursor.getPosition(),currentCursor.getAngle(), currentCursor.getColor(),currentCursor.getWidth(), currentCursor.getOpacity(),currentCursor.getId()*31,scene);
-
+                    Cursor mirroredCursor = new Cursor(
+                            centralSymmetry(currentCursor.getPosition(), pointA),
+                            currentCursor.getAngle() + 180, // Angle adapted to +180
+                            currentCursor.getColor(),
+                            currentCursor.getWidth(),
+                            currentCursor.getOpacity(),
+                            currentCursor.getId() * 31,
+                            scene
+                    );
                     cursorManager.addCursor(mirroredCursor);
 
+                    // Central symmetry logic
                     for (Instruction instruction : instructions) {
                         if (instruction.isValid()) {
                             instruction.execute();
+                            cursorManager.selectCursor(mirroredCursor.getId());
+                            instruction.mirrorExecute(false, parameters);
+                            cursorManager.selectCursor(currentCursorId);
                         }
-                        mirroredCursor.setPosition(new Point(
-                                2 * x1 - currentCursor.getPosition().getX(),
-                                2 * y1 - currentCursor.getPosition().getY()
-                        ));
                     }
-
-                    cursorManager.removeCursor(mirroredCursor.getId());
                 }
                 break;
 
@@ -174,7 +195,7 @@ public class InstructionsBlock extends Instruction {
                 break;
 
             case "MIMIC":
-                int cursorID = (Integer) parameters[0];
+                int cursorID = (Integer) parameters;
                 int originalCursor = cursorManager.getCurrentCursor().getId();
 
                 cursorManager.selectCursor(cursorID);
@@ -189,44 +210,105 @@ public class InstructionsBlock extends Instruction {
 
                 cursorManager.selectCursor(originalCursor);
                 break;
-
             case "MIRROR":
-                double x1 = (Double) parameters[0];
-                double y1 = (Double) parameters[1];
-                if (parameters.length > 2) {
-                    double x2 = (Double) parameters[2];
-                    double y2 = (Double) parameters[3];
+                Point[] points = parsePoints((String) parameters);
+                Point pointA = points[0];
+                int currentCursorId = cursorManager.getCurrentCursor().getId();
+
+                if (points.length > 1) {
+                    Point pointB = points[1];
+
+                    Cursor currentCursor = cursorManager.getCurrentCursor();
+                    Cursor mirroredCursor = new Cursor(
+                            axialSymmetry(currentCursor.getPosition(), pointA, pointB),
+                            currentCursor.getAngle() + 180, // Angle adapted to +180
+                            currentCursor.getColor(),
+                            currentCursor.getWidth(),
+                            currentCursor.getOpacity(),
+                            currentCursor.getId() * 31,
+                            scene
+                    );
+                    cursorManager.addCursor(mirroredCursor);
+
                     // Axial symmetry logic
                     for (Instruction instruction : instructions) {
                         if (instruction.isValid()) {
                             instruction.execute();
+                            cursorManager.selectCursor(mirroredCursor.getId());
+                            instruction.mirrorExecute(true, parameters);
+                            cursorManager.selectCursor(currentCursorId);
                         }
-                        // Apply symmetry transformation
                     }
                 } else {
-                    // Central symmetry logic
                     Cursor currentCursor = cursorManager.getCurrentCursor();
-                    Cursor mirroredCursor =  new Cursor(currentCursor.getPosition(),currentCursor.getAngle(), currentCursor.getColor(),currentCursor.getWidth(), currentCursor.getOpacity(),currentCursor.getId()*31,scene);
-
+                    Cursor mirroredCursor = new Cursor(
+                            centralSymmetry(currentCursor.getPosition(), pointA),
+                            currentCursor.getAngle() + 180, // Angle adapted to +180
+                            currentCursor.getColor(),
+                            currentCursor.getWidth(),
+                            currentCursor.getOpacity(),
+                            currentCursor.getId() * 31,
+                            scene
+                    );
                     cursorManager.addCursor(mirroredCursor);
 
+                    // Central symmetry logic
                     for (Instruction instruction : instructions) {
                         if (instruction.isValid()) {
                             instruction.execute();
+                            cursorManager.selectCursor(mirroredCursor.getId());
+                            instruction.mirrorExecute(false, parameters);
+                            cursorManager.selectCursor(currentCursorId);
                         }
-                        mirroredCursor.setPosition(new Point(
-                                2 * x1 - currentCursor.getPosition().getX(),
-                                2 * y1 - currentCursor.getPosition().getY()
-                        ));
                     }
-
-                    cursorManager.removeCursor(mirroredCursor.getId());
                 }
+
                 break;
 
             default:
                 throw new UnsupportedOperationException("Unknown block instruction type: " + type);
         }
+    }
+
+    public static Point axialSymmetry(Point p, Point a, Point b) {
+        double dx = b.getX() - a.getX();
+        double dy = b.getY() - a.getY();
+        double t = ((p.getX() - a.getX()) * dx + (p.getY() - a.getY()) * dy) / (dx * dx + dy * dy);
+        double x_p = a.getX() + t * dx;
+        double y_p = a.getY() + t * dy;
+        double x_s = 2 * x_p - p.getX();
+        double y_s = 2 * y_p - p.getY();
+        return new Point(x_s, y_s);
+    }
+
+    public static Point centralSymmetry(Point p, Point c) {
+        double x_s = 2 * c.getX() - p.getX();
+        double y_s = 2 * c.getY() - p.getY();
+        return new Point(x_s, y_s);
+    }
+
+    private Point parsePoint(String pointString) {
+        // Remove parentheses and trim any whitespace
+        pointString = pointString.replace("(", "").replace(")", "").trim();
+
+        // Split the string by comma to get the coordinates
+        String[] coordinates = pointString.split(",");
+        double x = Double.parseDouble(coordinates[0].trim());
+        double y = Double.parseDouble(coordinates[1].trim());
+
+        return new Point(x, y);
+    }
+
+    private Point[] parsePoints(String pointsString) {
+        // Remove parentheses and split by "),("
+        String[] pointStrings = pointsString.split("\\),\\(");
+
+        // Parse each point
+        Point[] points = new Point[pointStrings.length];
+        for (int i = 0; i < pointStrings.length; i++) {
+            points[i] = parsePoint(pointStrings[i]);
+        }
+        return points;
     }
 
     public boolean isValid() {
@@ -244,13 +326,24 @@ public class InstructionsBlock extends Instruction {
                 return condition instanceof BooleanSupplier && instructions != null;
 
             case "MIMIC":
-                return parameters.length == 1 && parameters[0] instanceof Integer && instructions != null;
+                return parameters instanceof Integer && instructions != null;
 
             case "MIRROR":
-                return (parameters.length == 2 || parameters.length == 4)
-                        && parameters[0] instanceof Double && parameters[1] instanceof Double
-                        && (parameters.length < 3 || (parameters[2] instanceof Double && parameters[3] instanceof Double))
-                        && instructions != null;
+                if (parameters instanceof String) {
+                    String params = (String) parameters;
+                    String[] points = params.split("\\),\\(");
+                    if (points.length == 1 || points.length == 2) {
+                        for (String point : points) {
+                            try {
+                                parsePoint(point);
+                            } catch (Exception e) {
+                                return false;
+                            }
+                        }
+                        return instructions != null;
+                    }
+                }
+                return false;
 
             default:
                 return false;
