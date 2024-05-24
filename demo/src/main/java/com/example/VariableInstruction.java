@@ -7,7 +7,7 @@ public class VariableInstruction extends Instruction{
     private Object value;
     private VariableContext variableContext;
 
-    public VariableInstruction(String type, String name, String value, VariableContext variableContext){
+    public VariableInstruction(String type, String name, Object value, VariableContext variableContext){
         this.type=type;
         this.name=name;
         this.value=value;
@@ -18,10 +18,11 @@ public class VariableInstruction extends Instruction{
     public void execute() throws ErrorLogger {
         switch (type){
             case "NUM":
-                variableContext.createNumericVariable(name,(Number) value);
+                variableContext.createNumericVariable(name,(Double) value);
                 break;
             case "STR":
                 variableContext.createStringVariable(name,(String) value);
+                System.out.println(value);
                 break;
             case "BOOL":
                 variableContext.createBooleanVariable(name,(Boolean) value);
@@ -59,6 +60,7 @@ public class VariableInstruction extends Instruction{
                 break;
             case "BOOL":
                 if (value == null || value instanceof Boolean) {
+                    System.out.println(value);
                     res = true;
                 } else {
                     throw new ErrorLogger("Variable value needs to be a Boolean for BOOL type");
