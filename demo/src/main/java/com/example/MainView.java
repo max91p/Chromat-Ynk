@@ -4,6 +4,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Date;
@@ -74,43 +76,68 @@ public class MainView extends VBox {
         return inputBox;
     }
 
+    public void processInstruction(Text test,CursorManager cursorManager,String line) throws ErrorLogger{
+
+            Pattern pattern = Pattern.compile("^(.*?)\\((.*?)\\)$");
+            Matcher matcherInstruction = pattern.matcher(line);
+
+            // Vérification de la correspondance et extraction du texte et de la valeur
+            if (matcherInstruction.matches()) {
+                String texte = matcherInstruction.group(1); // Texte entre les parenthèses
+                String valeurString = matcherInstruction.group(2); // Valeur entre les parenthèses
+
+                // Convertir la valeur en type Object
+                Object valeur = null;
+
+                // Vérifier le type de la valeur
+                if (isInteger(valeurString)) {
+                    valeur = Integer.parseInt(valeurString);
+                    if ((int) valeur < 0) {
+                        throw new ErrorLogger("La valeur doit être positive");
+                    }
+
+                } else if (isDouble(valeurString)) {
+                    valeur = Double.parseDouble(valeurString);
+                } else {
+                    valeur = valeurString;
+                }
+                // Afficher le texte et la valeur
+                test.setText("Texte : " + texte + " Valeur : " + valeur);
+                VariableContext variable = new VariableContext();
+
+                SimpleInstruction test1 = new SimpleInstruction(texte, valeur, cursorManager, variable, cursorManager.getScene());
+                test1.isValid();
+                test1.execute();
+                System.out.println(test1.isValid());
+            } else {
+                test.setText("Format invalide.");
+            }
+        }
+
     public void getText(TextArea text, Text test, CursorManager cursorManager) throws ErrorLogger {
         test.setText(text.getText());
-        Pattern pattern = Pattern.compile("^(.*?)\\((.*?)\\)$");
-        Matcher matcher = pattern.matcher(test.getText());
-
-        // Vérification de la correspondance et extraction du texte et de la valeur
-        if (matcher.matches()) {
-            String texte = matcher.group(1); // Texte entre les parenthèses
-            String valeurString = matcher.group(2); // Valeur entre les parenthèses
-
-            // Convertir la valeur en type Object
-            Object valeur = null;
-
-            // Vérifier le type de la valeur
-            if (isInteger(valeurString)) {
-                valeur = Integer.parseInt(valeurString);
-                if ((int) valeur < 0) {
-                    throw new ErrorLogger("La valeur doit être positive");
-                }
-
-            } else if (isDouble(valeurString)) {
-                valeur = Double.parseDouble(valeurString);
+        String textAll = test.getText();
+        textAll=textAll.replaceAll("[\n\r]", "");
+        if (textAll.contains(";")) {
+            if (textAll.contains("{") && textAll.contains("}")) {
+                //faire le bloc d'instruction
             } else {
-                valeur = valeurString;
-            }
-            // Afficher le texte et la valeur
-            test.setText("Texte : " + texte + " Valeur : " + valeur);
-            VariableContext variable = new VariableContext();
-
-            SimpleInstruction test1 = new SimpleInstruction(texte,valeur,cursorManager,variable,cursorManager.getScene());
-            test1.isValid();
-            test1.execute();
-            System.out.println(test1.isValid());
+                List<String> listInstruction = new ArrayList<>();
+                Pattern instruction = Pattern.compile("([^;]*);");
+                Matcher matcher = instruction.matcher(textAll);
+                while (matcher.find()) {
+                    listInstruction.add(matcher.group(1));
+                }
+                for (String line : listInstruction) {
+                    processInstruction(test, cursorManager, line);
+                }
+                }
         } else {
-            test.setText("Format invalide.");
+            processInstruction(test,cursorManager,textAll);
         }
     }
+
+
 
     private static boolean isInteger(String s) {
         try {
