@@ -194,7 +194,6 @@ public class MainView extends VBox {
                 } else {
                     processVariable(test, textAll, variable);
                 }
-                break;
             }
         }
     }
