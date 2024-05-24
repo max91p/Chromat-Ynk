@@ -35,7 +35,7 @@ public class VariableContext {
         return null;
     }
 
-    public void createNumericVariable(String name,Double value){
+    public void createNumericVariable(String name,Number value){
         if(value==null){
             value=0.0;
         }

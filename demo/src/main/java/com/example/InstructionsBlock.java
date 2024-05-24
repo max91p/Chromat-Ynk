@@ -465,13 +465,6 @@ public class InstructionsBlock extends Instruction {
                 case "FOR":
                     String[] parts = argument.split("\\s+");
                     if (parts.length == 3 || parts.length == 5 || parts.length == 7) {
-                        for (int i = 1; i < parts.length; i += 2) {
-                            try {
-                                Integer.parseInt(parts[i]);
-                            } catch (NumberFormatException e) {
-                                throw new ErrorLogger("Invalid FOR block: FROM, TO, and STEP must be integers.");
-                            }
-                        }
                         if (instructions != null) {
                             return true;
                         } else {

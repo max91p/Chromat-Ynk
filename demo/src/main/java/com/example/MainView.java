@@ -4,12 +4,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.Date;
 
 import javax.imageio.ImageIO;
 import javax.sound.midi.Soundbank;
@@ -79,122 +76,151 @@ public class MainView extends VBox {
         return inputBox;
     }
 
-    public void processInstruction(Text test, CursorManager cursorManager, String line, VariableContext variable) throws ErrorLogger {
-
-        Pattern pattern = Pattern.compile("^(.*?)\\((.*?)\\)$");
-        Matcher matcherInstruction = pattern.matcher(line);
-
-        // Vérification de la correspondance et extraction du texte et de la valeur
-        if (matcherInstruction.matches()) {
-            String texte = matcherInstruction.group(1); // Texte entre les parenthèses
-            String valeurString = matcherInstruction.group(2); // Valeur entre les parenthèses
-
-            // Convertir la valeur en type Object
-            Object valeur = null;
-
-            // Vérifier le type de la valeur
-            if (isInteger(valeurString)) {
-                valeur = Integer.parseInt(valeurString);
-                if ((int) valeur < 0) {
-                    throw new ErrorLogger("La valeur doit être positive");
-                }
-
-            } else if (isDouble(valeurString)) {
-                valeur = Double.parseDouble(valeurString);
-            } else {
-                valeur = valeurString;
-            }
-            // Afficher le texte et la valeur
-            test.setText("Texte : " + texte + " Valeur : " + valeur);
-
-            SimpleInstruction test1 = new SimpleInstruction(texte, valeur, cursorManager, variable, cursorManager.getScene());
-            test1.isValid();
-            test1.execute();
-            System.out.println(test1.isValid());
-        } else {
-            test.setText("Format invalide.");
-        }
-    }
-
-    public void processVariable(Text text, String line, VariableContext variable) throws ErrorLogger {
-        Pattern pattern = Pattern.compile("^(\\w+)\\s+(.+)$");
-        Matcher matcherVariable = pattern.matcher(line);
-        if (matcherVariable.matches()) {
-            String type = matcherVariable.group(1);
-            String argument = matcherVariable.group(2);
-            if (argument.contains("=")) {
-                int operator = argument.indexOf("=");
-                String name = argument.substring(0, operator).trim();
-                String value = argument.substring(operator + 1).trim();
-                // Convertir la valeur en type Object
-                Object valeur = null;
-
-                // Vérifier le type de la valeur
-                if (isInteger(value)) {
-                    valeur = Integer.parseInt(value);
-                    if ((int) valeur < 0) {
-                        throw new ErrorLogger("La valeur doit être positive");
-                    }
-
-                } else if (isDouble(value)) {
-                    valeur = Double.parseDouble(value);
-                } else if (isBoolean(value)) {
-                    if (value.equals("true")){
-                        valeur = true;
-                    }
-                    else {
-                        valeur=false;
-                    }
-                } else {
-                    valeur = value;
-                }
-                VariableInstruction variableInstruction = new VariableInstruction(type, name, valeur, variable);
-                variableInstruction.isValid();
-                variableInstruction.execute();
-            } else {
-                VariableInstruction variableInstructionNull = new VariableInstruction(type, argument, null, variable);
-                variableInstructionNull.isValid();
-                variableInstructionNull.execute();
-            }
-        }
-    }
-
     public void getText(TextArea text, Text test, CursorManager cursorManager, VariableContext variable) throws ErrorLogger {
         test.setText(text.getText());
         String textAll = test.getText();
         textAll = textAll.replaceAll("[\n\r]", "");
-        if (textAll.contains(";")) {
-            if (textAll.contains("{") && textAll.contains("}")) {
-                //faire le bloc d'instruction
-            } else {
-                List<String> listInstruction = new ArrayList<>();
-                Pattern instruction = Pattern.compile("([^;]*);");
-                Matcher matcher = instruction.matcher(textAll);
-                while (matcher.find()) {
-                    listInstruction.add(matcher.group(1));
+        processInstructions(textAll,cursorManager,variable);
+    }
+
+    public void processInstructions(String inputText,CursorManager cursorManager, VariableContext variableContext) throws ErrorLogger {
+        List<Instruction> instructions = parseInstructions(inputText,cursorManager,variableContext);
+        for (Instruction instruction : instructions) {
+            if (instruction.isValid()) {
+                instruction.execute();
+            }
+        }
+    }
+
+    private List<Instruction> parseInstructions(String inputText,CursorManager cursorManager, VariableContext variableContext) throws ErrorLogger {
+        List<Instruction> instructions = new ArrayList<>();
+        Deque<InstructionsBlock> stack = new ArrayDeque<>();
+        String[] lines = inputText.split("(?<=;|\\{|\\})|(?=\\{|\\})");
+
+        for (String line : lines) {
+            line = line.trim();
+            if (line.isEmpty()) continue;
+
+            if (line.endsWith(";")) {
+                String instructionText=line.substring(0,line.length()-1).trim();
+                Instruction instruction=null;
+
+                for (EnumSimpleInstructions value : EnumSimpleInstructions.values()) {
+                    if (instructionText.startsWith(value.toString())) {
+                        instruction = parseSimpleInstruction(instructionText,cursorManager,variableContext);
+                        break;
+                    }
                 }
-                for (String line : listInstruction) {
-                    for (EnumSimpleInstructions value : EnumSimpleInstructions.values()) {
-                        if (line.startsWith(value.toString())) {
-                            System.out.println("oetrg");
-                            processInstruction(test, cursorManager, line, variable);
-                        } else {
-                            processVariable(test, line, variable);
+
+                if (instruction == null) {
+                    for (EnumVariableInstruction value : EnumVariableInstruction.values()) {
+                        if (instructionText.startsWith(value.toString())) {
+                            instruction = parseVariableInstruction(instructionText,variableContext);
+                            break;
                         }
                     }
                 }
 
+                if (instruction == null) {
+                    throw new ErrorLogger("Unknown type: " + instructionText);
+                }
 
-            }
-
-        } else {
-            for (EnumSimpleInstructions value : EnumSimpleInstructions.values()) {
-                if (textAll.startsWith(value.toString())) {
-                    processInstruction(test, cursorManager, textAll, variable);
+                if (!stack.isEmpty()) {
+                    stack.peek().getInstructions().add(instruction);
                 } else {
-                    processVariable(test, textAll, variable);
+                    instructions.add(instruction);
+                }
+            } else if (line.startsWith("IF") || line.startsWith("FOR") || line.startsWith("WHILE") || line.startsWith("MIMIC") || line.startsWith("MIRROR")) {
+                InstructionsBlock blockInstruction = parseBlockInstruction(line.trim(),cursorManager,variableContext);
+                if (!stack.isEmpty()) {
+                    stack.peek().getInstructions().add(blockInstruction);
+                } else {
+                    instructions.add(blockInstruction);
+                }
+                stack.push(blockInstruction);
+            } else if (line.equals("}")) {
+                if (!stack.isEmpty()) {
+                    stack.pop();
                 }
             }
+        }
+        return instructions;
+    }
+
+    private Instruction parseVariableInstruction(String line,VariableContext variableContext) throws ErrorLogger {
+        String[] parts = line.split("\\s+",2);
+        String type = parts[0];
+        String argument= parts[1];
+        if(argument.contains("=")){
+            int operator = argument.indexOf("=");
+            String name = argument.substring(0,operator).trim();
+            String value = argument.substring(operator+1).trim();
+
+            // Convertir la valeur en type Object
+            Object variableValue = null;
+
+            // Vérifier le type de la valeur
+            if (isInteger(value)) {
+                variableValue = Integer.parseInt(value);
+                if ((int) variableValue < 0) {
+                    throw new ErrorLogger("La valeur doit être positive");
+                }
+
+            } else if (isDouble(value)) {
+                variableValue = Double.parseDouble(value);
+            } else if (isBoolean(value)) {
+                if (value.equals("true")){
+                    variableValue = true;
+                }
+                else {
+                    variableValue=false;
+                }
+            } else {
+                variableValue = value;
+            }
+            return new VariableInstruction(type,name,variableValue,variableContext);
+        }
+        return new VariableInstruction(type,argument,null,variableContext);
+    }
+
+    private InstructionsBlock parseBlockInstruction(String line,CursorManager cursorManager,VariableContext variableContext) {
+        String[] parts = line.split("\\s+",2);
+        String type = parts[0];
+        String argument;
+        if (parts.length > 1) {
+            argument = parts[1].trim();
+        } else {
+            argument = "";
+        }
+
+        List<Instruction> blockInstructions = new ArrayList<>();
+
+        return new InstructionsBlock(type, argument, blockInstructions, cursorManager, variableContext, cursorManager.getScene());
+    }
+
+    private Instruction parseSimpleInstruction(String line,CursorManager cursorManager,VariableContext variableContext) throws ErrorLogger {
+        String type = line.substring(0, line.indexOf("(")).trim();
+        String parameters = line.substring(line.indexOf("(") + 1,  line.indexOf(")")).trim();
+
+        Object valeur = parseParameter(parameters);
+
+        return new SimpleInstruction(type, valeur, cursorManager,variableContext , cursorManager.getScene());
+    }
+
+    private Object parseParameter(String parameter) throws ErrorLogger {
+        if (parameter.isEmpty()) {
+            return null;
+        }
+        if (isInteger(parameter)) {
+            int value = Integer.parseInt(parameter);
+            if (value < 0) {
+                throw new ErrorLogger("La valeur doit être positive");
+            }
+            return value;
+        } else if (isDouble(parameter)) {
+            return Double.parseDouble(parameter);
+        } else {
+            return parameter;
         }
     }
 
