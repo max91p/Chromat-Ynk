@@ -1,6 +1,7 @@
 package com.example;
 
 import java.security.KeyStore;
+import java.util.Calendar;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import javafx.scene.Scene;
@@ -24,8 +25,6 @@ public class InstructionsBlock extends Instruction {
 
     private boolean evaluateComparison(String condition){
         condition=condition.trim();
-
-
 
         String[] operators={"==","<=",">=","<",">","!="};
         for (String operator : operators){
@@ -57,11 +56,21 @@ public class InstructionsBlock extends Instruction {
     private boolean evaluateBooleanExpression(String leftPart, String rightPart,String operator){
         Object leftOperand=resolvedParameter(leftPart);
         Object rightOperand= resolvedParameter(rightPart);
+
+        if (leftOperand instanceof String && rightOperand instanceof Number) {
+            leftOperand = convertToCompatibleType((String) leftOperand, (Number) rightOperand);
+        } else if (rightOperand instanceof String && leftOperand instanceof Number) {
+            rightOperand = convertToCompatibleType((String) rightOperand, (Number) leftOperand);
+        } else if (leftOperand instanceof String && rightOperand instanceof String) {
+            leftOperand = Double.parseDouble((String) leftOperand);
+            rightOperand = Double.parseDouble((String) rightOperand);
+        }
+
         switch (operator){
             case "==":
-                return leftPart.equals(rightPart);
+                return compareTo(rightOperand,leftOperand)==0;
             case "!=":
-                return !leftPart.equals(rightPart);
+                return !(compareTo(rightOperand,leftOperand)==0);
             case "<":
                 return compareTo(leftOperand,rightOperand)<0;
             case ">":
@@ -75,6 +84,14 @@ public class InstructionsBlock extends Instruction {
         }
     }
 
+    private Object convertToCompatibleType(String stringValue, Number numericValue) {
+        if (numericValue instanceof Integer) {
+            return Integer.parseInt(stringValue);
+        } else if (numericValue instanceof Double) {
+            return Double.parseDouble(stringValue);
+        }
+        throw new IllegalArgumentException("Non numeric type");
+    }
     private boolean evaluateLogicalExpression(String expression){
         String[] parts = expression.split("\\|\\|");
         if(parts.length>1){
@@ -490,5 +507,9 @@ public class InstructionsBlock extends Instruction {
         catch (Exception e){
             throw new ErrorLogger("Error during execution of the instruction :" + type , e);
         }
+    }
+
+    public List<Instruction> getInstructions() {
+        return instructions;
     }
 }
