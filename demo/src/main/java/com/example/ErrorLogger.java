@@ -20,4 +20,11 @@ public class ErrorLogger extends Exception{
     public String toString() {
         return getMessage();
     }
+
+    public void logError(){
+        System.err.println(toString());
+        if (getCause() != null){
+            System.err.println("Error caused by : " + getCause());
+        }
+    }
 }

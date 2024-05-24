@@ -18,37 +18,50 @@ public class Main extends Application {
     private final double WINDOW_HEIGHT = 480;
 
     @Override
-    public void start(Stage primaryStage){
+    public void start(Stage primaryStage) {
+        Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> {
+            try {
+                ErrorLogger errorlogger = new ErrorLogger("Exception not handled" + throwable.getMessage(), throwable);
+                errorlogger.logError();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        try {
 
 
+            Group root = new Group();
+            Group root2 = new Group();
 
-        Group root = new Group();
-        Group root2 = new Group();
+            // Création de la scène avec la racine
+            Scene scene = new Scene(root, 400, 200);
+            Scene scene2 = new Scene(root2, 400, 200);
+            Cursor c1 = new Cursor(new Point(100, 100), 10, scene2);
 
-        // Création de la scène avec la racine
-        Scene scene = new Scene(root, 400, 200);
-        Scene scene2 = new Scene(root2, 400, 200);
-        Cursor c1=new Cursor(new Point(100,100),10,scene2);
+            primaryStage.setTitle(WINDOW_TITLE);
+            primaryStage.setWidth(WINDOW_WIDTH);
+            primaryStage.setHeight(WINDOW_HEIGHT);
 
-        primaryStage.setTitle(WINDOW_TITLE);
-        primaryStage.setWidth(WINDOW_WIDTH);
-        primaryStage.setHeight(WINDOW_HEIGHT);
-
-        CursorManager cursorManager=new CursorManager(scene2);
-        cursorManager.addCursor(c1);
-        cursorManager.selectCursor(10);
-        MainView view = new MainView(10,new TextArea(),new Button("Submit"), new Button("Save"),new Text(),cursorManager);
-        Pane container = new Pane();
-        container.getChildren().add(view);
+            CursorManager cursorManager = new CursorManager(scene2);
+            cursorManager.addCursor(c1);
+            cursorManager.selectCursor(10);
+            MainView view = new MainView(10, new TextArea(), new Button("Submit"), new Button("Save"), new Text(), cursorManager);
+            Pane container = new Pane();
+            container.getChildren().add(view);
 
 // Ajouter le conteneur à root
-        root.getChildren().add(container);
+            root.getChildren().add(container);
 
-        scene.setRoot(root);
+            scene.setRoot(root);
 
 
-        primaryStage.setScene(scene);
-        primaryStage.show();
+            primaryStage.setScene(scene);
+            primaryStage.show();
+        } catch (Exception e) {
+            ErrorLogger errorLogger = new ErrorLogger("An error occurred while starting the application." + e.getMessage(), e);
+            errorLogger.logError();
+        }
     }
 
 
