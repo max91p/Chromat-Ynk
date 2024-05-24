@@ -216,13 +216,17 @@ public class InstructionsBlock extends Instruction {
                     Point pointB = points[1];
 
                     Cursor currentCursor = cursorManager.getCurrentCursor();
+                    int a= 31;
+                    while (cursorManager.isCursorIdExists(currentCursor.getId() * a)){
+                        a++;
+                    }
                     Cursor mirroredCursor = new Cursor(
                             axialSymmetry(currentCursor.getPosition(), pointA, pointB),
-                            currentCursor.getAngle() + 180, // Angle adapted to +180
+                            (180-currentCursor.getAngle()+360)%360, // Angle adapted to +180
                             currentCursor.getColor(),
                             currentCursor.getWidth(),
                             currentCursor.getOpacity(),
-                            currentCursor.getId() * 31,
+                            currentCursor.getId() * a,
                             scene
                     );
                     cursorManager.addCursor(mirroredCursor);
@@ -238,13 +242,17 @@ public class InstructionsBlock extends Instruction {
                     }
                 } else {
                     Cursor currentCursor = cursorManager.getCurrentCursor();
+                    int a= 31;
+                    while (cursorManager.isCursorIdExists(currentCursor.getId() * a)){
+                        a++;
+                    }
                     Cursor mirroredCursor = new Cursor(
                             centralSymmetry(currentCursor.getPosition(), pointA),
-                            currentCursor.getAngle() + 180, // Angle adapted to +180
+                            (180-currentCursor.getAngle()+360)%360, // Angle adapted to +180
                             currentCursor.getColor(),
                             currentCursor.getWidth(),
                             currentCursor.getOpacity(),
-                            currentCursor.getId() * 31,
+                            currentCursor.getId() * a,
                             scene
                     );
                     cursorManager.addCursor(mirroredCursor);
@@ -343,15 +351,18 @@ public class InstructionsBlock extends Instruction {
 
                 if (points.length > 1) {
                     Point pointB = points[1];
-
                     Cursor currentCursor = cursorManager.getCurrentCursor();
+                    int a= 31;
+                    while (cursorManager.isCursorIdExists(currentCursor.getId() * a)){
+                        a++;
+                    }
                     Cursor mirroredCursor = new Cursor(
                             axialSymmetry(currentCursor.getPosition(), pointA, pointB),
-                            currentCursor.getAngle() + 180, // Angle adapted to +180
+                            (180-currentCursor.getAngle()+360)%360, // Angle adapted to +180
                             currentCursor.getColor(),
                             currentCursor.getWidth(),
                             currentCursor.getOpacity(),
-                            currentCursor.getId() * 31,
+                            currentCursor.getId() * a,
                             scene
                     );
                     cursorManager.addCursor(mirroredCursor);
@@ -367,13 +378,17 @@ public class InstructionsBlock extends Instruction {
                     }
                 } else {
                     Cursor currentCursor = cursorManager.getCurrentCursor();
+                    int a= 31;
+                    while (cursorManager.isCursorIdExists(currentCursor.getId() * a)){
+                        a++;
+                    }
                     Cursor mirroredCursor = new Cursor(
                             centralSymmetry(currentCursor.getPosition(), pointA),
-                            currentCursor.getAngle() + 180, // Angle adapted to +180
+                            (180-currentCursor.getAngle()+360)%360, // Angle adapted to +180
                             currentCursor.getColor(),
                             currentCursor.getWidth(),
                             currentCursor.getOpacity(),
-                            currentCursor.getId() * 31,
+                            currentCursor.getId() * a,
                             scene
                     );
                     cursorManager.addCursor(mirroredCursor);
