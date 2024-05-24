@@ -359,9 +359,9 @@ public class InstructionsBlock extends Instruction {
                     // Axial symmetry logic
                     for (Instruction instruction : instructions) {
                         if (instruction.isValid()) {
-                            instruction.execute();
-                            cursorManager.selectCursor(mirroredCursor.getId());
                             instruction.mirrorExecute(true, argument);
+                            cursorManager.selectCursor(mirroredCursor.getId());
+                            instruction.execute();
                             cursorManager.selectCursor(currentCursorId);
                         }
                     }
@@ -381,9 +381,9 @@ public class InstructionsBlock extends Instruction {
                     // Central symmetry logic
                     for (Instruction instruction : instructions) {
                         if (instruction.isValid()) {
-                            instruction.execute();
-                            cursorManager.selectCursor(mirroredCursor.getId());
                             instruction.mirrorExecute(false, argument);
+                            cursorManager.selectCursor(mirroredCursor.getId());
+                            instruction.execute();
                             cursorManager.selectCursor(currentCursorId);
                         }
                     }
