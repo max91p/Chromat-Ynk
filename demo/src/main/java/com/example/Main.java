@@ -12,11 +12,20 @@ import javafx.scene.shape.Path;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+/**
+ * Main class for the application.
+ */
 public class Main extends Application {
     private final String WINDOW_TITLE = "Application";
     private final double WINDOW_WIDTH = 640;
     private final double WINDOW_HEIGHT = 480;
 
+    /**
+     * Starts the application.
+     *
+     * @param primaryStage the primary stage for this application, onto which
+     * the application scene can be set.
+     */
     @Override
     public void start(Stage primaryStage) {
         Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> {
@@ -65,7 +74,11 @@ public class Main extends Application {
         }
     }
 
-
+    /**
+     * The main entry point for all JavaFX applications.
+     *
+     * @param args the command line arguments
+     */
     public static void main(String[] args) {
         launch(args);
     }

@@ -484,10 +484,44 @@ public class SimpleInstruction extends Instruction {
                     }
                     break;
                 case "COLOR":
-                    if (resolvedParameter instanceof String) {
-                        res = true;
+                    if (resolvedParameter instanceof String && ((String) resolvedParameter).contains("#")){
+                        if(((String) resolvedParameter).substring(1).matches("[0-9A-Fa-f]+") && ((String) resolvedParameter).charAt(0) == '#' && ((String) resolvedParameter).length() == 7){
+                            res = true;
+                        } else {
+                            throw new ErrorLogger("parameter needs to be a String like #RRGGBB with RRGGBB between 0 and F");
+                        }
+                    } else if (resolvedParameter instanceof String && ((String) resolvedParameter).contains(",") && !((String) resolvedParameter).contains(".")) {
+                        String[] valueStrings = ((String) resolvedParameter).split(",");
+                        if (valueStrings.length == 3) {
+                            int[] values = new int[valueStrings.length];
+                            for (int i = 0; i < valueStrings.length; i++) {
+                                values[i] = Integer.parseInt(valueStrings[i]);
+                            }
+                            if (values[0] >= 0 && values[0] <= 255 && values[1] >= 0 && values[1] <= 255 && values[2] >= 0 && values[2] <= 255) {
+                                res = true;
+                            } else {
+                                throw new ErrorLogger("parameter needs to be a String like R,G,B with R,G,B between 0 and 255");
+                            }
+                        } else {
+                            throw new ErrorLogger("parameter needs to be a String like R,G,B with R,G,B between 0 and 255");
+                        }
+                    } else if (resolvedParameter instanceof String && ((String) resolvedParameter).contains(",") && ((String) resolvedParameter).contains(".")) {
+                        String[] valueStrings = ((String) resolvedParameter).split(",");
+                        if (valueStrings.length == 3) {
+                            double[] values = new double[valueStrings.length];
+                            for (int i = 0; i < valueStrings.length; i++) {
+                                values[i] = Double.parseDouble(valueStrings[i]);
+                            }
+                            if (values[0] >= 0 && values[0] <= 1 && values[1] >= 0 && values[1] <= 1 && values[2] >= 0 && values[2] <= 1) {
+                                res = true;
+                            } else {
+                                throw new ErrorLogger("parameter needs to be a String like R,G,B with R,G,B between 0 and 1");
+                            }
+                        } else {
+                            throw new ErrorLogger("parameter needs to be a String like R,G,B with R,G,B between 0 and 1");
+                        }
                     } else {
-                        throw new ErrorLogger("parameter needs to be a ColorOfLine");
+                        throw new ErrorLogger("parameter needs to be a String like #RRGGBB or R,G,B or R,G,B with R,G,B between 0 and 255 or R,G,B with R,G,B between 0 and 1");
                     }
                     break;
                 case "THICK":
