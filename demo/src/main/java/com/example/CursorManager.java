@@ -136,4 +136,8 @@ public class CursorManager {
         }
         return false;
     }
+
+    public List<Cursor> getListCursor(){
+        return cursors;
+    }
 }

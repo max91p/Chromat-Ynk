@@ -118,6 +118,7 @@ public class Cursor {
         }
     }
 
+
     /**
      * return the scene where the cursor is
      * @return the scene where the cursor is
@@ -151,6 +152,10 @@ public class Cursor {
         this.position = new Point(x,y);
         DrawingCanvas draw = new DrawingCanvas(this.scene);
         draw.drawPosCursor(this);
+    }
+
+    public void setNewPos(double x, double y){
+        this.position = new Point(x,y);
     }
 
     /**

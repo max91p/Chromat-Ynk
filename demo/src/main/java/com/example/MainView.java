@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 import javax.sound.midi.Soundbank;
 
+import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.PixelReader;
@@ -26,15 +27,20 @@ public class MainView extends VBox {
     private final Button button;
     private final Button save;
     private final Text resultText;
+    private final Button clearButton;
 
-    public MainView(double spacing, TextArea text, Button button, Button save, Text resultText, CursorManager cursorManager1, VariableContext variable) {
+    public MainView(double spacing, TextArea text, Button button, Button save, Text resultText, CursorManager cursorManager1, VariableContext variable,Button clearButton) {
         super(spacing);
         this.text = text;
         this.button = button;
         this.save = save;
+        this.clearButton=clearButton;
         this.resultText = resultText;
 
         Stage secondaryStage = new Stage();
+        secondaryStage.setTitle("Drawing Canva");
+        secondaryStage.setWidth(1080);
+        secondaryStage.setHeight(800);
         button.setOnAction(event -> {
             try {
                 getText(text, resultText, cursorManager1, variable);
@@ -42,6 +48,13 @@ public class MainView extends VBox {
                 secondaryStage.show();
             } catch (ErrorLogger e) {
                 throw new RuntimeException(e);
+            }
+        });
+        Group root = (Group)cursorManager1.getScene().getRoot();
+        clearButton.setOnAction(event -> {
+            root.getChildren().clear(); // Vider tous les enfants de la racine
+            for (Cursor cursor : cursorManager1.getListCursor()){
+                cursorManager1.removeCursor(cursor.getId());
             }
         });
 
@@ -72,7 +85,7 @@ public class MainView extends VBox {
 
     private VBox createInputBox() {
         VBox inputBox = new VBox(10);
-        inputBox.getChildren().addAll(text, button, save);
+        inputBox.getChildren().addAll(text, button, save,clearButton);
         return inputBox;
     }
 

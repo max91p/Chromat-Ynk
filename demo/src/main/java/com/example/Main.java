@@ -17,8 +17,8 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
     private final String WINDOW_TITLE = "Application";
-    private final double WINDOW_WIDTH = 640;
-    private final double WINDOW_HEIGHT = 480;
+    private final double WINDOW_WIDTH = 1080;
+    private final double WINDOW_HEIGHT = 800;
 
     /**
      * Starts the application.
@@ -46,17 +46,14 @@ public class Main extends Application {
             // Création de la scène avec la racine
             Scene scene = new Scene(root, 400, 200);
             Scene scene2 = new Scene(root2, 400, 200);
-            Cursor c1 = new Cursor(new Point(100, 100), 10, scene2);
 
             primaryStage.setTitle(WINDOW_TITLE);
             primaryStage.setWidth(WINDOW_WIDTH);
             primaryStage.setHeight(WINDOW_HEIGHT);
 
             CursorManager cursorManager = new CursorManager(scene2);
-            cursorManager.addCursor(c1);
-            cursorManager.selectCursor(10);
             VariableContext variable = new VariableContext();
-            MainView view = new MainView(10, new TextArea(), new Button("Submit"), new Button("Save"), new Text(), cursorManager,variable);
+            MainView view = new MainView(10, new TextArea(), new Button("Submit"), new Button("Save"), new Text(), cursorManager,variable,new Button("Clear"));
             Pane container = new Pane();
             container.getChildren().add(view);
 
