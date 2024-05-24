@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import java.util.Date;
 
 import javax.imageio.ImageIO;
+import javax.sound.midi.Soundbank;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
@@ -175,11 +176,11 @@ public class MainView extends VBox {
                 for (String line : listInstruction) {
                     for (EnumSimpleInstructions value : EnumSimpleInstructions.values()) {
                         if (line.startsWith(value.toString())) {
+                            System.out.println("oetrg");
                             processInstruction(test, cursorManager, line, variable);
                         } else {
                             processVariable(test, line, variable);
                         }
-                        break;
                     }
                 }
 
