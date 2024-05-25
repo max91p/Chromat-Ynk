@@ -19,7 +19,7 @@ public class ColorOfLine {
     public ColorOfLine(int red, int green, int blue){
         try {
             if (red < 0 || red > 255 || green < 0 || green > 255 || blue < 0 || blue > 255) {
-                throw new ErrorLogger("Les valeurs de rouge, vert et bleu doivent être comprises entre 0 et 255");
+                throw new ErrorLogger("The red, green and blue values need to stand between 0 and 255");
             } else {
                 this.red = red;
                 this.green = green;
@@ -39,7 +39,7 @@ public class ColorOfLine {
     public ColorOfLine(String hex){
         try{
             if(hex.length() != 7 || hex.charAt(0) != '#' || !hex.substring(1).matches("[0-9A-F]+")){
-                throw new ErrorLogger("Le code hexadécimal doit être sous la forme #RRGGBB où RR, GG et BB sont des valeurs hexadécimales comprises entre 00 et FF");
+                throw new ErrorLogger("The hexadecimal code needs to be in the form of #RRGGBB where  RR, GG and BB are hexadecimal values that stand between 00 and FF");
             }
             else{
                 this.red = Integer.parseInt(hex.substring(1, 3), 16);
@@ -62,7 +62,7 @@ public class ColorOfLine {
     public ColorOfLine(double red, double green, double blue){
         try{
             if(red < 0 || red > 1 || green < 0 || green > 1 || blue < 0 || blue > 1){
-                throw new ErrorLogger("Les valeurs de rouge, vert et bleu doivent être comprises entre 0 et 1");
+                throw new ErrorLogger("The red, green and blue values need to stand between 0 and 1");
             } else {
                 this.red = (int) (red * 255);
                 this.green = (int) (green * 255);
@@ -108,7 +108,7 @@ public class ColorOfLine {
     public void setRed(int red){
         try{
             if(red < 0 || red > 255){
-                throw new ErrorLogger("La valeur de rouge doit être comprise entre 0 et 255");
+                throw new ErrorLogger("The red value needs to stand between 0 and 255");
             } else {
                 this.red = red;
             }
@@ -125,7 +125,7 @@ public class ColorOfLine {
     public void setGreen(int green){
         try{
             if(green < 0 || green > 255){
-                throw new ErrorLogger("La valeur de vert doit être comprise entre 0 et 255");
+                throw new ErrorLogger("The green value needs to stand between 0 and 255");
             } else {
                 this.green = green;
             }
@@ -142,7 +142,7 @@ public class ColorOfLine {
     public void setBlue(int blue){
         try{
             if(blue < 0 || blue > 255){
-                throw new ErrorLogger("La valeur de bleu doit être comprise entre 0 et 255");
+                throw new ErrorLogger("The blue value needs to stand between 0 and 255");
             } else {
                 this.blue = blue;
             }
