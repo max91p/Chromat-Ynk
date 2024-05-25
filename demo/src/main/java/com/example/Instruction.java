@@ -14,7 +14,7 @@ public abstract class Instruction {
 
     public abstract void execute() throws ErrorLogger;
 
-    public abstract void mirrorExecute(boolean Axial,Object parameter)throws ErrorLogger;
+    public abstract void mirrorExecute(boolean axial,Object parameter)throws ErrorLogger;
 
     /**
      * Checks if the instruction is valid.

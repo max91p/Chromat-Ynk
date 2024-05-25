@@ -242,18 +242,6 @@ public class Cursor {
     }
 
     /**
-     * Mimic the cursor with the same position, angle, width, color and opacity
-     * @param other the cursor to mimic
-     */
-    public void mimic(Cursor other) {
-        this.position = new Point(other.position.getX(), other.position.getY());
-        this.angle = other.angle;
-        this.width = other.opacity;
-        this.color = other.color;
-        this.opacity = other.opacity;
-    }
-
-    /**
      * return the color of the line
      * @return the color of the line
      */

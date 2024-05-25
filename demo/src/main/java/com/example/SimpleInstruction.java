@@ -397,7 +397,7 @@ public class SimpleInstruction extends Instruction {
         }
     }
 
-    public static Point axialSymmetry(Point p, Point a, Point b) {
+    private static Point axialSymmetry(Point p, Point a, Point b) {
         double dx = b.getX() - a.getX();
         double dy = b.getY() - a.getY();
         double t = ((p.getX() - a.getX()) * dx + (p.getY() - a.getY()) * dy) / (dx * dx + dy * dy);
@@ -408,7 +408,7 @@ public class SimpleInstruction extends Instruction {
         return new Point(x_s, y_s);
     }
 
-    public static Point centralSymmetry(Point p, Point c) {
+    private static Point centralSymmetry(Point p, Point c) {
         double x_s = 2 * c.getX() - p.getX();
         double y_s = 2 * c.getY() - p.getY();
         return new Point(x_s, y_s);
