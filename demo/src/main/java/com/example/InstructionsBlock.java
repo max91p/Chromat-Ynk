@@ -37,13 +37,6 @@ public class InstructionsBlock extends Instruction {
                 }
             }
 
-
-            if (condition == "true" || (Boolean) resolvedParameter(condition) == true) {
-                return true;
-            } else if (condition == "false" || (Boolean) resolvedParameter(condition) == false) {
-                return false;
-            }
-
             if (condition.startsWith("!")) {
                 String expression = condition.substring(1).trim();
                 if (expression == "true" || (Boolean) resolvedParameter(expression) == true) {
@@ -52,6 +45,13 @@ public class InstructionsBlock extends Instruction {
                     return true;
                 }
             }
+
+            if (condition == "true" || (Boolean) resolvedParameter(condition) == true) {
+                return true;
+            } else if (condition == "false" || (Boolean) resolvedParameter(condition) == false) {
+                return false;
+            }
+
             throw new ErrorLogger("Condition :" + condition + "unsupported");
         }catch (ErrorLogger e){
             e.logError();
@@ -490,7 +490,7 @@ public class InstructionsBlock extends Instruction {
                     if (argument != null && instructions != null){
                         return true;
                     } else {
-                        throw new ErrorLogger("condition needs to be a BooleanSupplier type and instructions cannot be null");
+                        throw new ErrorLogger("condition required and instructions cannot be null");
                     }
 
                 case "FOR":
