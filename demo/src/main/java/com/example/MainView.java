@@ -3,6 +3,8 @@ package com.example;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -19,6 +21,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class MainView extends VBox {
@@ -28,14 +31,18 @@ public class MainView extends VBox {
     private final Button save;
     private final Text resultText;
     private final Button clearButton;
+    private final Button oppenFileButton;
 
-    public MainView(double spacing, TextArea text, Button button, Button save, Text resultText, CursorManager cursorManager1, VariableContext variable,Button clearButton) {
+
+
+    public MainView(double spacing, TextArea text, Button button, Button save, Text resultText, CursorManager cursorManager1, VariableContext variable,Button clearButton, Button openFileButton,Stage primaryStage) {
         super(spacing);
         this.text = text;
         this.button = button;
         this.save = save;
         this.clearButton=clearButton;
         this.resultText = resultText;
+        this.oppenFileButton=openFileButton;
 
         Stage secondaryStage = new Stage();
         secondaryStage.setTitle("Drawing Canva");
@@ -51,10 +58,26 @@ public class MainView extends VBox {
             }
         });
         Group root = (Group)cursorManager1.getScene().getRoot();
+
         clearButton.setOnAction(event -> {
             root.getChildren().clear(); // Vider tous les enfants de la racine
             for (Cursor cursor : cursorManager1.getListCursor()){
                 cursorManager1.removeCursor(cursor.getId());
+            }
+        });
+
+        openFileButton.setOnAction(e -> {
+            // Utiliser le FileChooser pour obtenir le chemin du fichier
+            String filePath = showFileChooser(primaryStage);
+            if (filePath != null) {
+                try {
+                    // Appeler la méthode getText avec les paramètres nécessaires
+                    getTextFromFile(cursorManager1, variable, filePath);
+                    secondaryStage.setScene(cursorManager1.getScene());
+                    secondaryStage.show();
+                } catch (ErrorLogger | IOException ex) {
+                    ex.printStackTrace();
+                }
             }
         });
 
@@ -83,9 +106,20 @@ public class MainView extends VBox {
         getChildren().addAll(inputBox, resultText);
     }
 
+    public String showFileChooser(Stage primaryStage) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open Text File");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+        File selectedFile = fileChooser.showOpenDialog(primaryStage);
+        if (selectedFile != null) {
+            return selectedFile.getPath();
+        }
+        return null;
+    }
+
     private VBox createInputBox() {
         VBox inputBox = new VBox(10);
-        inputBox.getChildren().addAll(text, button, save,clearButton);
+        inputBox.getChildren().addAll(text, button, save,clearButton,oppenFileButton);
         return inputBox;
     }
 
@@ -94,6 +128,22 @@ public class MainView extends VBox {
         String textAll = test.getText();
         textAll = textAll.replaceAll("[\n\r]", "");
         processInstructions(textAll,cursorManager,variable);
+    }
+
+    public void getTextFromFile(CursorManager cursorManager,VariableContext variable,String filePath) throws ErrorLogger, IOException {
+        String textAll="";
+        if (filePath != null && !filePath.isEmpty()) {
+            // Lecture du contenu du fichier texte
+            String fileContent = new String(Files.readAllBytes(Paths.get(filePath)));
+            // Ajout du contenu du fichier au texte récupéré
+            textAll += fileContent;
+        }
+
+        // Remplacer les nouvelles lignes et les retours chariot
+        textAll = textAll.replaceAll("[\n\r]", "");
+
+        // Traitement des instructions
+        processInstructions(textAll, cursorManager, variable);
     }
 
     public void processInstructions(String inputText,CursorManager cursorManager, VariableContext variableContext) throws ErrorLogger {

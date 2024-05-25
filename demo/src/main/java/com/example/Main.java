@@ -53,7 +53,7 @@ public class Main extends Application {
 
             CursorManager cursorManager = new CursorManager(scene2);
             VariableContext variable = new VariableContext();
-            MainView view = new MainView(10, new TextArea(), new Button("Submit"), new Button("Save"), new Text(), cursorManager,variable,new Button("Clear"));
+            MainView view = new MainView(10, new TextArea(), new Button("Submit"), new Button("Save"), new Text(), cursorManager,variable,new Button("Clear"),new Button("Open Text File"),primaryStage);
             Pane container = new Pane();
             container.getChildren().add(view);
 
@@ -70,6 +70,8 @@ public class Main extends Application {
             errorLogger.logError();
         }
     }
+
+
 
     /**
      * The main entry point for all JavaFX applications.
