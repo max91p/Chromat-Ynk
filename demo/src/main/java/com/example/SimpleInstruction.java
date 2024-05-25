@@ -540,21 +540,36 @@ public class SimpleInstruction extends Instruction {
                     break;
                 case "CURSOR":
                     if (resolvedParameter instanceof Integer) {
-                        res = true;
+                        int cursorID = (Integer) resolvedParameter;
+                        if(cursors.isCursorIdExists(cursorID)){
+                            res = true;
+                        } else {
+                            throw new ErrorLogger("Cursor ID doesn't exist");
+                        }
                     } else {
                         throw new ErrorLogger("parameter needs to be a Integer");
                     }
                     break;
                 case "SELECT":
                     if (resolvedParameter instanceof Integer) {
-                        res = true;
+                        int cursorID = (Integer) resolvedParameter;
+                        if(cursors.isCursorIdExists(cursorID)){
+                            res = true;
+                        } else {
+                            throw new ErrorLogger("Cursor ID doesn't exist");
+                        }
                     } else {
                         throw new ErrorLogger("parameter needs to be a Integer");
                     }
                     break;
                 case "REMOVE":
                     if (resolvedParameter instanceof Integer) {
-                        res = true;
+                        int cursorID = (Integer) resolvedParameter;
+                        if(cursors.isCursorIdExists(cursorID)){
+                            res = true;
+                        } else {
+                            throw new ErrorLogger("Cursor ID doesn't exist");
+                        }
                     } else {
                         throw new ErrorLogger("parameter needs to be a Integer");
                     }
