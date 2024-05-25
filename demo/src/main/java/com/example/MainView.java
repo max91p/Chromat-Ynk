@@ -62,7 +62,11 @@ public class MainView extends VBox {
         clearButton.setOnAction(event -> {
             root.getChildren().clear(); // Vider tous les enfants de la racine
             for (Cursor cursor : cursorManager1.getListCursor()){
-                cursorManager1.removeCursor(cursor.getId());
+                try {
+                    cursorManager1.removeCursor(cursor.getId());
+                } catch (ErrorLogger e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
 
@@ -70,14 +74,18 @@ public class MainView extends VBox {
             // Utiliser le FileChooser pour obtenir le chemin du fichier
             String filePath = showFileChooser(primaryStage);
             if (filePath != null) {
-                try {
+
                     // Appeler la méthode getText avec les paramètres nécessaires
+                try {
                     getTextFromFile(cursorManager1, variable, filePath);
-                    secondaryStage.setScene(cursorManager1.getScene());
-                    secondaryStage.show();
-                } catch (ErrorLogger | IOException ex) {
-                    ex.printStackTrace();
+                } catch (ErrorLogger ex) {
+                    throw new RuntimeException(ex);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
                 }
+                secondaryStage.setScene(cursorManager1.getScene());
+                    secondaryStage.show();
+
             }
         });
 
