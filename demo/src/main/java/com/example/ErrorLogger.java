@@ -22,9 +22,11 @@ public class ErrorLogger extends Exception{
     }
 
     public void logError(){
-        System.err.println(toString());
         if (getCause() != null){
             System.err.println("Error caused by : " + getCause());
+        }
+        else {
+            System.err.println(toString());
         }
     }
 }
