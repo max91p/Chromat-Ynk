@@ -33,19 +33,23 @@ public class Cursor {
      * @param scene Scene where the cursor is
      */
     public Cursor(Point position, double angle, ColorOfLine color, double thick, double press, int id, Scene scene) {
-        if (position == null) {
-            throw new IllegalArgumentException("La position ne peut pas être nulle");
-        } else if (angle < 0 || angle >= 360) {
-            throw new IllegalArgumentException("L'angle doit être compris entre 0 et 360");
-        } else {
-            this.position = position;
-            this.angle = angle;
-            this.color = color;
-            this.width = thick;
-            this.opacity = press;
-            this.id = id;
-            this.scene=scene;
-            this.visible = true;
+        try{
+            if (position == null) {
+                throw new ErrorLogger("The position can't be null");
+            } else if (angle < 0 || angle >= 360) {
+                throw new ErrorLogger("The angle must stand between 0 and 360");
+            } else {
+                this.position = position;
+                this.angle = angle;
+                this.color = color;
+                this.width = thick;
+                this.opacity = press;
+                this.id = id;
+                this.scene=scene;
+                this.visible = true;
+            }
+        }catch (ErrorLogger e){
+            e.logError();
         }
     }
 
@@ -57,21 +61,25 @@ public class Cursor {
      * @param scene Scene where the cursor is
      */
     public Cursor(Point position, double angle, int id, Scene scene) {
-        if (position == null) {
-            throw new IllegalArgumentException("La position ne peut pas être nulle");
-        }
-        else if (angle < 0 || angle >= 360) {
-            throw new IllegalArgumentException("L'angle doit être compris entre 0 et 360");
-        }
-        else{
-            this.position = position;
-            this.angle = angle;
-            this.color = new ColorOfLine(0,0,0);
-            this.width = 1;
-            this.opacity = 1;
-            this.id = id;
-            this.scene=scene;
-            this.visible = true;
+        try{
+            if (position == null) {
+                throw new ErrorLogger("The position can't be null");
+            }
+            else if (angle < 0 || angle >= 360) {
+                throw new ErrorLogger("The angle must stand between 0 and 360");
+            }
+            else{
+                this.position = position;
+                this.angle = angle;
+                this.color = new ColorOfLine(0,0,0);
+                this.width = 1;
+                this.opacity = 1;
+                this.id = id;
+                this.scene=scene;
+                this.visible = true;
+            }
+        }catch (ErrorLogger e){
+            e.logError();
         }
     }
 
@@ -81,18 +89,22 @@ public class Cursor {
      * @param scene Scene where the cursor is
      */
     public Cursor(int id,Scene scene) {
-        if (angle < 0 || angle >= 360) {
-            throw new IllegalArgumentException("L'angle doit être compris entre 0 et 360");
-        }
-        else{
-            this.position = new Point();
-            this.angle = 0;
-            this.color = new ColorOfLine(0,0,0);
-            this.width = 1;
-            this.opacity= 1;
-            this.id = id;
-            this.scene=scene;
-            this.visible = true;
+        try{
+            if (angle < 0 || angle >= 360) {
+                throw new ErrorLogger("The angle must stand between 0 and 360");
+            }
+            else{
+                this.position = new Point();
+                this.angle = 0;
+                this.color = new ColorOfLine(0,0,0);
+                this.width = 1;
+                this.opacity= 1;
+                this.id = id;
+                this.scene=scene;
+                this.visible = true;
+            }
+        }catch (ErrorLogger e){
+            e.logError();
         }
     }
 
@@ -103,18 +115,22 @@ public class Cursor {
      * @param scene Scene where the cursor is
      */
     public Cursor(Point point, int id, Scene scene) {
-        if (angle < 0 || angle >= 360) {
-            throw new IllegalArgumentException("L'angle doit être compris entre 0 et 360");
-        }
-        else{
-            this.position = new Point(point.getX(), point.getY());
-            this.angle = 0;
-            this.color = new ColorOfLine(0,0,0);
-            this.width = 1;
-            this.opacity = 1;
-            this.id = id;
-            this.scene=scene;
-            this.visible = true;
+        try{
+            if (angle < 0 || angle >= 360) {
+                throw new ErrorLogger("The angle must stand between 0 and 360");
+            }
+            else{
+                this.position = new Point(point.getX(), point.getY());
+                this.angle = 0;
+                this.color = new ColorOfLine(0,0,0);
+                this.width = 1;
+                this.opacity = 1;
+                this.id = id;
+                this.scene=scene;
+                this.visible = true;
+            }
+        }catch (ErrorLogger e){
+            e.logError();
         }
     }
 
@@ -313,31 +329,35 @@ public class Cursor {
         Parent root = this.scene.getRoot();
 
         // Vérifiez si la racine peut être castée en Group ou Pane
-        if (root instanceof Group) {
-            Group groupRoot = (Group) root;
-            ObservableList<Node> children = groupRoot.getChildren();
+        try{
+            if (root instanceof Group) {
+                Group groupRoot = (Group) root;
+                ObservableList<Node> children = groupRoot.getChildren();
 
-            // Utilisez un itérateur pour éviter les problèmes de modification de la liste
-            for (Iterator<Node> iterator = children.iterator(); iterator.hasNext();) {
-                Node child = iterator.next();
-                if (idToRemove.equals(child.getId())) {
-                    iterator.remove();
+                // Utilisez un itérateur pour éviter les problèmes de modification de la liste
+                for (Iterator<Node> iterator = children.iterator(); iterator.hasNext();) {
+                    Node child = iterator.next();
+                    if (idToRemove.equals(child.getId())) {
+                        iterator.remove();
+                    }
                 }
-            }
 
-        } else if (root instanceof Pane) {
-            Pane paneRoot = (Pane) root;
-            ObservableList<Node> children = paneRoot.getChildren();
+            } else if (root instanceof Pane) {
+                Pane paneRoot = (Pane) root;
+                ObservableList<Node> children = paneRoot.getChildren();
 
-            // Utilisez un itérateur pour éviter les problèmes de modification de la liste
-            for (Iterator<Node> iterator = children.iterator(); iterator.hasNext();) {
-                Node child = iterator.next();
-                if (idToRemove.equals(child.getId())) {
-                    iterator.remove();
+                // Utilisez un itérateur pour éviter les problèmes de modification de la liste
+                for (Iterator<Node> iterator = children.iterator(); iterator.hasNext();) {
+                    Node child = iterator.next();
+                    if (idToRemove.equals(child.getId())) {
+                        iterator.remove();
+                    }
                 }
+            } else {
+                throw new ErrorLogger("Unsupported root type: " + root.getClass().getName());
             }
-        } else {
-            throw new IllegalArgumentException("Unsupported root type: " + root.getClass().getName());
+        }catch (ErrorLogger e){
+            e.logError();
         }
 
         // Pas besoin de réaffecter la racine, elle est déjà mise à jour
