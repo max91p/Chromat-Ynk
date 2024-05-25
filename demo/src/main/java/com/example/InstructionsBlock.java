@@ -27,70 +27,88 @@ public class InstructionsBlock extends Instruction {
         condition=condition.trim();
 
         String[] operators={"==","<=",">=","<",">","!="};
-        for (String operator : operators){
-            int position = condition.indexOf(operator);
-            if(position != -1){
-                String leftPart = condition.substring(0,position).trim();
-                String rightPart = condition.substring(position+operator.length()).trim();
-                return evaluateBooleanExpression(leftPart,rightPart,operator);
+        try {
+            for (String operator : operators) {
+                int position = condition.indexOf(operator);
+                if (position != -1) {
+                    String leftPart = condition.substring(0, position).trim();
+                    String rightPart = condition.substring(position + operator.length()).trim();
+                    return evaluateBooleanExpression(leftPart, rightPart, operator);
+                }
             }
-        }
 
-        if(condition=="true" || (Boolean)resolvedParameter(condition)==true){
-            return true;
-        } else if (condition=="false" || (Boolean)resolvedParameter(condition)==false) {
+
+            if (condition == "true" || (Boolean) resolvedParameter(condition) == true) {
+                return true;
+            } else if (condition == "false" || (Boolean) resolvedParameter(condition) == false) {
+                return false;
+            }
+
+            if (condition.startsWith("!")) {
+                String expression = condition.substring(1).trim();
+                if (expression == "true" || (Boolean) resolvedParameter(expression) == true) {
+                    return false;
+                } else if (expression == "false" || (Boolean) resolvedParameter(expression) == false) {
+                    return true;
+                }
+            }
+            throw new ErrorLogger("Condition :" + condition + "unsupported");
+        }catch (ErrorLogger e){
+            e.logError();
             return false;
         }
-
-        if(condition.startsWith("!")){
-            String expression= condition.substring(1).trim();
-            if(expression=="true" || (Boolean)resolvedParameter(expression)==true){
-                return false;
-            } else if (expression=="false" || (Boolean)resolvedParameter(expression)==false) {
-                return true;
-            }
-        }
-        throw new IllegalArgumentException("Condition :"+ condition + "unsupported");
     }
 
     private boolean evaluateBooleanExpression(String leftPart, String rightPart,String operator){
         Object leftOperand=resolvedParameter(leftPart);
         Object rightOperand= resolvedParameter(rightPart);
 
-        if (leftOperand instanceof String && rightOperand instanceof Number) {
-            leftOperand = convertToCompatibleType((String) leftOperand, (Number) rightOperand);
-        } else if (rightOperand instanceof String && leftOperand instanceof Number) {
-            rightOperand = convertToCompatibleType((String) rightOperand, (Number) leftOperand);
-        } else if (leftOperand instanceof String && rightOperand instanceof String) {
-            leftOperand = Double.parseDouble((String) leftOperand);
-            rightOperand = Double.parseDouble((String) rightOperand);
-        }
+        try {
+            if (leftOperand instanceof String && rightOperand instanceof Number) {
+                leftOperand = convertToCompatibleType((String) leftOperand, (Number) rightOperand);
+            } else if (rightOperand instanceof String && leftOperand instanceof Number) {
+                rightOperand = convertToCompatibleType((String) rightOperand, (Number) leftOperand);
+            } else if (leftOperand instanceof String && rightOperand instanceof String) {
+                leftOperand = Double.parseDouble((String) leftOperand);
+                rightOperand = Double.parseDouble((String) rightOperand);
+            }
 
-        switch (operator){
-            case "==":
-                return compareTo(rightOperand,leftOperand)==0;
-            case "!=":
-                return !(compareTo(rightOperand,leftOperand)==0);
-            case "<":
-                return compareTo(leftOperand,rightOperand)<0;
-            case ">":
-                return compareTo(leftOperand,rightOperand)>0;
-            case "<=":
-                return compareTo(leftOperand,rightOperand)<=0;
-            case ">=":
-                return compareTo(leftOperand,rightOperand)>=0;
-            default:
-                throw new IllegalArgumentException("Operator"+ operator + "unsupported");
+
+            switch (operator) {
+                case "==":
+                    return compareTo(rightOperand, leftOperand) == 0;
+                case "!=":
+                    return !(compareTo(rightOperand, leftOperand) == 0);
+                case "<":
+                    return compareTo(leftOperand, rightOperand) < 0;
+                case ">":
+                    return compareTo(leftOperand, rightOperand) > 0;
+                case "<=":
+                    return compareTo(leftOperand, rightOperand) <= 0;
+                case ">=":
+                    return compareTo(leftOperand, rightOperand) >= 0;
+                default:
+                    throw new ErrorLogger("Operator" + operator + "unsupported");
+            }
+        }catch(ErrorLogger e){
+            e.logError();
+            return false;
         }
     }
 
     private Object convertToCompatibleType(String stringValue, Number numericValue) {
-        if (numericValue instanceof Integer) {
-            return Integer.parseInt(stringValue);
-        } else if (numericValue instanceof Double) {
-            return Double.parseDouble(stringValue);
+        try {
+            if (numericValue instanceof Integer) {
+                return Integer.parseInt(stringValue);
+            } else if (numericValue instanceof Double) {
+                return Double.parseDouble(stringValue);
+            }
+
+            throw new ErrorLogger("Non numeric type");
+        }catch (ErrorLogger e){
+            e.logError();
+            return false;
         }
-        throw new IllegalArgumentException("Non numeric type");
     }
     private boolean evaluateLogicalExpression(String expression){
         String[] parts = expression.split("\\|\\|");
@@ -124,290 +142,303 @@ public class InstructionsBlock extends Instruction {
     }
 
     private int compareTo(Object leftValue, Object rightValue){
-        if(leftValue instanceof Integer && rightValue instanceof Integer){
-            return Integer.compare((Integer)leftValue,(Integer)rightValue);
-        } else if (leftValue instanceof Double && rightValue instanceof Double) {
-            return Double.compare((Double)leftValue,(Double)rightValue);
-        } else{
-            throw new IllegalArgumentException("Comparison between different types is impossible");
+        try{
+            if(leftValue instanceof Integer && rightValue instanceof Integer){
+                return Integer.compare((Integer)leftValue,(Integer)rightValue);
+            } else if (leftValue instanceof Double && rightValue instanceof Double) {
+                return Double.compare((Double)leftValue,(Double)rightValue);
+            } else{
+                throw new ErrorLogger("Comparison between different types is impossible");
+            }
+        }catch (ErrorLogger e){
+            e.logError();
+            return -1;
         }
     }
 
     @Override
     public void execute() throws ErrorLogger {
-        switch (type) {
-            case "IF":
-                if (evaluateLogicalExpression(argument)) {
+        try{
+            switch (type) {
+                case "IF":
+                    if (evaluateLogicalExpression(argument)) {
+                        for (Instruction instruction : instructions) {
+                            if (instruction.isValid()) {
+                                instruction.execute();
+                            }
+                        }
+                    }
+                    break;
+
+                case "FOR":
+                    String[] parts= argument.split("\\s+");
+                    String variableName=parts[0];
+
+                    int from=0;
+                    int to;
+                    int step=1;
+
+                    if(parts.length == 5){
+                        // [FOR] name FROM v1 TO v2
+                        from=Integer.parseInt(parts[2]);
+                        to=Integer.parseInt(parts[4]);
+                    } else if(parts.length==7){
+                        // [FOR] name FROM v1 TO v2 STEP v3
+                        from=Integer.parseInt(parts[2]);
+                        to=Integer.parseInt(parts[4]);
+                        step=Integer.parseInt(parts[6]);
+                    } else if (parts.length==3) {
+                        //[FOR] name TO v1
+                        to=Integer.parseInt(parts[2]);
+                    } else {
+                        throw new ErrorLogger("Invalid loop format");
+                    }
+
+                    for(int i = from; i<=to;i+=step){
+                        variableContext.setVariable(variableName,i);
+                        for(Instruction instruction : instructions){
+                            if (instruction.isValid()){
+                                instruction.execute();
+                            }
+                        }
+                    }
+                    break;
+
+                case "WHILE":
+                    while (evaluateLogicalExpression(argument)) {
+                        for (Instruction instruction : instructions) {
+                            if (instruction.isValid()) {
+                                instruction.execute();
+                            }
+                        }
+                    }
+                    break;
+
+                case "MIMIC":
+                    int cursorID = Integer.parseInt(argument.trim());
+                    int originalCursor = cursorManager.getCurrentCursor().getId();
+
+                    cursorManager.selectCursor(cursorID);
                     for (Instruction instruction : instructions) {
                         if (instruction.isValid()) {
                             instruction.execute();
-                        }
-                    }
-                }
-                break;
-
-            case "FOR":
-                String[] parts= argument.split("\\s+");
-                String variableName=parts[0];
-
-                int from=0;
-                int to;
-                int step=1;
-
-                if(parts.length == 5){
-                    // [FOR] name FROM v1 TO v2
-                    from=Integer.parseInt(parts[2]);
-                    to=Integer.parseInt(parts[4]);
-                } else if(parts.length==7){
-                    // [FOR] name FROM v1 TO v2 STEP v3
-                    from=Integer.parseInt(parts[2]);
-                    to=Integer.parseInt(parts[4]);
-                    step=Integer.parseInt(parts[6]);
-                } else if (parts.length==3) {
-                    //[FOR] name TO v1
-                    to=Integer.parseInt(parts[2]);
-                } else {
-                    throw new IllegalArgumentException("Invalid loop format");
-                }
-
-                for(int i = from; i<=to;i+=step){
-                    variableContext.setVariable(variableName,i);
-                    for(Instruction instruction : instructions){
-                        if (instruction.isValid()){
+                            cursorManager.selectCursor(originalCursor);
                             instruction.execute();
+                            cursorManager.selectCursor(cursorID);
                         }
                     }
-                }
-                break;
 
-            case "WHILE":
-                while (evaluateLogicalExpression(argument)) {
-                    for (Instruction instruction : instructions) {
-                        if (instruction.isValid()) {
-                            instruction.execute();
+                    cursorManager.selectCursor(originalCursor);
+                    break;
+
+                case "MIRROR":
+                    Point[] points = parsePoints((String) argument);
+                    Point pointA = points[0];
+                    int currentCursorId = cursorManager.getCurrentCursor().getId();
+
+                    if (points.length > 1) {
+                        Point pointB = points[1];
+
+                        Cursor currentCursor = cursorManager.getCurrentCursor();
+                        int a= 31;
+                        while (cursorManager.isCursorIdExists(currentCursor.getId() * a)){
+                            a++;
+                        }
+                        Cursor mirroredCursor = new Cursor(
+                                axialSymmetry(currentCursor.getPosition(), pointA, pointB),
+                                (180-currentCursor.getAngle()+360)%360, // Angle adapted to +180
+                                currentCursor.getColor(),
+                                currentCursor.getWidth(),
+                                currentCursor.getOpacity(),
+                                currentCursor.getId() * a,
+                                scene
+                        );
+                        cursorManager.addCursor(mirroredCursor);
+
+                        // Axial symmetry logic
+                        for (Instruction instruction : instructions) {
+                            if (instruction.isValid()) {
+                                instruction.execute();
+                                cursorManager.selectCursor(mirroredCursor.getId());
+                                instruction.mirrorExecute(true, argument);
+                                cursorManager.selectCursor(currentCursorId);
+                            }
+                        }
+                    } else {
+                        Cursor currentCursor = cursorManager.getCurrentCursor();
+                        int a= 31;
+                        while (cursorManager.isCursorIdExists(currentCursor.getId() * a)){
+                            a++;
+                        }
+                        Cursor mirroredCursor = new Cursor(
+                                centralSymmetry(currentCursor.getPosition(), pointA),
+                                (180-currentCursor.getAngle()+360)%360, // Angle adapted to +180
+                                currentCursor.getColor(),
+                                currentCursor.getWidth(),
+                                currentCursor.getOpacity(),
+                                currentCursor.getId() * a,
+                                scene
+                        );
+                        cursorManager.addCursor(mirroredCursor);
+
+                        // Central symmetry logic
+                        for (Instruction instruction : instructions) {
+                            if (instruction.isValid()) {
+                                instruction.execute();
+                                cursorManager.selectCursor(mirroredCursor.getId());
+                                instruction.mirrorExecute(false, argument);
+                                cursorManager.selectCursor(currentCursorId);
+                            }
                         }
                     }
-                }
-                break;
+                    break;
 
-            case "MIMIC":
-                int cursorID = Integer.parseInt(argument.trim());
-                int originalCursor = cursorManager.getCurrentCursor().getId();
-
-                cursorManager.selectCursor(cursorID);
-                for (Instruction instruction : instructions) {
-                    if (instruction.isValid()) {
-                        instruction.execute();
-                        cursorManager.selectCursor(originalCursor);
-                        instruction.execute();
-                        cursorManager.selectCursor(cursorID);
-                    }
-                }
-
-                cursorManager.selectCursor(originalCursor);
-                break;
-
-            case "MIRROR":
-                Point[] points = parsePoints((String) argument);
-                Point pointA = points[0];
-                int currentCursorId = cursorManager.getCurrentCursor().getId();
-
-                if (points.length > 1) {
-                    Point pointB = points[1];
-
-                    Cursor currentCursor = cursorManager.getCurrentCursor();
-                    int a= 31;
-                    while (cursorManager.isCursorIdExists(currentCursor.getId() * a)){
-                        a++;
-                    }
-                    Cursor mirroredCursor = new Cursor(
-                            axialSymmetry(currentCursor.getPosition(), pointA, pointB),
-                            (180-currentCursor.getAngle()+360)%360, // Angle adapted to +180
-                            currentCursor.getColor(),
-                            currentCursor.getWidth(),
-                            currentCursor.getOpacity(),
-                            currentCursor.getId() * a,
-                            scene
-                    );
-                    cursorManager.addCursor(mirroredCursor);
-
-                    // Axial symmetry logic
-                    for (Instruction instruction : instructions) {
-                        if (instruction.isValid()) {
-                            instruction.execute();
-                            cursorManager.selectCursor(mirroredCursor.getId());
-                            instruction.mirrorExecute(true, argument);
-                            cursorManager.selectCursor(currentCursorId);
-                        }
-                    }
-                } else {
-                    Cursor currentCursor = cursorManager.getCurrentCursor();
-                    int a= 31;
-                    while (cursorManager.isCursorIdExists(currentCursor.getId() * a)){
-                        a++;
-                    }
-                    Cursor mirroredCursor = new Cursor(
-                            centralSymmetry(currentCursor.getPosition(), pointA),
-                            (180-currentCursor.getAngle()+360)%360, // Angle adapted to +180
-                            currentCursor.getColor(),
-                            currentCursor.getWidth(),
-                            currentCursor.getOpacity(),
-                            currentCursor.getId() * a,
-                            scene
-                    );
-                    cursorManager.addCursor(mirroredCursor);
-
-                    // Central symmetry logic
-                    for (Instruction instruction : instructions) {
-                        if (instruction.isValid()) {
-                            instruction.execute();
-                            cursorManager.selectCursor(mirroredCursor.getId());
-                            instruction.mirrorExecute(false, argument);
-                            cursorManager.selectCursor(currentCursorId);
-                        }
-                    }
-                }
-                break;
-
-            default:
-                throw new UnsupportedOperationException("Unknown block instruction type: " + type);
+                default:
+                    throw new ErrorLogger("Unknown block instruction type: " + type);
+            }
+        }catch(ErrorLogger e){
+            e.logError();
         }
     }
 
     @Override
     public void mirrorExecute(boolean Axial,Object parameter) throws ErrorLogger {
-        switch (type) {
-            case "IF":
-                if (evaluateLogicalExpression(argument)) {
+        try{
+            switch (type) {
+                case "IF":
+                    if (evaluateLogicalExpression(argument)) {
+                        for (Instruction instruction : instructions) {
+                            if (instruction.isValid()) {
+                                instruction.mirrorExecute(Axial, parameter);
+                            }
+                        }
+                    }
+                    break;
+
+                case "FOR":
+                    String[] parts = argument.split("\\s+");
+                    String variableName = parts[0];
+
+                    int from = 0;
+                    int to;
+                    int step = 1;
+
+                    if (parts.length == 5) {
+                        from = Integer.parseInt(parts[2]);
+                        to = Integer.parseInt(parts[4]);
+                    } else if (parts.length == 7) {
+                        from = Integer.parseInt(parts[2]);
+                        to = Integer.parseInt(parts[4]);
+                        step = Integer.parseInt(parts[6]);
+                    } else if (parts.length == 3) {
+                        to = Integer.parseInt(parts[2]);
+                    } else {
+                        throw new ErrorLogger("Invalid loop format");
+                    }
+
+                    for (int i = from; i <= to; i += step) {
+                        variableContext.setVariable(variableName, i);
+                        for (Instruction instruction : instructions) {
+                            if (instruction.isValid()) {
+                                instruction.mirrorExecute(Axial, parameter);
+                            }
+                        }
+                    }
+                    break;
+
+                case "WHILE":
+                    while (evaluateLogicalExpression(argument)) {
+                        for (Instruction instruction : instructions) {
+                            if (instruction.isValid()) {
+                                instruction.mirrorExecute(Axial, parameter);
+                            }
+                        }
+                    }
+                    break;
+
+                case "MIMIC":
+                    int cursorID = Integer.parseInt(argument.trim());
+                    int originalCursor = cursorManager.getCurrentCursor().getId();
+
+                    cursorManager.selectCursor(cursorID);
                     for (Instruction instruction : instructions) {
                         if (instruction.isValid()) {
                             instruction.mirrorExecute(Axial, parameter);
-                        }
-                    }
-                }
-                break;
-
-            case "FOR":
-                String[] parts = argument.split("\\s+");
-                String variableName = parts[0];
-
-                int from = 0;
-                int to;
-                int step = 1;
-
-                if (parts.length == 5) {
-                    from = Integer.parseInt(parts[2]);
-                    to = Integer.parseInt(parts[4]);
-                } else if (parts.length == 7) {
-                    from = Integer.parseInt(parts[2]);
-                    to = Integer.parseInt(parts[4]);
-                    step = Integer.parseInt(parts[6]);
-                } else if (parts.length == 3) {
-                    to = Integer.parseInt(parts[2]);
-                } else {
-                    throw new IllegalArgumentException("Invalid loop format");
-                }
-
-                for (int i = from; i <= to; i += step) {
-                    variableContext.setVariable(variableName, i);
-                    for (Instruction instruction : instructions) {
-                        if (instruction.isValid()) {
+                            cursorManager.selectCursor(originalCursor);
                             instruction.mirrorExecute(Axial, parameter);
+                            cursorManager.selectCursor(cursorID);
                         }
                     }
-                }
-                break;
 
-            case "WHILE":
-                while (evaluateLogicalExpression(argument)) {
-                    for (Instruction instruction : instructions) {
-                        if (instruction.isValid()) {
-                            instruction.mirrorExecute(Axial, parameter);
+                    cursorManager.selectCursor(originalCursor);
+                    break;
+                case "MIRROR":
+                    Point[] points = parsePoints((String) argument);
+                    Point pointA = points[0];
+                    int currentCursorId = cursorManager.getCurrentCursor().getId();
+
+                    if (points.length > 1) {
+                        Point pointB = points[1];
+                        Cursor currentCursor = cursorManager.getCurrentCursor();
+                        int a= 31;
+                        while (cursorManager.isCursorIdExists(currentCursor.getId() * a)){
+                            a++;
+                        }
+                        Cursor mirroredCursor = new Cursor(
+                                axialSymmetry(currentCursor.getPosition(), pointA, pointB),
+                                (180-currentCursor.getAngle()+360)%360, // Angle adapted to +180
+                                currentCursor.getColor(),
+                                currentCursor.getWidth(),
+                                currentCursor.getOpacity(),
+                                currentCursor.getId() * a,
+                                scene
+                        );
+                        cursorManager.addCursor(mirroredCursor);
+
+                        // Axial symmetry logic
+                        for (Instruction instruction : instructions) {
+                            if (instruction.isValid()) {
+                                instruction.mirrorExecute(true, argument);
+                                cursorManager.selectCursor(mirroredCursor.getId());
+                                instruction.execute();
+                                cursorManager.selectCursor(currentCursorId);
+                            }
+                        }
+                    } else {
+                        Cursor currentCursor = cursorManager.getCurrentCursor();
+                        int a= 31;
+                        while (cursorManager.isCursorIdExists(currentCursor.getId() * a)){
+                            a++;
+                        }
+                        Cursor mirroredCursor = new Cursor(
+                                centralSymmetry(currentCursor.getPosition(), pointA),
+                                (180-currentCursor.getAngle()+360)%360, // Angle adapted to +180
+                                currentCursor.getColor(),
+                                currentCursor.getWidth(),
+                                currentCursor.getOpacity(),
+                                currentCursor.getId() * a,
+                                scene
+                        );
+                        cursorManager.addCursor(mirroredCursor);
+
+                        // Central symmetry logic
+                        for (Instruction instruction : instructions) {
+                            if (instruction.isValid()) {
+                                instruction.mirrorExecute(false, argument);
+                                cursorManager.selectCursor(mirroredCursor.getId());
+                                instruction.execute();
+                                cursorManager.selectCursor(currentCursorId);
+                            }
                         }
                     }
-                }
-                break;
 
-            case "MIMIC":
-                int cursorID = Integer.parseInt(argument.trim());
-                int originalCursor = cursorManager.getCurrentCursor().getId();
+                    break;
 
-                cursorManager.selectCursor(cursorID);
-                for (Instruction instruction : instructions) {
-                    if (instruction.isValid()) {
-                        instruction.mirrorExecute(Axial, parameter);
-                        cursorManager.selectCursor(originalCursor);
-                        instruction.mirrorExecute(Axial, parameter);
-                        cursorManager.selectCursor(cursorID);
-                    }
-                }
-
-                cursorManager.selectCursor(originalCursor);
-                break;
-            case "MIRROR":
-                Point[] points = parsePoints((String) argument);
-                Point pointA = points[0];
-                int currentCursorId = cursorManager.getCurrentCursor().getId();
-
-                if (points.length > 1) {
-                    Point pointB = points[1];
-                    Cursor currentCursor = cursorManager.getCurrentCursor();
-                    int a= 31;
-                    while (cursorManager.isCursorIdExists(currentCursor.getId() * a)){
-                        a++;
-                    }
-                    Cursor mirroredCursor = new Cursor(
-                            axialSymmetry(currentCursor.getPosition(), pointA, pointB),
-                            (180-currentCursor.getAngle()+360)%360, // Angle adapted to +180
-                            currentCursor.getColor(),
-                            currentCursor.getWidth(),
-                            currentCursor.getOpacity(),
-                            currentCursor.getId() * a,
-                            scene
-                    );
-                    cursorManager.addCursor(mirroredCursor);
-
-                    // Axial symmetry logic
-                    for (Instruction instruction : instructions) {
-                        if (instruction.isValid()) {
-                            instruction.mirrorExecute(true, argument);
-                            cursorManager.selectCursor(mirroredCursor.getId());
-                            instruction.execute();
-                            cursorManager.selectCursor(currentCursorId);
-                        }
-                    }
-                } else {
-                    Cursor currentCursor = cursorManager.getCurrentCursor();
-                    int a= 31;
-                    while (cursorManager.isCursorIdExists(currentCursor.getId() * a)){
-                        a++;
-                    }
-                    Cursor mirroredCursor = new Cursor(
-                            centralSymmetry(currentCursor.getPosition(), pointA),
-                            (180-currentCursor.getAngle()+360)%360, // Angle adapted to +180
-                            currentCursor.getColor(),
-                            currentCursor.getWidth(),
-                            currentCursor.getOpacity(),
-                            currentCursor.getId() * a,
-                            scene
-                    );
-                    cursorManager.addCursor(mirroredCursor);
-
-                    // Central symmetry logic
-                    for (Instruction instruction : instructions) {
-                        if (instruction.isValid()) {
-                            instruction.mirrorExecute(false, argument);
-                            cursorManager.selectCursor(mirroredCursor.getId());
-                            instruction.execute();
-                            cursorManager.selectCursor(currentCursorId);
-                        }
-                    }
-                }
-
-                break;
-
-            default:
-                throw new UnsupportedOperationException("Unknown block instruction type: " + type);
+                default:
+                    throw new ErrorLogger("Unknown block instruction type: " + type);
+            }
+        }catch (ErrorLogger e){
+            e.logError();
         }
     }
 
