@@ -75,18 +75,18 @@ public class CursorManager {
      *
      * @param id the id of the cursor to select
      */
-    public void selectCursor(int id) {
-        for (Cursor cursor : cursors) {
-            if (cursor.getId() == id) {
-                currentCursor = cursor;
-                Group root = (Group)scene.getRoot();
-                System.out.println(root.getChildren());
+    public void selectCursor(int id) throws ErrorLogger {
+        if(isCursorIdExists(id)) {
+            for (Cursor cursor : cursors) {
+                if (cursor.getId() == id) {
+                    currentCursor = cursor;
+                    Group root = (Group) scene.getRoot();
+                    System.out.println(root.getChildren());
+                }
             }
-
-
-
+        }else {
+            throw new ErrorLogger("Cannot select a cursor that doesn't exist");
         }
-        // Gérer l'erreur : aucun curseur avec cet identifiant n'existe
     }
 
     /**
@@ -100,13 +100,7 @@ public class CursorManager {
             if(cursor.getId()==id){
                 return cursor;
             }
-
-
-
-
         }
-
-        //error
         return null;
     }
 
@@ -115,18 +109,20 @@ public class CursorManager {
      *
      * @param id the id of the cursor to remove
      */
-    public void removeCursor(int id) {
-        for (Cursor cursor : cursors) {
-            if (cursor.getId() == id) {
-                cursors.remove(cursor);
-                cursor.removeCursorWithId();
-                cursor.deconstructor();
-                break;
+    public void removeCursor(int id) throws ErrorLogger {
+        if(isCursorIdExists(id)) {
+            for (Cursor cursor : cursors) {
+                if (cursor.getId() == id) {
+                    cursors.remove(cursor);
+                    cursor.removeCursorWithId();
+                    cursor.deconstructor();
+                    break;
+                }
             }
-
-
         }
-        // Gérer l'erreur : aucun curseur avec cet identifiant n'existe
+        else {
+            throw new ErrorLogger("Cursor ID doesn't exist");
+        }
     }
 
     /**

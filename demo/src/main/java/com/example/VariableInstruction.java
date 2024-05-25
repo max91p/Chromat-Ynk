@@ -43,7 +43,21 @@ public class VariableInstruction extends Instruction{
 
     @Override
     public void mirrorExecute(boolean Axial, Object parameter) throws ErrorLogger {
-
+        Object resolvedParameter = resolveParameter(value);
+        switch (type){
+            case "NUM":
+                variableContext.createNumericVariable(name,(Number) resolvedParameter);
+                break;
+            case "STR":
+                variableContext.createStringVariable(name,(String) resolvedParameter);
+                break;
+            case "BOOL":
+                variableContext.createBooleanVariable(name,(Boolean) resolvedParameter);
+                break;
+            case "DEL":
+                variableContext.removeVariable(name);
+                break;
+        }
     }
 
 

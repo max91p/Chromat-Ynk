@@ -541,10 +541,10 @@ public class SimpleInstruction extends Instruction {
                 case "CURSOR":
                     if (resolvedParameter instanceof Integer) {
                         int cursorID = (Integer) resolvedParameter;
-                        if(cursors.isCursorIdExists(cursorID)){
+                        if(!cursors.isCursorIdExists(cursorID)){
                             res = true;
                         } else {
-                            throw new ErrorLogger("Cursor ID doesn't exist");
+                            throw new ErrorLogger("Cursor ID already exists");
                         }
                     } else {
                         throw new ErrorLogger("parameter needs to be a Integer");
