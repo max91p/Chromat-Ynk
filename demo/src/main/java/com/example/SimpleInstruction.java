@@ -76,7 +76,7 @@ public class SimpleInstruction extends Instruction {
      */
 
     @Override
-    public void execute(){
+    public void execute() throws ErrorLogger{
         Object resolvedParameter = resolveParameter(parameters);
         switch (type) {
             case "FWD":

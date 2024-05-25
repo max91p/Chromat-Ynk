@@ -48,7 +48,7 @@ public class CursorManager {
      * Creates a new cursor with the specified id.
      * @param id the id of the new cursor
      */
-    public void createCursor(int id) {
+    public void createCursor(int id) throws ErrorLogger {
         if (!isCursorIdExists(id)) {
             Cursor newCursor = new Cursor(new Point(50,50),id,scene);
             cursors.add(newCursor);
@@ -56,7 +56,7 @@ public class CursorManager {
             draw.drawCursor(newCursor);
             Group root = (Group)scene.getRoot();
         } else {
-            throw new IllegalArgumentException("L'identifiant existe déjà!");
+            throw new ErrorLogger(("This ID already exist"));
         }
     }
 
@@ -65,12 +65,12 @@ public class CursorManager {
      *
      * @param cursor the cursor to add
      */
-    public void addCursor(Cursor cursor) {
+    public void addCursor(Cursor cursor) throws ErrorLogger{
         if (!isCursorIdExists(cursor.getId()) && cursor!=null) {
             cursors.add(cursor);
 
         } else {
-            throw new IllegalArgumentException("L'identifiant existe déjà!");
+            throw new ErrorLogger(("This ID already exist or the cursor is null"));
         }
     }
 
@@ -79,12 +79,15 @@ public class CursorManager {
      *
      * @param id the id of the cursor to select
      */
-    public void selectCursor(int id) {
+    public void selectCursor(int id) throws ErrorLogger{
         for (Cursor cursor : cursors) {
             if (cursor.getId() == id) {
                 currentCursor = cursor;
                 Group root = (Group)scene.getRoot();
                 System.out.println(root.getChildren());
+            }
+            else{
+                throw new ErrorLogger(("There is no cursor existing with this ID"));
             }
         }
         // Gérer l'erreur : aucun curseur avec cet identifiant n'existe
@@ -96,12 +99,17 @@ public class CursorManager {
      * @param id the id of the cursor to return
      * @return the cursor with the specified id
      */
-    public Cursor getCursor(int id){
+    public Cursor getCursor(int id) throws ErrorLogger{
         for(Cursor cursor : cursors){
             if(cursor.getId()==id){
                 return cursor;
             }
+            else{
+                throw new ErrorLogger("There is no cursor existing with this ID");
+            }
+
         }
+
         //error
         return null;
     }
@@ -111,13 +119,15 @@ public class CursorManager {
      *
      * @param id the id of the cursor to remove
      */
-    public void removeCursor(int id) {
+    public void removeCursor(int id) throws ErrorLogger{
         for (Cursor cursor : cursors) {
             if (cursor.getId() == id) {
                 cursors.remove(cursor);
                 cursor.removeCursorWithId();
                 cursor.deconstructor();
                 break;
+            }else{
+                throw new ErrorLogger(("There is no cursor existing with this ID"));
             }
         }
         // Gérer l'erreur : aucun curseur avec cet identifiant n'existe
@@ -132,6 +142,8 @@ public class CursorManager {
         for (Cursor cursor : cursors) {
             if (cursor.getId() == id) {
                 return true;
+            }else{
+                ErrorLogger errorLogger = new ErrorLogger("There is no cursor existing with this ID");
             }
         }
         return false;
