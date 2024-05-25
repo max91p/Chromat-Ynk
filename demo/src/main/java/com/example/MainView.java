@@ -193,7 +193,7 @@ public class MainView extends VBox {
                 }
 
                 if (instruction == null) {
-                    throw new ErrorLogger("Unknown type: " + instructionText);
+                    throw new ErrorLogger("Unknown expression: " + instructionText);
                 }
 
                 if (!stack.isEmpty()) {
@@ -210,9 +210,10 @@ public class MainView extends VBox {
                 }
                 stack.push(blockInstruction);
             } else if (line.equals("}")) {
-                if (!stack.isEmpty()) {
-                    stack.pop();
+                if (stack.isEmpty()) {
+                    throw new ErrorLogger("Syntax error: unexcepted '}'.");
                 }
+                stack.pop();
             }
         }
         return instructions;

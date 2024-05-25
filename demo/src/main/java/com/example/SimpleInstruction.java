@@ -140,7 +140,12 @@ public class SimpleInstruction extends Instruction {
                     String[] valueStrings = valueString.split(",");
                     int[] values = new int[valueStrings.length];
                     for (int i = 0; i < valueStrings.length; i++) {
-                        values[i]= Integer.parseInt(valueStrings[i]);
+                        if(variableContext.containsVariable(valueStrings[i])){
+                            values[i]=(Integer)variableContext.getVariable(valueStrings[i]);
+                        }
+                        else {
+                            values[i] = Integer.parseInt(valueStrings[i]);
+                        }
                     }
                     cursors.getCurrentCursor().setColor(new ColorOfLine(values[0], values[1], values[2]));
                 }
@@ -151,7 +156,13 @@ public class SimpleInstruction extends Instruction {
                     String[] valueStrings = valueString.split(",");
                     double[] values = new double[valueStrings.length];
                     for (int i = 0; i < valueStrings.length; i++) {
-                        values[i]= Double.parseDouble(valueStrings[i]);
+                        if(variableContext.containsVariable(valueStrings[i])){
+                            values[i]=(Double) variableContext.getVariable(valueStrings[i]);
+                        }
+                        else {
+                            values[i]= Double.parseDouble(valueStrings[i]);
+                        }
+
                     }
                     cursors.getCurrentCursor().setColor(new ColorOfLine(values[0], values[1], values[2]));
                 }
@@ -495,7 +506,12 @@ public class SimpleInstruction extends Instruction {
                         if (valueStrings.length == 3) {
                             int[] values = new int[valueStrings.length];
                             for (int i = 0; i < valueStrings.length; i++) {
-                                values[i] = Integer.parseInt(valueStrings[i]);
+                                if(variableContext.containsVariable(valueStrings[i]) && variableContext.getVariable(valueStrings[i]) instanceof Integer){
+                                    values[i]=(Integer)variableContext.getVariable(valueStrings[i]);
+                                }
+                                else {
+                                    values[i] = Integer.parseInt(valueStrings[i]);
+                                }
                             }
                             if (values[0] >= 0 && values[0] <= 255 && values[1] >= 0 && values[1] <= 255 && values[2] >= 0 && values[2] <= 255) {
                                 res = true;
@@ -510,7 +526,12 @@ public class SimpleInstruction extends Instruction {
                         if (valueStrings.length == 3) {
                             double[] values = new double[valueStrings.length];
                             for (int i = 0; i < valueStrings.length; i++) {
-                                values[i] = Double.parseDouble(valueStrings[i]);
+                                if(variableContext.containsVariable(valueStrings[i]) && variableContext.getVariable(valueStrings[i]) instanceof Double){
+                                    values[i]=(Double)variableContext.getVariable(valueStrings[i]);
+                                }
+                                else {
+                                    values[i]= Double.parseDouble(valueStrings[i]);
+                                }
                             }
                             if (values[0] >= 0 && values[0] <= 1 && values[1] >= 0 && values[1] <= 1 && values[2] >= 0 && values[2] <= 1) {
                                 res = true;
