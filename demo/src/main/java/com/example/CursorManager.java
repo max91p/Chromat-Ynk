@@ -86,10 +86,10 @@ public class CursorManager {
                 Group root = (Group)scene.getRoot();
                 System.out.println(root.getChildren());
             }
-            else{
-                throw new ErrorLogger(("There is no cursor existing with this ID"));
-            }
-        }
+
+
+
+        }throw new ErrorLogger(("There is no cursor existing with this ID"));
         // Gérer l'erreur : aucun curseur avec cet identifiant n'existe
     }
 
@@ -104,14 +104,14 @@ public class CursorManager {
             if(cursor.getId()==id){
                 return cursor;
             }
-            else{
-                throw new ErrorLogger("There is no cursor existing with this ID");
-            }
 
-        }
+
+
+
+        }throw new ErrorLogger("There is no cursor existing with this ID");
 
         //error
-        return null;
+        //return null;
     }
 
     /**
@@ -126,10 +126,10 @@ public class CursorManager {
                 cursor.removeCursorWithId();
                 cursor.deconstructor();
                 break;
-            }else{
-                throw new ErrorLogger(("There is no cursor existing with this ID"));
             }
-        }
+
+
+        }throw new ErrorLogger(("There is no cursor existing with this ID"));
         // Gérer l'erreur : aucun curseur avec cet identifiant n'existe
     }
 
@@ -142,8 +142,6 @@ public class CursorManager {
         for (Cursor cursor : cursors) {
             if (cursor.getId() == id) {
                 return true;
-            }else{
-                ErrorLogger errorLogger = new ErrorLogger("There is no cursor existing with this ID");
             }
         }
         return false;
