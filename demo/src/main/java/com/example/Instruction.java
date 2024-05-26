@@ -5,15 +5,19 @@ package com.example;
  */
 public abstract class Instruction {
 
-    /**
-     * Executes the instruction on the given cursor.
-     *
-     * @param cursor the cursor to execute the instruction on
-     */
-    //public abstract void execute(Cursor cursor);
 
+    /**
+     * Executes the instruction on the current cursor
+     * @throws ErrorLogger
+     */
     public abstract void execute() throws ErrorLogger;
 
+    /**
+     * Executes mirror instructions
+     * @param axial
+     * @param parameter
+     * @throws ErrorLogger
+     */
     public abstract void mirrorExecute(boolean axial,Object parameter)throws ErrorLogger;
 
     /**

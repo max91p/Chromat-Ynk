@@ -43,7 +43,7 @@ public class Main extends Application {
             Group root = new Group();
             Group root2 = new Group();
 
-            // Création de la scène avec la racine
+            // Creation of the scene with root
             Scene scene = new Scene(root, 400, 200);
             Scene scene2 = new Scene(root2, 400, 200);
 
@@ -57,11 +57,10 @@ public class Main extends Application {
             Pane container = new Pane();
             container.getChildren().add(view);
 
-// Ajouter le conteneur à root
+            // add container to root
             root.getChildren().add(container);
 
             scene.setRoot(root);
-
 
             primaryStage.setScene(scene);
             primaryStage.show();
@@ -70,7 +69,6 @@ public class Main extends Application {
             errorLogger.logError();
         }
     }
-
 
 
     /**
