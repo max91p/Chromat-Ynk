@@ -81,7 +81,6 @@ public class CursorManager {
                 if (cursor.getId() == id) {
                     currentCursor = cursor;
                     Group root = (Group) scene.getRoot();
-                    System.out.println(root.getChildren());
                 }
             }
         }else {

@@ -364,9 +364,6 @@ public class Cursor {
         }catch (ErrorLogger e){
             e.logError();
         }
-
-        // Pas besoin de réaffecter la racine, elle est déjà mise à jour
-        System.out.println(root+"root reaffecter");
     }
 
     /**

@@ -63,6 +63,8 @@ public class MainView extends VBox {
         secondaryStage.setTitle("Drawing Canva");
         secondaryStage.setWidth(1080);
         secondaryStage.setHeight(800);
+        secondaryStage.setX(1000);
+        secondaryStage.setY(100);
         // Event handler for execute button
         button.setOnAction(event -> {
             try {
@@ -73,6 +75,8 @@ public class MainView extends VBox {
                 throw new RuntimeException(e);
             }
         });
+        secondaryStage.setScene(cursorManager1.getScene());
+        secondaryStage.show();
         Group root = (Group)cursorManager1.getScene().getRoot();
 
         clearButton.setOnAction(event -> {

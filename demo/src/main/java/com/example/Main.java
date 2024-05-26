@@ -17,8 +17,8 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
     private final String WINDOW_TITLE = "Application";
-    private final double WINDOW_WIDTH = 1080;
-    private final double WINDOW_HEIGHT = 800;
+    private final double WINDOW_WIDTH = 800;
+    private final double WINDOW_HEIGHT = 600;
 
     /**
      * Starts the application.
@@ -50,6 +50,9 @@ public class Main extends Application {
             primaryStage.setTitle(WINDOW_TITLE);
             primaryStage.setWidth(WINDOW_WIDTH);
             primaryStage.setHeight(WINDOW_HEIGHT);
+
+            primaryStage.setX(100);
+            primaryStage.setY(100);
 
             CursorManager cursorManager = new CursorManager(scene2);
             VariableContext variable = new VariableContext();
