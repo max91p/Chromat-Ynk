@@ -14,6 +14,15 @@ public class InstructionsBlock extends Instruction {
     private VariableContext variableContext;
     private Scene scene;
 
+    /**
+     * Constructor
+     * @param type              Type of the block
+     * @param argument          Argument
+     * @param instructions      List of instructions
+     * @param cursorManager     Cursors manager
+     * @param variableContext   Variables manager
+     * @param scene             Scene
+     */
     public InstructionsBlock(String type, String argument, List<Instruction> instructions, CursorManager cursorManager, VariableContext variableContext, Scene scene) {
         this.type = type;
         this.argument = argument;
@@ -23,22 +32,34 @@ public class InstructionsBlock extends Instruction {
         this.scene = scene;
     }
 
+    /**
+     * Evaluate the value of a comparison
+     * @param condition
+     * @return True if it's the value of the comprarison, otherwise false
+     */
     private boolean evaluateComparison(String condition){
         condition=condition.trim();
 
+        // Define comparison operators
         String[] operators={"==","<=",">=","<",">","!="};
         try {
+            //check for each operator in the condition string
             for (String operator : operators) {
                 int position = condition.indexOf(operator);
+                //if the operator is find
                 if (position != -1) {
+                    //split the condition into left and right parts of the operator
                     String leftPart = condition.substring(0, position).trim();
                     String rightPart = condition.substring(position + operator.length()).trim();
+                    // evaluate the boolean expression
                     return evaluateBooleanExpression(leftPart, rightPart, operator);
                 }
             }
 
+            //Handle negation at the start of the boolean condition
             if (condition.startsWith("!")) {
                 String expression = condition.substring(1).trim();
+                //check for "true" or "false" values (direct String or boolean variable)
                 if (expression == "true" || (Boolean) resolvedParameter(expression) == true) {
                     return false;
                 } else if (expression == "false" || (Boolean) resolvedParameter(expression) == false) {
@@ -46,12 +67,13 @@ public class InstructionsBlock extends Instruction {
                 }
             }
 
+            //Check for "true" or "false values (String or boolean variable)
             if (condition == "true" || (Boolean) resolvedParameter(condition) == true) {
                 return true;
             } else if (condition == "false" || (Boolean) resolvedParameter(condition) == false) {
                 return false;
             }
-
+            //throw an error if the condition is unsupported
             throw new ErrorLogger("Condition :" + condition + "unsupported");
         }catch (ErrorLogger e){
             e.logError();
@@ -59,11 +81,20 @@ public class InstructionsBlock extends Instruction {
         }
     }
 
+    /**
+     *  Evaluate the value of a boolean expression
+     * @param leftPart      Left part of the Operator
+     * @param rightPart     Right part of the Operator
+     * @param operator      Operator
+     * @return
+     */
     private boolean evaluateBooleanExpression(String leftPart, String rightPart,String operator){
+        //resolve parameters to handle variable
         Object leftOperand=resolvedParameter(leftPart);
         Object rightOperand= resolvedParameter(rightPart);
 
         try {
+            //Convert operands to compatible types
             if (leftOperand instanceof String && rightOperand instanceof Number) {
                 leftOperand = convertToCompatibleType((String) leftOperand, (Number) rightOperand);
             } else if (rightOperand instanceof String && leftOperand instanceof Number) {
@@ -74,6 +105,7 @@ public class InstructionsBlock extends Instruction {
             }
 
 
+            //Comparison based on the operator
             switch (operator) {
                 case "==":
                     return compareTo(rightOperand, leftOperand) == 0;
@@ -96,8 +128,15 @@ public class InstructionsBlock extends Instruction {
         }
     }
 
+    /**
+     * Convert values to compatible type to compare
+     * @param stringValue
+     * @param numericValue
+     * @return a number
+     */
     private Object convertToCompatibleType(String stringValue, Number numericValue) {
         try {
+            //Check the type of numeric Value to convert stringValue
             if (numericValue instanceof Integer) {
                 return Integer.parseInt(stringValue);
             } else if (numericValue instanceof Double) {
@@ -110,44 +149,77 @@ public class InstructionsBlock extends Instruction {
             return false;
         }
     }
+
+    /**
+     * Evaluate the boolean value of a logical expression (to handle && and || operator)
+     * @param expression
+     * @return  True if the expression is true, false otherwise
+     */
     private boolean evaluateLogicalExpression(String expression){
+        //Split the expression by "||"
         String[] parts = expression.split("\\|\\|");
+        //Check if parts contains mutiple parts
         if(parts.length>1){
+            //evaluate each part one by one
             for (String part : parts){
+                //If any part is true then the result of the expression is true ("OR")
                 if(evaluateLogicalExpression(part.trim())){
                     return true;
                 }
             }
+            //If none of the parts is true, the expression is false
             return false;
         }
 
+        //Split the expression by "&&"
         parts = expression.split("&&");
+        //Check if parts contains mutiple parts
         if(parts.length>1){
+            //evaluate each part one by one
             for(String part : parts){
+                //If any part is false then the result of the expression is false ("AND")
                 if(!evaluateLogicalExpression(part.trim())){
                     return false;
                 }
             }
+            //If all parts are true then the result is true
             return true;
         }
 
+        //If the expression has no logical operators (parts.length==1) evaluate the expression as a comparison
         return evaluateComparison(expression);
     }
 
+    /**
+     * Replace a variable by its value if it's a known by the variables manager
+     * @param parameter
+     * @return the resolved parameter
+     */
     private Object resolvedParameter(String parameter){
+        //Check if the paramater is a variable name
         if(variableContext.containsVariable(parameter.trim())){
+            //If it is, return the corresponding value
             return variableContext.getVariable(parameter.trim());
         }
+        //If not return the parameter
         return parameter;
     }
 
+    /**
+     * Compare values
+     * @param leftValue
+     * @param rightValue
+     * @return a comparison integer
+     */
     private int compareTo(Object leftValue, Object rightValue){
         try{
+            //Check if both values have the same number type and compare them
             if(leftValue instanceof Integer && rightValue instanceof Integer){
                 return Integer.compare((Integer)leftValue,(Integer)rightValue);
             } else if (leftValue instanceof Double && rightValue instanceof Double) {
                 return Double.compare((Double)leftValue,(Double)rightValue);
             } else{
+                //Error if not comparable
                 throw new ErrorLogger("Comparison between different types is impossible");
             }
         }catch (ErrorLogger e){
@@ -156,11 +228,16 @@ public class InstructionsBlock extends Instruction {
         }
     }
 
+    /**
+     * Execute instructions
+     * @throws ErrorLogger
+     */
     @Override
     public void execute() throws ErrorLogger {
         try{
             switch (type) {
                 case "IF":
+                    //Execute instrcutions if the logical expression is true
                     if (evaluateLogicalExpression(argument)) {
                         for (Instruction instruction : instructions) {
                             if (instruction.isValid()) {
@@ -174,10 +251,12 @@ public class InstructionsBlock extends Instruction {
                     String[] parts= argument.split("\\s+");
                     String variableName=parts[0];
 
+                    //loop parameters
                     int from=0;
                     int to;
                     int step=1;
 
+                    //Handle different loop format
                     if(parts.length == 5){
                         // [FOR] name FROM v1 TO v2
                         from=Integer.parseInt(parts[2]);
@@ -194,7 +273,9 @@ public class InstructionsBlock extends Instruction {
                         throw new ErrorLogger("Invalid loop format");
                     }
 
+                    //execute the instructions for each iteration
                     for(int i = from; i<=to;i+=step){
+                        //Update the iterative variable
                         variableContext.setVariable(variableName,i);
                         for(Instruction instruction : instructions){
                             if (instruction.isValid()){
@@ -205,6 +286,7 @@ public class InstructionsBlock extends Instruction {
                     break;
 
                 case "WHILE":
+                    //Execute instruction while logical expression is true
                     while (evaluateLogicalExpression(argument)) {
                         for (Instruction instruction : instructions) {
                             if (instruction.isValid()) {
@@ -215,6 +297,7 @@ public class InstructionsBlock extends Instruction {
                     break;
 
                 case "MIMIC":
+                    //execute instructions on both currentCursor and original cursor (ID on parameters)
                     int cursorID = Integer.parseInt(argument.trim());
                     int originalCursor = cursorManager.getCurrentCursor().getId();
 
@@ -232,6 +315,7 @@ public class InstructionsBlock extends Instruction {
                     break;
 
                 case "MIRROR":
+                    //Execute instructions with mirrrored movement
                     Point[] points = parsePoints((String) argument);
                     Point pointA = points[0];
                     int currentCursorId = cursorManager.getCurrentCursor().getId();
@@ -301,6 +385,12 @@ public class InstructionsBlock extends Instruction {
         }
     }
 
+    /**
+     * Execute mirror instructions
+     * @param Axial
+     * @param parameter
+     * @throws ErrorLogger
+     */
     @Override
     public void mirrorExecute(boolean Axial,Object parameter) throws ErrorLogger {
         try{
@@ -442,6 +532,13 @@ public class InstructionsBlock extends Instruction {
         }
     }
 
+    /**
+     *
+     * @param p
+     * @param a
+     * @param b
+     * @return
+     */
     public static Point axialSymmetry(Point p, Point a, Point b) {
         double dx = b.getX() - a.getX();
         double dy = b.getY() - a.getY();
@@ -453,12 +550,23 @@ public class InstructionsBlock extends Instruction {
         return new Point(x_s, y_s);
     }
 
+    /**
+     *
+     * @param p
+     * @param c
+     * @return
+     */
     public static Point centralSymmetry(Point p, Point c) {
         double x_s = 2 * c.getX() - p.getX();
         double y_s = 2 * c.getY() - p.getY();
         return new Point(x_s, y_s);
     }
 
+    /**
+     * Parse a String to a Point
+     * @param pointString
+     * @return A point
+     */
     private Point parsePoint(String pointString) {
         // Remove parentheses and trim any whitespace
         pointString = pointString.replace("(", "").replace(")", "").trim();
@@ -483,10 +591,16 @@ public class InstructionsBlock extends Instruction {
         return points;
     }
 
+    /**
+     * Check if the instruction is valid
+     * @return True if it's valid, false otherwise
+     * @throws ErrorLogger
+     */
     public boolean isValid() throws ErrorLogger {
         try {
             switch (type) {
                 case "IF":
+                    // Check if both condition and instructions are not null
                     if (argument != null && instructions != null){
                         return true;
                     } else {
@@ -494,8 +608,9 @@ public class InstructionsBlock extends Instruction {
                     }
 
                 case "FOR":
+                    //Validate FOR block arguments based on their format and  check if instructions is not null
                     String[] parts = argument.split("\\s+");
-                    if (parts.length == 3 || parts.length == 5 || parts.length == 7) {
+                    if (parts.length == 3 && argument.contains("TO") || parts.length == 5 && argument.contains("TO") && argument.contains("FROM")|| parts.length == 7&& argument.contains("TO") && argument.contains("FROM") && argument.contains("STEP")) {
                         if (instructions != null) {
                             return true;
                         } else {
@@ -507,6 +622,7 @@ public class InstructionsBlock extends Instruction {
 
 
                 case "WHILE":
+                    //check if both condition and instructions are not null
                     if (argument != null && instructions != null){
                         return true;
                     } else {
@@ -514,6 +630,7 @@ public class InstructionsBlock extends Instruction {
                     }
 
                 case "MIMIC":
+                    // Check if both argument and instructions are not null
                     if (argument != null && instructions != null){
                     return true;
                     } else {
@@ -521,11 +638,12 @@ public class InstructionsBlock extends Instruction {
                 }
 
                 case "MIRROR":
+                    //Validate MIRROR arguments
                     String[] points = argument.split("\\),\\(");
                     if (points.length == 1 || points.length == 2) {
                         for (String point : points) {
                             try {
-                                parsePoint(point);
+                                parsePoint(point); //parse each point
                                 } catch (Exception e) {
                                     return false;
                                 }
@@ -548,6 +666,10 @@ public class InstructionsBlock extends Instruction {
         }
     }
 
+    /**
+     * Getter of instructions list
+     * @return a list of instructions
+     */
     public List<Instruction> getInstructions() {
         return instructions;
     }

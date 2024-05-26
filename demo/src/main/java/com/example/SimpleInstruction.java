@@ -27,7 +27,6 @@ public class SimpleInstruction extends Instruction {
      * @param type       the type of the instruction
      * @param parameters the parameters of the instruction
      */
-
     public SimpleInstruction(String type, Object parameters, CursorManager cursors, VariableContext variableContext,Scene scene) {
         this.type = type;
         this.parameters = parameters;
@@ -36,19 +35,11 @@ public class SimpleInstruction extends Instruction {
         this.scene=scene;
     }
 
-    public SimpleInstruction(String type, Object parameters, CursorManager cursors,Scene scene) {
-        this.type = type;
-        this.parameters = parameters;
-        this.cursors = cursors;
-        this.scene=scene;
-    }
-
     /**
      * Constructs a new SimpleInstruction with the specified type and parameters.
      *
      * @param type the type of the instruction
      */
-
     public SimpleInstruction(String type, CursorManager cursors, VariableContext variableContext,Scene scene) {
         this.type = type;
         this.parameters = null;
@@ -64,37 +55,50 @@ public class SimpleInstruction extends Instruction {
      * @return
      */
     private Object resolveParameter(Object parameter) {
+        //Check if the parameter is a variable name
         if (parameter instanceof String && variableContext.containsVariable((String) parameter)) {
+            //If it is, return the corresponding value
             return variableContext.getVariable((String) parameter);
         }
+        //If not return the parameter
         return parameter;
     }
 
 
     /**
      * Executes the instruction on the given cursor.
+     * @throws ErrorLogger
      */
 
     @Override
     public void execute() throws ErrorLogger{
+        //Resolve the parameter before executing the instruction
         Object resolvedParameter = resolveParameter(parameters);
+
+        //Execute instruction
         switch (type) {
             case "FWD":
+                //Move the current cursor forward by the parameter value
                 cursors.getCurrentCursor().moveForward((Double)resolvedParameter);
                 break;
             case "BWD":
+                //Move the current cursor backward by the parameter value
                 cursors.getCurrentCursor().moveBackward((Double)resolvedParameter);
                 break;
             case "TURN":
+                //Turn the current cursorby the parameter value
                 cursors.getCurrentCursor().turn((Double)resolvedParameter);
                 break;
             case "SHOW":
+                //Set the cursor visible
                 cursors.getCurrentCursor().setVisible(true);
                 break;
             case "HIDE":
+                //Set the cursor invisible
                 cursors.getCurrentCursor().setVisible(false);
                 break;
             case "MOV":
+                //Move the current cursor to a specified position
                 String valuePoint = (String)resolvedParameter;
                 if(valuePoint.contains(",")){
                     String[] valueCo = valuePoint.split(",");
@@ -106,6 +110,7 @@ public class SimpleInstruction extends Instruction {
                 }
                 break;
             case "POS":
+                //Set the position of the current cursor
                 String valuePointPos = (String)resolvedParameter;
                 if(valuePointPos.contains(",")){
                     String[] valueCo = valuePointPos.split(",");
@@ -118,9 +123,12 @@ public class SimpleInstruction extends Instruction {
 
                 break;
             case "PRESS":
+                //Set the opacity of the current cursor
+                //Handle with double parameter
                 if (resolvedParameter instanceof Double) {
                     cursors.getCurrentCursor().setOpacity((Double)resolvedParameter);
                 }
+                //handle with String parameter
                 if (resolvedParameter instanceof String) {
                     String value = (String)resolvedParameter;
                     // Vérification si la valeur correspond au format numérique avec un % à la fin
@@ -135,7 +143,9 @@ public class SimpleInstruction extends Instruction {
 
                 break;
             case "COLOR":
+                //Set the color of the current cursor
                 String valueString = (String)resolvedParameter;
+                //Handle (R,G,B) format with R,G,B between 0 and 255
                 if(valueString.contains(",") && !valueString.contains(".")){
                     String[] valueStrings = valueString.split(",");
                     int[] values = new int[valueStrings.length];
@@ -149,9 +159,11 @@ public class SimpleInstruction extends Instruction {
                     }
                     cursors.getCurrentCursor().setColor(new ColorOfLine(values[0], values[1], values[2]));
                 }
+                //Handle #RRGGBB format
                 else if (valueString.contains("#")){
                     cursors.getCurrentCursor().setColor(new ColorOfLine(valueString));
                 }
+                //Handle (R,G,B) format with R,G,B between 0 and 1
                 else if(valueString.contains(",") && valueString.contains(".")){
                     String[] valueStrings = valueString.split(",");
                     double[] values = new double[valueStrings.length];
@@ -168,10 +180,13 @@ public class SimpleInstruction extends Instruction {
                 }
                 break;
             case "THICK":
+                //Set the width of the cursor
                 cursors.getCurrentCursor().setWidth((Double)resolvedParameter);
                 break;
             case "LOOKAT":
+                //Set the angle of the current cursor to face a point (or another cursor)
                 if (resolvedParameter instanceof Integer) {
+                    //Get the id of the cursor
                     Cursor cursor = cursors.getCursor((Integer)resolvedParameter);
                     double deltaX = cursor.getPosition().getX() - cursors.getCurrentCursor().getPosition().getX();
                     double deltaY = cursor.getPosition().getY() - cursors.getCurrentCursor().getPosition().getY();
@@ -181,6 +196,7 @@ public class SimpleInstruction extends Instruction {
                     cursors.getCurrentCursor().setAngle(angleToTarget);
                 }
                 if (resolvedParameter instanceof String) {
+                    //Get the point to face
                     String valuePointLook = (String) resolvedParameter;
                     if (valuePointLook.contains(",")) {
                         String[] valueCo = valuePointLook.split(",");
@@ -200,18 +216,27 @@ public class SimpleInstruction extends Instruction {
                 }
                 break;
             case "CURSOR":
+                //Create a new cursor
                 cursors.createCursor((Integer)resolvedParameter);
                 break;
             case "SELECT":
+                //Select an existing cursor
                 cursors.selectCursor((Integer)resolvedParameter);
                 break;
             case "REMOVE":
+                //remove an existing cursor
                 cursors.removeCursor((Integer)resolvedParameter);
                 break;
 
         }
     }
 
+    /**
+     * Execute mirror instructions
+     * @param Axial
+     * @param parameter
+     * @throws ErrorLogger
+     */
     public void mirrorExecute(boolean Axial,Object parameter)throws ErrorLogger{
         switch (type) {
             case "FWD":
@@ -408,6 +433,13 @@ public class SimpleInstruction extends Instruction {
         }
     }
 
+    /**
+     * Axial Symetry
+     * @param p
+     * @param a
+     * @param b
+     * @return Point values
+     */
     private static Point axialSymmetry(Point p, Point a, Point b) {
         double dx = b.getX() - a.getX();
         double dy = b.getY() - a.getY();
@@ -419,12 +451,23 @@ public class SimpleInstruction extends Instruction {
         return new Point(x_s, y_s);
     }
 
+    /**
+     *
+     * @param p
+     * @param c
+     * @return
+     */
     private static Point centralSymmetry(Point p, Point c) {
         double x_s = 2 * c.getX() - p.getX();
         double y_s = 2 * c.getY() - p.getY();
         return new Point(x_s, y_s);
     }
 
+    /**
+     * Parse a String to a Point
+     * @param pointString
+     * @return New point
+     */
     private Point parsePoint(String pointString) {
         pointString = pointString.replace("(", "").replace(")", "").trim();
         String[] coordinates = pointString.split(",");
@@ -433,6 +476,11 @@ public class SimpleInstruction extends Instruction {
         return new Point(x, y);
     }
 
+    /**
+     * Check if the instruction is valid
+     * @return true if it's valid, otherwise false
+     * @throws ErrorLogger
+     */
     public boolean isValid() throws ErrorLogger{
         Object resolvedParameter = resolveParameter(parameters);
         boolean res = false;
@@ -441,6 +489,7 @@ public class SimpleInstruction extends Instruction {
                 case "FWD":
                 case "BWD":
                 case "TURN":
+                    //Parameter value must be a double
                     if (resolvedParameter instanceof Double) {
                         res = true;
                     } else {
@@ -449,9 +498,11 @@ public class SimpleInstruction extends Instruction {
                     break;
                 case "SHOW":
                 case "HIDE":
+                    //No parameter required
                     res = true;
                     break;
                 case "MOV":
+                    //Parameter value must be a Point
                     if (resolvedParameter instanceof String) {
                         res = true;
                     } else {
@@ -466,6 +517,7 @@ public class SimpleInstruction extends Instruction {
                     }
                     break;
                 case "PRESS":
+                    //Parameter value must be a double between 0 and 1 or a String representing a percentage
                     if (resolvedParameter instanceof Double || resolvedParameter instanceof String) {
                         if (resolvedParameter instanceof Double) {
                             double value = (Double)resolvedParameter;
@@ -477,11 +529,11 @@ public class SimpleInstruction extends Instruction {
                         }
                         else if (resolvedParameter instanceof String) {
                             String value = (String)resolvedParameter;
-                            // Vérification si la valeur correspond au format numérique avec un % à la fin
+                            // Check if the string matches the format of a percentage (e.g., "50%")
                             Pattern pattern = Pattern.compile("^\\d+(\\.\\d+)?%$");
                             Matcher matcher = pattern.matcher(value);
                             if (matcher.matches()) {
-                                // La valeur est au format numérique avec un % à la fin
+                                // Percentage to numeric value and check if it's between 0 and 100
                                 double numericValue = Double.parseDouble(value.substring(0, value.length() - 1));
                                 if (numericValue >= 0 && numericValue <= 100) {
                                     res = true;
@@ -495,13 +547,16 @@ public class SimpleInstruction extends Instruction {
                     }
                     break;
                 case "COLOR":
+                    // Parameter must represent a color in various formats
                     if (resolvedParameter instanceof String && ((String) resolvedParameter).contains("#")){
+                        //Hexadecimal
                         if(((String) resolvedParameter).substring(1).matches("[0-9A-Fa-f]+") && ((String) resolvedParameter).charAt(0) == '#' && ((String) resolvedParameter).length() == 7){
                             res = true;
                         } else {
                             throw new ErrorLogger("parameter needs to be a String like #RRGGBB with RRGGBB between 0 and F");
                         }
                     } else if (resolvedParameter instanceof String && ((String) resolvedParameter).contains(",") && !((String) resolvedParameter).contains(".")) {
+                        //RGB integer
                         String[] valueStrings = ((String) resolvedParameter).split(",");
                         if (valueStrings.length == 3) {
                             int[] values = new int[valueStrings.length];
@@ -522,6 +577,7 @@ public class SimpleInstruction extends Instruction {
                             throw new ErrorLogger("parameter needs to be a String like R,G,B with R,G,B between 0 and 255");
                         }
                     } else if (resolvedParameter instanceof String && ((String) resolvedParameter).contains(",") && ((String) resolvedParameter).contains(".")) {
+                        //RGB double format
                         String[] valueStrings = ((String) resolvedParameter).split(",");
                         if (valueStrings.length == 3) {
                             double[] values = new double[valueStrings.length];
@@ -546,6 +602,7 @@ public class SimpleInstruction extends Instruction {
                     }
                     break;
                 case "THICK":
+                    // Parameter must be a Double
                     if (resolvedParameter instanceof Double) {
                         res = true;
                     } else {
@@ -553,6 +610,7 @@ public class SimpleInstruction extends Instruction {
                     }
                     break;
                 case "LOOKAT":
+                    // Parameter must be a String representing a Point or an Interger representing a Cursor ID
                     if (resolvedParameter instanceof String || resolvedParameter instanceof Integer) {
                         res = true;
                     } else {
@@ -560,6 +618,7 @@ public class SimpleInstruction extends Instruction {
                     }
                     break;
                 case "CURSOR":
+                    // Parameter must be an Integer representing a non-existent Cursor ID
                     if (resolvedParameter instanceof Integer) {
                         int cursorID = (Integer) resolvedParameter;
                         if(!cursors.isCursorIdExists(cursorID)){
@@ -572,6 +631,7 @@ public class SimpleInstruction extends Instruction {
                     }
                     break;
                 case "SELECT":
+                    // Parameter must be an Integer representing an existing Cursor ID
                     if (resolvedParameter instanceof Integer) {
                         int cursorID = (Integer) resolvedParameter;
                         if(cursors.isCursorIdExists(cursorID)){
@@ -584,6 +644,7 @@ public class SimpleInstruction extends Instruction {
                     }
                     break;
                 case "REMOVE":
+                    // Parameter must be an Integer representing an existing Cursor ID
                     if (resolvedParameter instanceof Integer) {
                         int cursorID = (Integer) resolvedParameter;
                         if(cursors.isCursorIdExists(cursorID)){
