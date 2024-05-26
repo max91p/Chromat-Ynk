@@ -2,9 +2,7 @@ package com.example;
 
 public class ErrorLogger extends Exception{
 
-    /*public ErrorLogger(){
-        super();
-    }*/
+
 
     public ErrorLogger(String message){
         super(message);
