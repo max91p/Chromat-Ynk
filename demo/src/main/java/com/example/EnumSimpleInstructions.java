@@ -1,5 +1,8 @@
 package com.example;
 
+/**
+ * Enumeration of Simple instructions
+ */
 public enum EnumSimpleInstructions {
     FWD,
     BWD,

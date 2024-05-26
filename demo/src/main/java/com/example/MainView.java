@@ -24,6 +24,9 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+/**
+ * Manages the main page interactions
+ */
 public class MainView extends VBox {
 
     private final TextArea text;

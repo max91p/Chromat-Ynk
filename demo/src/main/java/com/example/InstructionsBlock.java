@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 import javafx.scene.Scene;
 
+/**
+ * Class to represent a block of instruction
+ */
 public class InstructionsBlock extends Instruction {
     private String type;
     private List<Instruction> instructions;

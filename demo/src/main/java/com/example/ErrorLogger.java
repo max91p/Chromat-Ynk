@@ -1,5 +1,8 @@
 package com.example;
 
+/**
+ * Class to handle error
+ */
 public class ErrorLogger extends Exception{
 
 

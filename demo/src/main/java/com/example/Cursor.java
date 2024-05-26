@@ -170,6 +170,11 @@ public class Cursor {
         draw.drawPosCursor(this);
     }
 
+    /**
+     * Setter of position
+     * @param x x
+     * @param y y
+     */
     public void setNewPos(double x, double y){
         this.position = new Point(x,y);
     }
@@ -394,6 +399,10 @@ public class Cursor {
     public String toString() {
         return "Le curseur "+ id +" est à la position " + position + " et est orienté à " + angle + " degrés";
     }
+
+    /**
+     * Deconstructor of a cursor to manage a remove
+     */
     public void deconstructor(){
         this.position = new Point();
         this.angle = 0;

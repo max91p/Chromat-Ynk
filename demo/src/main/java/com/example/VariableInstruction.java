@@ -1,5 +1,8 @@
 package com.example;
 
+/**
+ * Represents a variable instruction
+ */
 public class VariableInstruction extends Instruction{
 
     private String type;

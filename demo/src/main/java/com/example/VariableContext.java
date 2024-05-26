@@ -3,6 +3,9 @@ package com.example;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class to manage variables
+ */
 public class VariableContext {
 
     private Map<String, Object> variables;
